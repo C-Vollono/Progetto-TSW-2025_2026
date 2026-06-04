@@ -1,23 +1,42 @@
 package model.dao;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
 
 public class ConPool {
-    private static final String URL = "jdbc:mysql://127.0.0.1:3306/e_commerce_db?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true";
-    private static final String USER = "root";
-    private static final String PASSWORD = "root";
+    private static DataSource dataSource;
 
+    // Il blocco static viene eseguito una sola volta all'avvio dell'applicazione
     static {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            System.err.println("Errore: Impossibile trovare il driver MySQL Connector! " + e.getMessage());
+            // Inizializziamo il contesto JNDI per parlare con Tomcat
+            InitialContext context = new InitialContext();
+            
+            // Chiediamo a Tomcat di passarci il DataSource (il Pool) configurato nel server
+            // NOTA: "jdbc/e_commerce_db" corrisponde esattamente al "name" inserito nel context.xml
+            dataSource = (DataSource) context.lookup("java:comp/env/jdbc/e_commerce_db");
+            System.out.println("[ConPool] Connection Pool JNDI inizializzato con successo tramite Tomcat.");
+            
+        } catch (NamingException e) {
+            System.err.println("Errore critico: Impossibile trovare il DataSource JNDI!");
+            e.printStackTrace();
         }
     }
-//patt
+
+    /**
+     * Prende in prestito una connessione già pronta dal Pool di Tomcat.
+     * @return java.sql.Connection
+     * @throws SQLException
+     */
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, USER, PASSWORD);
+        if (dataSource == null) {
+            throw new SQLException("DataSource non inizializzato correttamente. Controlla il file context.xml.");
+        }
+        // Questo NON apre una nuova connessione da zero! 
+        // Riduce i tempi di attesa prelevando un canale già attivo dal pool.
+        return dataSource.getConnection(); 
     }
 }
