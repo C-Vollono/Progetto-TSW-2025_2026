@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <Resource name="jdbc/e_commerce_db"
+              auth="Container"
+              type="javax.sql.DataSource"
+              maxTotal="50"
+              maxIdle="15"
+              maxWaitMillis="10000"
+              username="root" 
+              password="root"
+              driverClassName="com.mysql.cj.jdbc.Driver"
+              url="jdbc:mysql://127.0.0.1:3306/e_commerce_db?serverTimezone=UTC&amp;useSSL=false&amp;allowPublicKeyRetrieval=true"/>
+</Context>
