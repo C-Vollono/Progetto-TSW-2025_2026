@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import model.bean.DatiPagamentoBean;
+import util.ConPool;
 
 public class DatiPagamentoDAO {
 

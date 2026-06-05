@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import model.bean.PraticaBean;
+import util.ConPool;
 
 public class PraticaDAO {
 

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import model.bean.PreferitiBean;
 import model.bean.ProdottoBean;
+import util.ConPool;
 
 public class PreferitiDAO {
 

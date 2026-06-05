@@ -8,6 +8,7 @@ import java.sql.Statement; // Importato per gestire Statement.RETURN_GENERATED_K
 import java.util.ArrayList;
 import java.util.List;
 import model.bean.UtenteBean;
+import util.ConPool;
 
 public class UtenteDAO {
 
