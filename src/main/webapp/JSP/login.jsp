@@ -32,7 +32,7 @@
     %>
 
     <%-- Il form punta alla Servlet mappata su /Login --%>
-    <form action="Login" method="POST">
+    <form action="${pageContext.request.ContextPath}/Login" method="POST">
         <div class="form-group">
             <label>Email</label>
             <input type="email" name="email" required placeholder="Inserisci la tua email">
