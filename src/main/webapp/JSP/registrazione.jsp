@@ -35,7 +35,13 @@
 				<label for="password">Password</label>
 				<input type="password" id="password" name="password" placeholder="Min. 8 caratteri, 1 lettera e 1 numero" required>
 				<span id="passwordError" class="error-msg"></span>
-				</div>
+			</div>
+				
+			<div class="input-group">
+				<label for="password">Conferma Password</label>
+				<input type="password" id="confermaPassword" name="confermaPassword" placeholder="Ripeti Password" required>
+				<span id="confermaPasswordError" class="error-msg"></span>
+			</div>
 			
 			<button type="submit" class="form-btn">Registrati</button>
 		</form>
@@ -48,4 +54,4 @@
 	
 	<jsp:include page="/JSP/footer.jsp" />
 	
-	<script src="${pageContext.request.contextPath}/js/validazione.js"></script>	
+	<script src="${pageContext.request.contextPath}/JS/validazione.js"></script>	

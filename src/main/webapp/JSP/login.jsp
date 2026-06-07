@@ -1,51 +1,33 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>ToneMarket - Login</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f4f4; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .login-container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 300px; }
-        h2 { text-align: center; color: #333; margin-bottom: 20px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; color: #666; }
-        input[type="email"], input[type="password"] { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-        button { width: 100%; padding: 10px; background-color: #28a745; border: none; color: white; font-size: 16px; border-radius: 4px; cursor: pointer; }
-        button:hover { background-color: #218838; }
-        .error-message { color: red; text-align: center; margin-bottom: 15px; font-weight: bold; }
-    </style>
-</head>
-<body>
 
-<div class="login-container">
-    <h2>Accedi a ToneMarket</h2>
-    
-    <%-- Recupera l'eventuale messaggio di errore inviato dalla Servlet --%>
-    <% 
-        String errore = (String) request.getAttribute("erroreLogin"); 
-        if (errore != null) { 
-    %>
-        <div class="error-message"><%= errore %></div>
-    <% 
-        } 
-    %>
+<jsp:include page="/JSP/header.jsp" />
 
-    <%-- Il form punta alla Servlet mappata su /Login --%>
-    <form action="${pageContext.request.ContextPath}/Login" method="POST">
-        <div class="form-group">
-            <label>Email</label>
-            <input type="email" name="email" required placeholder="Inserisci la tua email">
-        </div>
-        
-        <div class="form-group">
-            <label>Password</label>
-            <input type="password" name="password" required placeholder="Inserisci la password">
-        </div>
-        
-        <button type="submit">Accedi</button>
-    </form>
-</div>
+<section class="form-section">
+	<div class="form-card">
+		<h2>Ottieni il diritto di acquistare da noi!</h2>
+		<p class="form-subtitle"> Inserisci le tue credenziali</p>
+		
+		<span class="error-msg server-error">${erroreLogin}</span> 
+	
+		<form id="formLogin" action="${pageContext.request.contextPath}/Login" method="POST">
+	
+			<div class="input-group">
+				<label for="email">Email</label>
+				<input type="email" id="email" name="email" placeholder="mariorossi@email.com" required autofocus>
+			</div>
+		
+			<div class="input-group">
+				<label for="password">Password</label>
+				<input type="password" id="password" name="password" placeholder="Inserisci la tua password" required>
+			</div>
+		
+			<button type="submit" class="form-btn">Accedi</button>
+		</form>
+	
+		<div class="form-footer">
+			<p>Non hai ancora un account? <a href="${pageContext.request.contextPath}/JSP/registrazione.jsp">Registrati</a></p>
+		</div>
+	</div>
+</section>
 
-</body>
-</html>
+<jsp:include page="/JSP/footer.jsp" />
