@@ -35,7 +35,7 @@
 				<p class="product-price">€ 15.500,00</p>
 				
 				<div class="product-actions">
-					<a href="${pageContext.request.contextPath}/JSP/prodotto.jsp?id=2" class="btn-details"></a>
+					<a href="${pageContext.request.contextPath}/JSP/prodotto.jsp?id=2" class="btn-details">Dettagli</a>
 					<button class="btn-gold add-to-cart">Aggiungi al carrello</button>
 				</div>
 			</div>
