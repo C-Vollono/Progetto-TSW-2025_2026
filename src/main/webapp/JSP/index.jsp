@@ -5,7 +5,7 @@
 	<h1>Benvenuto su Tone<span>Market</span></h1>
 		<p>Il negozio adatto per musicisti esigenti.<br>Esplora il mondo della musica e i suoi strumenti unici</p>
 		
-		<a href="${pageContext.request.contextPath}/catalogo.jsp" class="btn-gold">
+		<a href="${pageContext.request.contextPath}/JSP/catalogo.jsp" class="btn-gold">
 			Esplora il nostro Catalogo
 		</a>
 </section>

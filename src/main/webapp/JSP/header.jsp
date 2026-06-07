@@ -13,24 +13,24 @@
 	<header>
 	<div class="header-container">
 		<div class="logo">
-			<a href="${pageContext.request.contextPath}/index.jsp">
+			<a href="${pageContext.request.contextPath}/JSP/index.jsp">
 				<h1>Tone<span>Market</span></h1>
 			</a>
 		</div>
 		
 		<nav>
 			<ul>
-				<li><a href="${pageContext.request.contextPath}/index.jsp">Home</a></li>
-				<li><a href="${pageContext.request.contextPath}/catalogo.jsp">Catalogo</a></li>
+				<li><a href="${pageContext.request.contextPath}/JSP/index.jsp">Home</a></li>
+				<li><a href="${pageContext.request.contextPath}/JSP/catalogo.jsp">Catalogo</a></li>
 				
 				<li class="search-item">
 					<input type="text" id="searchBar" placeholder="Cerca il tuo strumento">
 					<div id="searchSuggestions" class="suggestions-box"></div>
 					</li>
 					
-					<li><a href="${pageContext.request.contextPath}/login.jsp">Accedi</a></li>
-					<li><a href="${pageContext.request.contextPath}/registrazione.jsp">Registrati</a></li>
-					<li><a href="${pageContext.request.contextPath}/carrello.jsp">Carrello</a></li>
+					<li><a href="${pageContext.request.contextPath}/JSP/login.jsp">Accedi</a></li>
+					<li><a href="${pageContext.request.contextPath}/JSP/registrazione.jsp">Registrati</a></li>
+					<li><a href="${pageContext.request.contextPath}/JSP/carrello.jsp">Carrello</a></li>
 					</ul>
 				</nav>
 			</div>

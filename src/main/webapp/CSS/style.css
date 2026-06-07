@@ -144,5 +144,94 @@ footer{
 	
 	.hero-section h2{
 	font-size: 2rem;
-	}
+	}	
+}
+
+.form-section{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 40px 20px;
+}
+	
+.form-card{
+	background-color: var(--bg-card);
+	padding: 40px;
+	border-radius: 8px;
+	box-shadow: 0 8x 16px rgba(0,0,0,0.1);
+	width: 100%;
+	max-width: 500px;
+}
+
+.form-card h2{
+	text-align: center;
+	color: var(--text-dark);
+	margin-bottom: 5px;
+}
+
+.form-subtitle{
+	text-align: center;
+	color: #666;
+	margin-bottom: 30px;
+	font-size: 0.9rem;
+}
+
+.input-group{
+	margin-bottom: 20px;
+}
+
+.input-group label{
+	display: block;
+	margin-bottom: 5px;
+	font-weight: bold;
+	color: var(--text-dark);
+}
+
+.input-group input{
+	width: 100%;
+	padding: 10px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	font-size: 1rem;
+	background-color: #f9f9f9;
+}
+
+.error-msg{
+	color: #D8000C;
+	font-size: 0.85rem;
+	display: block;
+	margin-top: 5px;
+	min-height: 15px;
+}
+
+.form-btn{
+	display: inline-block;
+	width: 100%;
+	margin-top: 10px;
+	cursor: pointer;
+	border: none;
+	padding: 12px 24px;
+	background-color: var(--accent-gold);
+	color: var(--bg-secondary);
+	font-weight: bold;
+	font-size: 1.1rem;
+	border-radius: 4px;
+	transition: background-color 0.3s, transform 0.1s;
+}
+
+.form-btn:hover{
+	background-color: #c4a133;
+	transform: scale(1.02);
+}
+
+.form-footer{
+	text-align: center;
+	margin-top: 20px;
+	font-size: 0.9rem;
+}
+
+.form-footer a{
+	color: var(--accent-gold);
+	font-weight: bold;
+	text-decoration: none;
 }
