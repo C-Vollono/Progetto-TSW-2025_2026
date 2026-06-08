@@ -24,11 +24,12 @@ public class GestioneProdottiServlet extends HttpServlet {
         this.prodottoDAO = new ProdottoDAO();
     }
 
+    // IL METODO GET GESTISCE SOLO LA LETTURA DEI DATI E IL RENDERING DELLE FORM
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
-        // Controllo di sicurezza: Accessibile solo se l'utente è Admin
+        // Controllo di sicurezza Admin
         HttpSession session = request.getSession(false);
         UtenteBean utente = (session != null) ? (UtenteBean) session.getAttribute("utenteLoggato") : null;
         if (utente == null || !utente.isIsAdmin()) { 
@@ -40,39 +41,33 @@ public class GestioneProdottiServlet extends HttpServlet {
         if (action == null) action = "list";
 
         try {
-            switch (action) {
-                case "editForm":
-                    // Carica il prodotto per riempire il form di modifica
-                    int idEdit = Integer.parseInt(request.getParameter("idProdotto"));
-                    ProdottoBean prodDaModificare = prodottoDAO.doRetrieveByKey(idEdit);
+            if ("editForm".equals(action)) {
+                // Carica il prodotto per riempire il form di modifica
+                int idEdit = Integer.parseInt(request.getParameter("idProdotto"));
+                ProdottoBean prodDaModificare = prodottoDAO.doRetrieveByKey(idEdit);
+                
+                if (prodDaModificare != null) {
                     request.setAttribute("prodotto", prodDaModificare);
                     request.getRequestDispatcher("/jsp/admin/formProdotto.jsp").forward(request, response);
-                    break;
-
-                case "delete":
-                    // Cancellazione del prodotto
-                    int idDel = Integer.parseInt(request.getParameter("idProdotto"));
-                    try {
-                        prodottoDAO.doDelete(idDel);
-                        request.setAttribute("messaggioSuccesso", "Prodotto rimosso con successo dal catalogo.");
-                    } catch (SQLException e) {
-                        // Gestione vincolo RESTRICT (Se il prodotto è in un ordine non può essere rimosso)
-                        request.setAttribute("messaggioErrore", "Impossibile eliminare: lo strumento è legato a ordini passati.");
-                    }
-                    mostraLista(request, response);
-                    break;
-
-                case "list":
-                default:
-                    mostraLista(request, response);
-                    break;
+                } else {
+                    session = request.getSession();
+                    session.setAttribute("messaggioErrore", "Strumento non trovato.");
+                    response.sendRedirect(request.getContextPath() + "/Admin/GestioneProdotti");
+                }
+            } else {
+                // Caso di default: list
+                mostraLista(request, response);
             }
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            mostraListaConErrore(request, response, "Identificativo prodotto non valido.");
         } catch (SQLException e) {
             e.printStackTrace();
             throw new ServletException(e);
         }
     }
 
+    // IL METODO POST GESTISCE TUTTE REALI SCRITTURE/CANCELLAZIONI SUL DB (PRG)
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
@@ -86,46 +81,67 @@ public class GestioneProdottiServlet extends HttpServlet {
         }
 
         String action = request.getParameter("action");
-        
-        // Lettura parametri dal form
-        String idParam = request.getParameter("idProdotto");
-        String marca = request.getParameter("marca");
-        String modello = request.getParameter("modello");
-        String tipo = request.getParameter("tipo");
-        int quantita = Integer.parseInt(request.getParameter("quantita"));
-        String descrizione = request.getParameter("descrizione");
-        double prezzo = Double.parseDouble(request.getParameter("prezzo"));
-        int idMicro = Integer.parseInt(request.getParameter("idMicro"));
-        String urlImmagine = request.getParameter("urlImmagine");
+        session = request.getSession(); // Recuperiamo la sessione per i Flash Attributes dei messaggi
 
-        ProdottoBean p = new ProdottoBean();
-        p.setMarca(marca);
-        p.setModello(modello);
-        p.setTipo(tipo);
-        p.setQuantita(quantita);
-        p.setDescrizione(descrizione);
-        p.setPrezzo(prezzo);
-        p.setIdMicro(idMicro);
-        p.setUrlImmagine(urlImmagine);
+        // CASO 1: ELIMINAZIONE STRUMENTO (Spostato in POST per sicurezza architetturale)
+        if ("delete".equals(action)) {
+            try {
+                int idDel = Integer.parseInt(request.getParameter("idProdotto"));
+                prodottoDAO.doDelete(idDel);
+                session.setAttribute("messaggioSuccesso", "Prodotto rimosso con successo dal catalogo.");
+            } catch (NumberFormatException e) {
+                session.setAttribute("messaggioErrore", "Impossibile eliminare: ID non valido.");
+            } catch (SQLException e) {
+                // Gestione vincolo RESTRICT 
+                session.setAttribute("messaggioErrore", "Impossibile eliminare: lo strumento è presente in ordini già effettuati.");
+            }
+            response.sendRedirect(request.getContextPath() + "/Admin/GestioneProdotti");
+            return;
+        }
 
+        // CASO 2 & 3: INSERIMENTO O MODIFICA
         try {
+            String idParam = request.getParameter("idProdotto");
+            String marca = request.getParameter("marca");
+            String modello = request.getParameter("modello");
+            String tipo = request.getParameter("tipo");
+            int quantita = Integer.parseInt(request.getParameter("quantita"));
+            String descrizione = request.getParameter("descrizione");
+            double prezzo = Double.parseDouble(request.getParameter("prezzo"));
+            int idMicro = Integer.parseInt(request.getParameter("idMicro"));
+            String urlImmagine = request.getParameter("urlImmagine");
+
+            ProdottoBean p = new ProdottoBean();
+            p.setMarca(marca);
+            p.setModello(modello);
+            p.setTipo(tipo);
+            p.setQuantita(quantita);
+            p.setDescrizione(descrizione);
+            p.setPrezzo(prezzo);
+            p.setIdMicro(idMicro);
+            p.setUrlImmagine(urlImmagine);
+
             if ("update".equals(action)) {
                 p.setIdProdotto(Integer.parseInt(idParam));
                 prodottoDAO.doUpdate(p);
-                request.setAttribute("messaggioSuccesso", "Prodotto '" + modello + "' aggiornato con successo.");
+                session.setAttribute("messaggioSuccesso", "Prodotto '" + modello + "' aggiornato con successo.");
             } else { 
                 prodottoDAO.doSave(p);
-                request.setAttribute("messaggioSuccesso", "Nuovo strumento inserito correttamente.");
+                session.setAttribute("messaggioSuccesso", "Nuovo strumento '" + modello + "' inserito correttamente.");
             }
-            mostraLista(request, response);
+            
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            session.setAttribute("messaggioErrore", "Errore di formattazione: controlla che i campi Quantità e Prezzo siano numerici.");
         } catch (SQLException e) {
             e.printStackTrace();
-            request.setAttribute("messaggioErrore", "Errore nel salvataggio dei dati sul Database.");
-            mostraLista(request, response);
+            session.setAttribute("messaggioErrore", "Errore nel salvataggio dei dati sul Database.");
         }
+
+        // APPLICAZIONE RIGOROSA DEL PATTERN PRG
+        response.sendRedirect(request.getContextPath() + "/Admin/GestioneProdotti");
     }
 
-    // MODIFICATO: Rimosso il 'throws SQLException' dalla firma e gestito internamente
     private void mostraLista(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         List<ProdottoBean> prodotti = new ArrayList<>();
@@ -137,5 +153,11 @@ public class GestioneProdottiServlet extends HttpServlet {
         }
         request.setAttribute("listaProdotti", prodotti);
         request.getRequestDispatcher("/jsp/admin/admin.jsp").forward(request, response);
+    }
+
+    private void mostraListaConErrore(HttpServletRequest request, HttpServletResponse response, String msg) 
+            throws ServletException, IOException {
+        request.setAttribute("messaggioErrore", msg);
+        mostraLista(request, response);
     }
 }

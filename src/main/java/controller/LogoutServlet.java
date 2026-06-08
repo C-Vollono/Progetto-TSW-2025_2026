@@ -16,7 +16,6 @@ public class LogoutServlet extends HttpServlet {
         super();
     }
 
-    // Gestiamo sia GET che POST per massima flessibilità
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
@@ -32,21 +31,23 @@ public class LogoutServlet extends HttpServlet {
     private void processRequest(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
-        // 1. Recuperiamo la sessione corrente. Passando 'false', se la sessione 
-        // non esiste o è già scaduta, non ne viene creata una nuova inutilmente.
+        // 1. Recuperiamo la sessione corrente senza crearne una nuova
         HttpSession session = request.getSession(false);
         
         if (session != null) {
             System.out.println("[LogoutServlet] Rimozione utente e invalidazione sessione ID: " + session.getId());
             
-            // 2. Distrugge la sessione e tutti i relativi dati (utenteLoggato, ruolo, carrello, ecc.)
+            // 2. Distrugge la vecchia sessione e tutti i relativi dati dell'utente loggato
             session.invalidate();
         }
         
-        // 3. Impostiamo un messaggio di conferma da mostrare sulla pagina di login (Richiesto dalla Checklist!)
-        request.setAttribute("messaggioSuccesso", "Disconnessione effettuata con successo. A presto!");
+        // 3. CREAZIONE DI UNA NUOVA SESSIONE PULITA (Post-Invalidate)
+        // Questa sessione è totalmente nuova, non ha i vecchi dati dell'utente ma ci serve 
+        // come contenitore temporaneo per far viaggiare il messaggio di successo nel redirect.
+        HttpSession nuovaSessione = request.getSession(true);
+        nuovaSessione.setAttribute("messaggioSuccesso", "Disconnessione effettuata con successo. A presto!");
         
-        // 4. Reindirizziamo l'utente alla pagina di Login (o alla index.jsp se preferisci)
-        request.getRequestDispatcher("/jsp/login.jsp").forward(request, response);
+        // 4. REDIRECT SICURO: l'URL del browser si aggiorna e pulisce la cronologia delle richieste
+        response.sendRedirect(request.getContextPath() + "/jsp/login.jsp");
     }
 }

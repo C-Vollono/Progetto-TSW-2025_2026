@@ -11,6 +11,9 @@ import util.ConPool;
 
 public class ProdottoDAO {
 
+    // Costante applicativa per l'aliquota IVA standard del negozio (22%)
+    private static final int IVA_DEFAULT = 22;
+
     // 1. RECUPERA TUTTI I PRODOTTI
     public List<ProdottoBean> doRetrieveAll() throws SQLException {
         List<ProdottoBean> lista = new ArrayList<>();
@@ -21,7 +24,6 @@ public class ProdottoDAO {
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                // Sfruttiamo il metodo privato in fondo al file
                 lista.add(mapResultSetToBean(rs));
             }
         }
@@ -39,7 +41,6 @@ public class ProdottoDAO {
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    // Sfruttiamo il metodo privato in fondo al file
                     return mapResultSetToBean(rs);
                 }
             }
@@ -103,6 +104,75 @@ public class ProdottoDAO {
         }
     }
 
+    // 6. SCALA LA QUANTITÀ IN MAGAZZINO DOPO UN ACQUISTO (Essenziale per transazione di Checkout)
+    public void doUpdateQuantita(int idProdotto, int quantitaAcquistata, Connection con) throws SQLException {
+        String sql = "UPDATE Prodotto SET Quantita = Quantita - ? WHERE ID_prodotto = ?";
+        
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, quantitaAcquistata);
+            ps.setInt(2, idProdotto);
+            ps.executeUpdate();
+        }
+    }
+
+    // 7. RECUPERA PRODOTTI DI UNA SPECIFICA MICROCATEGORIA
+    public List<ProdottoBean> doRetrieveByMicrocategoria(int idMicro) throws SQLException {
+        List<ProdottoBean> lista = new ArrayList<>();
+        String sql = "SELECT * FROM Prodotto WHERE ID_micro = ?";
+
+        try (Connection con = ConPool.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            
+            ps.setInt(1, idMicro);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    lista.add(mapResultSetToBean(rs));
+                }
+            }
+        }
+        return lista;
+    }
+
+    // 8. RECUPERA 3 PRODOTTI CASUALI PER L'HERO DELLA HOMEPAGE
+    public List<ProdottoBean> doRetrieveInEvidenza() throws SQLException {
+        List<ProdottoBean> lista = new ArrayList<>();
+        String sql = "SELECT * FROM Prodotto ORDER BY RAND() LIMIT 3";
+
+        try (Connection con = ConPool.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                lista.add(mapResultSetToBean(rs));
+            }
+        }
+        return lista;
+    }
+
+    // 9. RECUPERA I PRODOTTI PER I SUGGERIMENTI DI RICERCA (LIVE SEARCH AJAX)
+    public List<ProdottoBean> doRetrieveBySearch(String query) throws SQLException {
+        List<ProdottoBean> lista = new ArrayList<>();
+        // Cerchiamo corrispondenze parziali sulla Marca o sul Modello nel DB
+        String sql = "SELECT * FROM Prodotto WHERE Marca LIKE ? OR Modello LIKE ? LIMIT 5";
+
+        try (Connection con = ConPool.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            
+            // Applichiamo i caratteri jolly per la corrispondenza parziale
+            String keyword = "%" + query + "%";
+            ps.setString(1, keyword);
+            ps.setString(2, keyword);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    lista.add(mapResultSetToBean(rs));
+                }
+            }
+        }
+        return lista;
+    }
+
     // Metodo interno di utility per il mapping ResultSet -> Bean
     private ProdottoBean mapResultSetToBean(ResultSet rs) throws SQLException {
         ProdottoBean p = new ProdottoBean();
@@ -115,6 +185,11 @@ public class ProdottoDAO {
         p.setPrezzo(rs.getDouble("Prezzo"));
         p.setIdMicro(rs.getInt("ID_micro"));
         p.setUrlImmagine(rs.getString("Url_Immagine"));
+        
+        // Assegniamo al Bean il valore dell'IVA corrente dell'e-commerce,
+        // che verrà poi catturato e scritto sul DB dalla servlet di checkout.
+        p.setIva(IVA_DEFAULT); 
+        
         return p;
     }
 }

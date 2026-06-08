@@ -50,7 +50,6 @@ public class ConfermaOrdineServlet extends HttpServlet {
             nomeCognome = utente.getNome() + " " + utente.getCognome();
         }
 
-        // Inizializzazione variabili spedizione con valori di Mock predefiniti
         String via = "Via dei Musicisti";
         String civico = "45";
         String cap = "84100";
@@ -60,7 +59,6 @@ public class ConfermaOrdineServlet extends HttpServlet {
         String circuito = "Visa";
         String cartaOscurata = "************1234";
 
-        // Proviamo a estrarre i dati reali salvati nelle tabelle Dati_spedizione e Dati_pagamento del DB
         try (Connection conDati = ConPool.getConnection()) {
             String sqlSped = "SELECT * FROM Dati_spedizione WHERE ID_Utente = ? LIMIT 1";
             try (PreparedStatement psSped = conDati.prepareStatement(sqlSped)) {
@@ -88,11 +86,9 @@ public class ConfermaOrdineServlet extends HttpServlet {
                 }
             }
         } catch (SQLException e) {
-            // Logghiamo l'errore ma non blocchiamo l'ordine, usiamo i mock residui
             System.out.println("[ConfermaOrdineServlet] Dati di default non trovati, uso i mock strutturati.");
         }
 
-        // Sovrascriviamo se invece il form del frontend ha inviato dei parametri espliciti
         if (request.getParameter("spedizioneVia") != null && !request.getParameter("spedizioneVia").trim().isEmpty()) 
             via = request.getParameter("spedizioneVia");
         if (request.getParameter("spedizioneNumeroCivico") != null && !request.getParameter("spedizioneNumeroCivico").trim().isEmpty()) 
@@ -114,9 +110,8 @@ public class ConfermaOrdineServlet extends HttpServlet {
         Connection con = null;
         try {
             con = ConPool.getConnection();
-            con.setAutoCommit(false); // Inizio blocco di transazione manuale
+            con.setAutoCommit(false); 
 
-            // A. Inserimento della testata dell'Ordine
             String sqlOrdine = "INSERT INTO Ordine (ID_Utente, Totale_ordine, Stato_ordine, Spedizione_Nome_Cognome, "
                            + "Spedizione_Via, Spedizione_Numero_civico, Spedizione_Cap, Spedizione_Citta, "
                            + "Spedizione_Provincia, Spedizione_Telefono, Pagamento_Circuito, Pagamento_Numero_Carta_Oscurato) "
@@ -149,10 +144,7 @@ public class ConfermaOrdineServlet extends HttpServlet {
                 throw new SQLException("Errore critico: Impossibile generare la chiave primaria per l'Ordine.");
             }
 
-            // B. Ciclo transazionale: Dettaglio_Ordine e Scalo del Magazzino (Tabella Prodotto)
             String sqlDettaglio = "INSERT INTO Dettaglio_Ordine (ID_ordine, ID_prodotto, Quantita, Prezzo_unitario_storico) VALUES (?, ?, ?, ?)";
-            
-            // CORRETTO: Aggiunto il punto interrogativo mancante e allineati i nomi colonne al DB
             String sqlUpdateStock = "UPDATE Prodotto SET Quantita = Quantita - ? WHERE ID_prodotto = ? AND Quantita >= ?";
 
             try (PreparedStatement psD = con.prepareStatement(sqlDettaglio);
@@ -162,45 +154,48 @@ public class ConfermaOrdineServlet extends HttpServlet {
                     ProdottoBean prodotto = entry.getKey();
                     int qtaRichiesta = entry.getValue();
 
-                    // 1. Inserimento riga specifica dentro Dettaglio_Ordine
                     psD.setInt(1, idOrdineGenerato);
                     psD.setInt(2, prodotto.getIdProdotto());
                     psD.setInt(3, qtaRichiesta);
                     psD.setDouble(4, prodotto.getPrezzo());
                     psD.executeUpdate();
 
-                    // 2. Modifica e scarico dello stock reale nel Database
                     psU.setInt(1, qtaRichiesta);
                     psU.setInt(2, prodotto.getIdProdotto());
-                    psU.setInt(3, qtaRichiesta); // Assicura che Quantita sul DB sia >= dei pezzi chiesti
+                    psU.setInt(3, qtaRichiesta); 
                     
                     int rowsAffected = psU.executeUpdate();
                     if (rowsAffected == 0) {
-                        // Se nessuna riga viene modificata, lo stock nel DB è inferiore alla richiesta
-                        con.rollback(); // Annulla l'intera operazione azzerando anche l'ordine inserito prima
-                        request.setAttribute("messaggioErrore", "Errore: Lo strumento '" + prodotto.getMarca() + " " + prodotto.getModello() + "' è andato esaurito o non è disponibile nella quantità richiesta!");
-                        request.getRequestDispatcher("/jsp/carrello.jsp").forward(request, response);
+                        con.rollback(); 
+                        
+                        // CORREZIONE PRG: Messaggio in sessione e redirect al carrello
+                        session.setAttribute("messaggioErrore", "Errore: Lo strumento '" + prodotto.getMarca() + " " + prodotto.getModello() + "' è esaurito o non disponibile nella quantità richiesta!");
+                        response.sendRedirect(request.getContextPath() + "/Carrello");
                         return;
                     }
                 }
             }
 
-            // C. Transazione completata con successo, salvataggio definitivo
             con.commit();
 
             // 5. SVUOTAMENTO DEL CARRELLO DALLA SESSIONE UTENTE
             session.removeAttribute("carrello");
 
-            request.setAttribute("messaggioSuccesso", "Complimenti! Il tuo ordine è stato registrato con successo. ID Ordine: #" + idOrdineGenerato);
-            request.getRequestDispatcher("/jsp/index.jsp").forward(request, response);
+            // Successo con PRG completo
+            session.setAttribute("messaggioSuccesso", "Complimenti! Il tuo ordine è stato registrato con successo. ID Ordine: #" + idOrdineGenerato);
+            response.sendRedirect(request.getContextPath() + "/jsp/index.jsp");
 
         } catch (SQLException e) {
             if (con != null) {
                 try { con.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
             }
             e.printStackTrace();
-            request.setAttribute("messaggioErrore", "Si è verificato un errore imprevisto nel server durante il salvataggio dei dati.");
-            request.getRequestDispatcher("/jsp/carrello.jsp").forward(request, response);
+            
+            // CORREZIONE PRG: Messaggio in sessione e redirect al carrello per evitare duplicazioni al refresh
+            if (session != null) {
+                session.setAttribute("messaggioErrore", "Si è verificato un errore imprevisto nel server durante il salvataggio dei dati dell'ordine.");
+            }
+            response.sendRedirect(request.getContextPath() + "/Carrello");
         } finally {
             if (con != null) {
                 try { con.close(); } catch (SQLException e) { e.printStackTrace(); }
