@@ -1,12 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<jsp:include page="/JSP/header.jsp" />
+<jsp:include page="/jsp/header.jsp" />
 
 <section class="form-section">
 	<div class="form-card">
 		<h2>Registra il tuo Account</h2>
 		<p class="form-subtitle">ToneMarket è qui per te</p>
-		<form id="formRegistrazione" action="${pageContext.request.contextPath}/RegistrazioneServlet" method="POST">
+		<form id="formRegistrazione" action="${pageContext.request.contextPath}/Registrazione" method="POST">
 			<div class="input-group">
 				<label for="nome">Nome</label>
 				<input type="text" id="nome" name="nome" placeholder="Es. Mario" required autofocus>
@@ -47,11 +47,11 @@
 		</form>
 		
 		<div class="form-footer">
-			<p>Hai già un account? <a href="${pageContext.request.contextPath}/JSP/login.jsp">Accedi qui</a></p>
+			<p>Hai già un account? <a href="${pageContext.request.contextPath}/jsp/login.jsp">Accedi qui</a></p>
 			</div>
 		</div>
 	</section>
 	
-	<jsp:include page="/JSP/footer.jsp" />
+	<jsp:include page="/jsp/footer.jsp" />
 	
-	<script src="${pageContext.request.contextPath}/JS/validazione.js"></script>	
+	<script src="${pageContext.request.contextPath}/js/validazione.js"></script>	

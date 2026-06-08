@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<jsp:include page="/JSP/header.jsp" />
+<jsp:include page="/jsp/header.jsp" />
 
 <section class="catalog-section">
 	<div class="catalog-header">
@@ -35,7 +35,7 @@
 			<p class="product-price">€ 15.500,00</p>
 				
 				<div class="product-actions">
-					<a href="${pageContext.request.contextPath}/JSP/prodotto.jsp?id=2" class="btn-details">Dettagli</a>
+					<a href="${pageContext.request.contextPath}/jsp/prodotto.jsp?id=2" class="btn-details">Dettagli</a>
 					<button class="btn-gold add-to-cart">Aggiungi al carrello</button>
 				</div>
 			</div>
@@ -51,7 +51,7 @@
                 <p class="product-price">€ 499,00</p>
                 
                 <div class="product-actions">
-                    <a href="${pageContext.request.contextPath}/JSP/prodotto.jsp?id=3" class="btn-details">Dettagli</a>
+                    <a href="${pageContext.request.contextPath}/jsp/prodotto.jsp?id=3" class="btn-details">Dettagli</a>
                     <button class="btn-gold add-to-cart">Aggiungi al carrello</button>
                 </div>
             </div>
@@ -59,4 +59,4 @@
 	</div>
 </section>
 
-<jsp:include page="/JSP/footer.jsp" />
+<jsp:include page="/jsp/footer.jsp" />

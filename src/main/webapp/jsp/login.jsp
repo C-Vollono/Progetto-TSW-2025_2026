@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<jsp:include page="/JSP/header.jsp" />
+<jsp:include page="/jsp/header.jsp" />
 
 <section class="form-section">
 	<div class="form-card">
@@ -30,4 +30,4 @@
 	</div>
 </section>
 
-<jsp:include page="/JSP/footer.jsp" />
+<jsp:include page="/jsp/footer.jsp" />

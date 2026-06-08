@@ -24,7 +24,7 @@ public class LoginServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
-        request.getRequestDispatcher("/JSP/login.jsp").forward(request, response);
+        request.getRequestDispatcher("/jsp/login.jsp").forward(request, response);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class LoginServlet extends HttpServlet {
         // Validazione di sicurezza formale sui campi di input
         if (email == null || email.trim().isEmpty() || passwordInChiaro == null || passwordInChiaro.isEmpty()) {
             request.setAttribute("erroreLogin", "Tutti i campi sono obbligatori!");
-            request.getRequestDispatcher("/JSP/login.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/login.jsp").forward(request, response);
             return;
         }
 
@@ -67,15 +67,21 @@ public class LoginServlet extends HttpServlet {
                 
                 System.out.println("[LoginServlet] Login riuscito nel DB per l'utente: " + email);
                 
-                // Per evitare il re-invio dei dati ricaricando la pagina
-                response.sendRedirect(request.getContextPath() + "/JSP/index.jsp");
+                // --- MODIFICA: SMISTAMENTO UTENTI IN BASE AL RUOLO ---
+                if (utente.isIsAdmin()) {
+                    // Se l'utente è amministratore, lo reindirizziamo all'area admin
+                    response.sendRedirect(request.getContextPath() + "/jsp/admin/admin");
+                } else {
+                    // Se l'utente è un cliente normale, lo mandiamo alla index generale
+                    response.sendRedirect(request.getContextPath() + "/jsp/index.jsp");
+                }
                 
             } else {
                 // LOGIN FALLITO: Le credenziali inserite non trovano corrispondenze nel DB
                 request.setAttribute("erroreLogin", "Email o Password errati!");
                 System.out.println("[LoginServlet] Fallimento: Credenziali non trovate nel database per " + email);
                 
-                request.getRequestDispatcher("/JSP/login.jsp").forward(request, response);
+                request.getRequestDispatcher("/jsp/login.jsp").forward(request, response);
             }
 
         } catch (SQLException e) {
@@ -85,7 +91,7 @@ public class LoginServlet extends HttpServlet {
             
             // Reindirizziamo a una pagina di errore generica o rimandiamo un messaggio pulito alla JSP
             request.setAttribute("erroreLogin", "Si è verificato un errore tecnico nel server. Riprova più tardi.");
-            request.getRequestDispatcher("/JSP/login.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/login.jsp").forward(request, response);
         }
     }
 }
