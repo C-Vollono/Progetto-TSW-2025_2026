@@ -3,7 +3,7 @@
   <display-name>ToneMarket</display-name>
   
   <welcome-file-list>
-    <welcome-file>JSP/index.jsp</welcome-file>
+    <welcome-file>jsp/index.jsp</welcome-file>
     
     <welcome-file>index.html</welcome-file>
     <welcome-file>index.jsp</welcome-file>
