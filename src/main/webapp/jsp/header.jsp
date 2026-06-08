@@ -60,6 +60,11 @@
 			
 			<a href="${pageContext.request.contextPath}/jsp/carrello.jsp" class="btn-cart">Carrello</a>
 		</div>
+		
+		<script>
+  			const contextPath = '${pageContext.request.contextPath}';
+		</script>
+		<script src="${pageContext.request.contextPath}/js/header.js"></script>
 	</header>
 	
 	<main>
