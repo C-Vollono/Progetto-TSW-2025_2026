@@ -48,6 +48,20 @@ public class ProdottoBean implements Serializable {
     public String getUrlImmagine() {return urlImmagine;}
     public void setUrlImmagine(String urlImmagine) {this.urlImmagine = urlImmagine;}
     
+    // Metodo equals per fare l'uguaglianza tra oggetti Prodotto tramite ID
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        ProdottoBean other = (ProdottoBean) obj;
+        return this.idProdotto == other.idProdotto;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(idProdotto);
+    }
+    
     // Per il Debugging
     @Override
     public String toString() {
