@@ -20,7 +20,7 @@
 				<p>bla bla bla</p>
 			</div>
 		
-		<form id="addToCartForm" action="${pageContext.request.contextPath}/CarrelloServlet" method="POST">
+		<form id="addToCartForm" action="${pageContext.request.contextPath}/Carrello" method="POST">
 			<input type="hidden" name="idProdotto" value="1">
 			
 			<div class="quantity-selector">

@@ -113,6 +113,86 @@ public class OrdineDAO {
             ps.executeUpdate();
         }
     }
+    
+    // 6. RECUPERA TUTTI GLI ORDINI DEL PORTALE ORDINATI DAL PIÙ RECENTE (doRetrieveAll)
+    public List<OrdineBean> doRetrieveAll() throws SQLException {
+        List<OrdineBean> lista = new ArrayList<>();
+        String sql = "SELECT * FROM Ordine ORDER BY Data_ordine DESC";
+
+        try (Connection con = ConPool.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                lista.add(mapResultSetToBean(rs));
+            }
+        }
+        return lista;
+    }
+    
+    // 7. RECUPERA GLI ORDINI IN UN DETERMINATO INTERVALLO DI DATE (doRetrieveByDates)
+    public List<OrdineBean> doRetrieveByDates(String dataInizio, String dataFine) throws SQLException {
+        List<OrdineBean> lista = new ArrayList<>();
+        
+        // Aggiungiamo i timestamp di inizio e fine giornata per coprire l'intera giornata selezionata
+        String sql = "SELECT * FROM Ordine WHERE Data_ordine BETWEEN ? AND ? ORDER BY Data_ordine DESC";
+
+        try (Connection con = ConPool.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            // Trasformiamo le stringhe provenienti dal form HTML (formato yyyy-MM-dd) in Timestamp
+            // Aggiungiamo l'orario per prendere tutto il giorno di inizio (00:00:00) e tutto il giorno di fine (23:59:59)
+            ps.setString(1, dataInizio + " 00:00:00");
+            ps.setString(2, dataFine + " 23:59:59");
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    lista.add(mapResultSetToBean(rs));
+                }
+            }
+        }
+        return lista;
+    }
+    
+    // 8. RECUPERA GLI ORDINI DI UN SINGOLO UTENTE IN UN INTERVALLO DI DATE (doRetrieveByUtenteAndDates)
+    public List<OrdineBean> doRetrieveByUtenteAndDates(int idUtente, String dataInizio, String dataFine) throws SQLException {
+        List<OrdineBean> lista = new ArrayList<>();
+        String sql = "SELECT * FROM Ordine WHERE ID_Utente = ? AND Data_ordine BETWEEN ? AND ? ORDER BY Data_ordine DESC";
+
+        try (Connection con = ConPool.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idUtente);
+            ps.setString(2, dataInizio + " 00:00:00");
+            ps.setString(3, dataFine + " 23:59:59");
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    lista.add(mapResultSetToBean(rs));
+                }
+            }
+        }
+        return lista;
+    }
+    
+    // 9. RECUPERA TUTTI GLI ORDINI DI UN DETERMINATO CLIENTE (doRetrieveByClienteAdmin)
+    public List<OrdineBean> doRetrieveByClienteAdmin(int idUtente) throws SQLException {
+        List<OrdineBean> lista = new ArrayList<>();
+        String sql = "SELECT * FROM Ordine WHERE ID_Utente = ? ORDER BY Data_ordine DESC";
+
+        try (Connection con = ConPool.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idUtente);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    lista.add(mapResultSetToBean(rs));
+                }
+            }
+        }
+        return lista;
+    }
 
     // Metodo interno di utility per il mapping ResultSet -> Bean
     private OrdineBean mapResultSetToBean(ResultSet rs) throws SQLException {
