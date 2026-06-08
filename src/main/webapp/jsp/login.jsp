@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
 <jsp:include page="/jsp/header.jsp" />
 
 <section class="form-section">
@@ -7,7 +9,11 @@
 		<h2>Ottieni il diritto di acquistare da noi!</h2>
 		<p class="form-subtitle"> Inserisci le tue credenziali</p>
 		
-		<span class="error-msg server-error">${erroreLogin}</span> 
+		 <c:if test="${not empty messaggioErrore}">
+			<div class="error-msg server-error">
+				${messaggioErrore}
+			</div>
+		</c:if>
 	
 		<form id="formLogin" action="${pageContext.request.contextPath}/Login" method="POST">
 	

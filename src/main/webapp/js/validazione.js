@@ -9,6 +9,26 @@ document.addEventListener("DOMContentLoaded", function(){
 	const usernameInput = document.getElementById("username");
 	
 	if(formRegistrazione){
+		const btnRegistrati = document.getElementById("btnRegistrati");
+		const dataInput = document.getElementById("data_di_nascita");
+		
+		function sbloccaBottoneSeValido() {
+			const nomeOk = /^[a-zA-Z\s\']{2,50}$/.test(nomeInput.value.trim());
+			const cognomeOk = /^[a-zA-Z\s\']{2,50}$/.test(cognomeInput.value.trim());
+			const usernameOk = /^[a-zA-Z0-9_]{4,20}$/.test(usernameInput.value.trim());
+			const emailOk = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}$/.test(emailInput.value.trim());
+			const passwordOk = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(passwordInput.value);
+			const confermaOk = (confermaPasswordInput.value === passwordInput.value && passwordInput.value !== "");
+			const dataOk = (dataInput.value !== "");
+
+			if (nomeOk && cognomeOk && usernameOk && emailOk && passwordOk && confermaOk && dataOk) {
+				btnRegistrati.disabled = false;
+			} else {
+				btnRegistrati.disabled = true;
+			}
+		}
+		
+		formRegistrazione.addEventListener("input", sbloccaBottoneSeValido);
 		
 		nomeInput.addEventListener("blur", function(){
 			const regex = /^[a-zA-Z\s\']{2,50}$/;
@@ -50,13 +70,17 @@ document.addEventListener("DOMContentLoaded", function(){
 			}
 		});
 		
-		confermaPasswordInput.addEventListener("blur", function(){
-			const span = document.getElementById("confermaPassword");
-			if(confermaPasswordInput.value !== "" && confermaPasswordInput.value !== passwordInput.value){
+		confermaPasswordInput.addEventListener("input", function(){
+			const span = document.getElementById("confermaPasswordError");
+			if(confermaPasswordInput.value === ""){
+							span.innerText = "";
+			} else if(confermaPasswordInput.value !== passwordInput.value){
 				span.innerText = "Le password non coincidono.";
-			}else{
-				span.innerText = "";
-			}
+				span.style.color = "#D8000C";
+			} else {
+				span.innerText = "Le password coincidono.";
+				span.style.color = "green";
+						}
 		});
 		
 		emailInput.addEventListener("blur", function(){
