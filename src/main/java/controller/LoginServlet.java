@@ -70,7 +70,7 @@ public class LoginServlet extends HttpServlet {
                 // --- MODIFICA: SMISTAMENTO UTENTI IN BASE AL RUOLO ---
                 if (utente.isIsAdmin()) {
                     // Se l'utente è amministratore, lo reindirizziamo all'area admin
-                    response.sendRedirect(request.getContextPath() + "/jsp/admin/admin");
+                    response.sendRedirect(request.getContextPath() + "/jsp/admin/admin.jsp");
                 } else {
                     // Se l'utente è un cliente normale, lo mandiamo alla index generale
                     response.sendRedirect(request.getContextPath() + "/jsp/index.jsp");
