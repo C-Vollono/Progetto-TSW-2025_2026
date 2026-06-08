@@ -8,6 +8,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import model.bean.ProdottoBean;
 import model.dao.ProdottoDAO;
 
@@ -37,7 +38,9 @@ public class CatalogoServlet extends HttpServlet {
                     request.setAttribute("prodottoDettaglio", prodotto);
                     request.getRequestDispatcher("/jsp/prodotto.jsp").forward(request, response);
                 } else {
-                    // Se l'ID non esiste, rimandiamo al catalogo generale
+                    // Se l'ID non esiste sul DB, avvisiamo l'utente tramite sessione (PRG) e torniamo al catalogo
+                    HttpSession session = request.getSession();
+                    session.setAttribute("messaggioErrore", "Lo strumento richiesto non è presente a catalogo.");
                     response.sendRedirect(request.getContextPath() + "/Catalogo");
                 }
             } else {
@@ -46,8 +49,18 @@ public class CatalogoServlet extends HttpServlet {
                 request.setAttribute("prodottiCatalogo", listaProdotti);
                 request.getRequestDispatcher("/jsp/catalogo.jsp").forward(request, response);
             }
-        } catch (SQLException | NumberFormatException e) {
+        } catch (NumberFormatException e) {
             e.printStackTrace();
+            // Errore di digitazione nell'ID dell'URL: salviamo in sessione e puliamo l'URL tornando al catalogo
+            HttpSession session = request.getSession();
+            session.setAttribute("messaggioErrore", "Identificativo prodotto non valido.");
+            response.sendRedirect(request.getContextPath() + "/Catalogo");
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Errore DB grave: andiamo alla index notificando il problema tramite sessione
+            HttpSession session = request.getSession();
+            session.setAttribute("messaggioErrore", "Errore di sistema nel recupero dei prodotti del catalogo.");
             response.sendRedirect(request.getContextPath() + "/jsp/index.jsp");
         }
     }

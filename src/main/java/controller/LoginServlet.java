@@ -15,15 +15,20 @@ import util.PasswordHashing;
 @WebServlet("/Login")
 public class LoginServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private UtenteDAO utenteDao;
        
     public LoginServlet() {
         super();
     }
 
     @Override
+    public void init() throws ServletException {
+        this.utenteDao = new UtenteDAO();
+    }
+
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        
         request.getRequestDispatcher("/jsp/login.jsp").forward(request, response);
     }
 
@@ -31,29 +36,27 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
-        // Recupero dei parametri inviati tramite form HTML
+        // 1. Recupero dei parametri inviati tramite form HTML
         String email = request.getParameter("email");
         String passwordInChiaro = request.getParameter("password");
 
-        // Validazione di sicurezza formale sui campi di input
+        // 2. Validazione formale con chiave standard 'messaggioErrore'
         if (email == null || email.trim().isEmpty() || passwordInChiaro == null || passwordInChiaro.isEmpty()) {
-            request.setAttribute("erroreLogin", "Tutti i campi sono obbligatori!");
+            request.setAttribute("messaggioErrore", "Tutti i campi sono obbligatori!");
             request.getRequestDispatcher("/jsp/login.jsp").forward(request, response);
             return;
         }
 
-        // Generazione dell'hash SHA-512 per confrontarlo in sicurezza con il record nel DB
+        // 3. Generazione dell'hash SHA-512 per il confronto
         String passwordCifrata = PasswordHashing.toHash(passwordInChiaro);
 
-        UtenteDAO utenteDao = new UtenteDAO();
-
         try {
-            // 4. Interrogazione del Database tramite il metodo doRetrieveByLogin del UtenteDAO
-            UtenteBean utente = utenteDao.doRetrieveByLogin(email, passwordCifrata);
+            // 4. Interrogazione del Database
+            UtenteBean utente = utenteDao.doRetrieveByLogin(email.trim(), passwordCifrata);
 
             if (utente != null) {
-                // LOGIN ANDATO A BUON FINE
-                HttpSession session = request.getSession();
+                // --- LOGIN ANDATO A BUON FINE ---
+                HttpSession session = request.getSession(true);
                 
                 // Salviamo l'intero Bean dell'utente in sessione
                 session.setAttribute("utenteLoggato", utente);
@@ -67,30 +70,28 @@ public class LoginServlet extends HttpServlet {
                 
                 System.out.println("[LoginServlet] Login riuscito nel DB per l'utente: " + email);
                 
-                // --- MODIFICA: SMISTAMENTO UTENTI IN BASE AL RUOLO ---
+                // --- SMISTAMENTO UTENTI IN BASE AL RUOLO ---
                 if (utente.isIsAdmin()) {
-                    // Se l'utente è amministratore, lo reindirizziamo all'area admin
                     response.sendRedirect(request.getContextPath() + "/jsp/admin/admin.jsp");
                 } else {
-                    // Se l'utente è un cliente normale, lo mandiamo alla index generale
                     response.sendRedirect(request.getContextPath() + "/jsp/index.jsp");
                 }
+                return; 
                 
             } else {
-                // LOGIN FALLITO: Le credenziali inserite non trovano corrispondenze nel DB
-                request.setAttribute("erroreLogin", "Email o Password errati!");
+                // LOGIN FALLITO: Uniformata la chiave del messaggio d'errore
+                request.setAttribute("messaggioErrore", "Email o Password errati!");
                 System.out.println("[LoginServlet] Fallimento: Credenziali non trovate nel database per " + email);
                 
                 request.getRequestDispatcher("/jsp/login.jsp").forward(request, response);
             }
 
         } catch (SQLException e) {
-            // 5. GESTIONE ECCEZIONI: Catturiamo l'errore SQL senza far crashare l'applicazione
+            // 5. GESTIONE ECCEZIONI: Uniformata la chiave del messaggio d'errore
             System.err.println("[LoginServlet] Errore critico di connessione al database durante il login:");
             e.printStackTrace();
             
-            // Reindirizziamo a una pagina di errore generica o rimandiamo un messaggio pulito alla JSP
-            request.setAttribute("erroreLogin", "Si è verificato un errore tecnico nel server. Riprova più tardi.");
+            request.setAttribute("messaggioErrore", "Si è verificato un errore tecnico nel server. Riprova più tardi.");
             request.getRequestDispatcher("/jsp/login.jsp").forward(request, response);
         }
     }

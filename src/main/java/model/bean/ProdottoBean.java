@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class ProdottoBean implements Serializable {
     // Numero di versione per la serializzazione, serve per non far crashare Tomcat in 
-	// caso finisca la RAM, per ricordare la classe anche se si eseguono modifiche 
+    // caso finisca la RAM, per ricordare la classe anche se si eseguono modifiche 
     private static final long serialVersionUID = 1L;
 
     private int idProdotto; // ID_prodotto INT AUTO_INCREMENT PRIMARY KEY
@@ -16,6 +16,7 @@ public class ProdottoBean implements Serializable {
     private double prezzo; // Prezzo DECIMAL(10, 2) NOT NULL  
     private int idMicro; // ID_micro INT NOT NULL
     private String urlImmagine; // Url_Immagine VARCHAR(255) NOT NULL
+    private int iva; // <--- Aliquota fissa 22% default MySql
 
     public ProdottoBean() {
     }
@@ -47,6 +48,9 @@ public class ProdottoBean implements Serializable {
 
     public String getUrlImmagine() {return urlImmagine;}
     public void setUrlImmagine(String urlImmagine) {this.urlImmagine = urlImmagine;}
+
+    public int getIva() {return iva;}
+    public void setIva(int iva) {this.iva = iva;}
     
     // Metodo equals per fare l'uguaglianza tra oggetti Prodotto tramite ID
     @Override
@@ -67,6 +71,7 @@ public class ProdottoBean implements Serializable {
     public String toString() {
         return "Prodotto [idProdotto=" + idProdotto + ", marca=" + marca + ", modello=" + modello 
                 + ", tipo=" + tipo + ", quantita=" + quantita + ", descrizione=" + descrizione 
-                + ", prezzo=" + prezzo + ", idMicro=" + idMicro + ", urlImmagine=" + urlImmagine + "]";
+                + ", prezzo=" + prezzo + ", idMicro=" + idMicro + ", urlImmagine=" + urlImmagine 
+                + ", iva=" + iva + "]";
     }
 }

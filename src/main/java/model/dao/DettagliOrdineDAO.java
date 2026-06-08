@@ -13,8 +13,8 @@ public class DettagliOrdineDAO {
 
     // 1. INSERISCI UN RECORD DI DETTAGLIO (doSave)
     public void doSave(DettaglioOrdineBean dettaglio) throws SQLException {
-        String sql = "INSERT INTO Dettaglio_Ordine (ID_ordine, ID_prodotto, Quantita, Prezzo_unitario_storico) "
-                   + "VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO Dettaglio_Ordine (ID_ordine, ID_prodotto, Quantita, Prezzo_unitario_storico, Iva_storicizzata) "
+                   + "VALUES (?, ?, ?, ?, ?)";
 
         try (Connection con = ConPool.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -23,6 +23,7 @@ public class DettagliOrdineDAO {
             ps.setInt(2, dettaglio.getIdProdotto());
             ps.setInt(3, dettaglio.getQuantita());
             ps.setDouble(4, dettaglio.getPrezzoUnitarioStorico());
+            ps.setInt(5, dettaglio.getIvaStoricizzata());
 
             ps.executeUpdate();
         }
@@ -54,6 +55,7 @@ public class DettagliOrdineDAO {
         d.setIdProdotto(rs.getInt("ID_prodotto"));
         d.setQuantita(rs.getInt("Quantita"));
         d.setPrezzoUnitarioStorico(rs.getDouble("Prezzo_unitario_storico"));
+        d.setIvaStoricizzata(rs.getInt("Iva_storicizzata")); 
         return d;
     }
 }

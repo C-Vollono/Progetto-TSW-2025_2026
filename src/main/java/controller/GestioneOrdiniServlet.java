@@ -24,11 +24,85 @@ public class GestioneOrdiniServlet extends HttpServlet {
         this.ordineDAO = new OrdineDAO();
     }
 
+    // IL METODO GET SI OCCUPA SOLO DI LETTURA E FILTRAGGIO (IDEMPOTENTE)
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
-        // Verifica Sicurezza Admin - usa isIsAdmin() generato dal tuo Eclipse
+        // 1. Verifica Sicurezza Admin
+        HttpSession session = request.getSession(false);
+        UtenteBean utente = (session != null) ? (UtenteBean) session.getAttribute("utenteLoggato") : null;
+        if (utente == null || !utente.isIsAdmin()) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Accesso negato.");
+            return;
+        }
+
+        String dataInizio = request.getParameter("dataInizio");
+        String dataFine = request.getParameter("dataFine");
+        String filtroCliente = request.getParameter("filtroCliente");
+        
+        List<OrdineBean> listaOrdini = new ArrayList<>();
+        boolean filtroAttivo = false;
+        
+        try {
+            boolean haDate = (dataInizio != null && !dataInizio.trim().isEmpty() && dataFine != null && !dataFine.trim().isEmpty());
+            boolean haCliente = (filtroCliente != null && !filtroCliente.trim().isEmpty());
+
+            // SCENARIO 1: Filtro Combinato (ID Cliente + Intervallo Date)
+            if (haCliente && haDate) {
+                try {
+                    int idCliente = Integer.parseInt(filtroCliente.trim());
+                    listaOrdini = ordineDAO.doRetrieveByUtenteAndDates(idCliente, dataInizio, dataFine);
+                    request.setAttribute("clienteSelezionato", filtroCliente);
+                    request.setAttribute("dataInizioSelezionata", dataInizio);
+                    request.setAttribute("dataFineSelezionata", dataFine);
+                    filtroAttivo = true;
+                } catch (NumberFormatException e) {
+                    request.setAttribute("messaggioErrore", "L'ID Cliente deve essere un numero intero.");
+                    listaOrdini = ordineDAO.doRetrieveAll();
+                }
+            }
+            // SCENARIO 2: Solo Filtro ID Cliente
+            else if (haCliente) {
+                try {
+                    int idCliente = Integer.parseInt(filtroCliente.trim());
+                    listaOrdini = ordineDAO.doRetrieveByClienteAdmin(idCliente);
+                    request.setAttribute("clienteSelezionato", filtroCliente);
+                    filtroAttivo = true;
+                } catch (NumberFormatException e) {
+                    request.setAttribute("messaggioErrore", "L'ID Cliente deve essere un numero intero.");
+                    listaOrdini = ordineDAO.doRetrieveAll();
+                }
+            }
+            // SCENARIO 3: Solo Filtro Intervallo Date
+            else if (haDate) {
+                listaOrdini = ordineDAO.doRetrieveByDates(dataInizio, dataFine);
+                request.setAttribute("dataInizioSelezionata", dataInizio);
+                request.setAttribute("dataFineSelezionata", dataFine);
+                filtroAttivo = true;
+            }
+            // SCENARIO 4: Nessun filtro attivo (Caricamento globale)
+            else {
+                listaOrdini = ordineDAO.doRetrieveAll();
+            }
+
+            request.setAttribute("filtroAttivo", filtroAttivo);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            request.setAttribute("messaggioErrore", "Errore nel caricamento dei dati o nel filtraggio del database.");
+        }
+        
+        request.setAttribute("listaOrdiniTotali", listaOrdini);
+        request.getRequestDispatcher("/jsp/admin/ordiniAdmin.jsp").forward(request, response);
+    }
+
+    // IL METODO POST GESTISCE LE MODIFICHE AL DATABASE (CAMBIO STATO ORDINE)
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        
+        // Verifica Sicurezza Admin anche sul POST
         HttpSession session = request.getSession(false);
         UtenteBean utente = (session != null) ? (UtenteBean) session.getAttribute("utenteLoggato") : null;
         if (utente == null || !utente.isIsAdmin()) {
@@ -37,39 +111,27 @@ public class GestioneOrdiniServlet extends HttpServlet {
         }
 
         String action = request.getParameter("action");
-        
-        try {
-            if ("cambiaStato".equals(action)) {
+
+        if ("cambiaStato".equals(action)) {
+            try {
                 int idOrdine = Integer.parseInt(request.getParameter("idOrdine"));
                 String nuovoStato = request.getParameter("stato");
+                
                 ordineDAO.doUpdateStato(idOrdine, nuovoStato);
-                request.setAttribute("messaggioSuccesso", "Stato dell'ordine #" + idOrdine + " modificato in " + nuovoStato + "!");
+                
+                // Salviamo il feedback in sessione perché stiamo per fare un redirect (PRG)
+                session.setAttribute("messaggioSuccesso", "Stato dell'ordine #" + idOrdine + " modificato in " + nuovoStato + "!");
+                
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+                session.setAttribute("messaggioErrore", "Identificativo ordine non valido.");
+            } catch (SQLException e) {
+                e.printStackTrace();
+                session.setAttribute("messaggioErrore", "Errore di sistema durante l'aggiornamento dello stato.");
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            request.setAttribute("messaggioErrore", "Impossibile aggiornare lo stato dell'ordine.");
         }
-        
-        // Carica la lista e inoltra alla vista
-        mostraRegistroOrdini(request, response);
-    }
 
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
-            throws ServletException, IOException {
-        doGet(request, response);
-    }
-
-    private void mostraRegistroOrdini(HttpServletRequest request, HttpServletResponse response) 
-            throws ServletException, IOException {
-        List<OrdineBean> totali = new ArrayList<>();
-        try {
-            totali = ordineDAO.doRetrieveAll();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            request.setAttribute("messaggioErrore", "Errore nel caricamento dei dati dal database.");
-        }
-        request.setAttribute("listaOrdiniTotali", totali);
-        request.getRequestDispatcher("/jsp/admin/ordiniAdmin.jsp").forward(request, response);
+        // REDIRECT (PRG) alla GET della stessa servlet per rinfrescare la lista in totale sicurezza
+        response.sendRedirect(request.getContextPath() + "/Admin/GestioneOrdini");
     }
 }
