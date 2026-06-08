@@ -113,6 +113,22 @@ public class OrdineDAO {
             ps.executeUpdate();
         }
     }
+    
+    // 6. RECUPERA TUTTI GLI ORDINI DEL PORTALE ORDINATI DAL PIÙ RECENTE (doRetrieveAll)
+    public List<OrdineBean> doRetrieveAll() throws SQLException {
+        List<OrdineBean> lista = new ArrayList<>();
+        String sql = "SELECT * FROM Ordine ORDER BY Data_ordine DESC";
+
+        try (Connection con = ConPool.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                lista.add(mapResultSetToBean(rs));
+            }
+        }
+        return lista;
+    }
 
     // Metodo interno di utility per il mapping ResultSet -> Bean
     private OrdineBean mapResultSetToBean(ResultSet rs) throws SQLException {
