@@ -10,6 +10,7 @@
 	
 	<title>ToneMarket - Il miglior negozio di strumenti musicali sul mercato</title>
 	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/style.css">
+	<link rel="icon" type="image/png" href="${pageContext.request.contextPath}/images/chiaveViolinotrans.png" sizes="96x96">
 	
 	<script defer src="${pageContext.request.contextPath}/js/main.js"></script>
 </head>
@@ -17,7 +18,10 @@
 	
 	<header class="main-header">
 		<div class="logo">
-			<a href="${pageContext.request.contextPath}/jsp/index.jsp">Tone<span>Market</span></a>
+			<a href="${pageContext.request.contextPath}/jsp/index.jsp">
+				<img src="${pageContext.request.contextPath}/images/chiaveViolinoheader.png" alt="Icona ToneMarket" class="logo-img">
+				<div>Tone<span>Market</span></div>
+			</a>
 		</div>
 		
 		<div class="search-bar">
