@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function(){
 	
 	if(formRegistrazione){
 		const btnRegistrati = document.getElementById("btnRegistrati");
-		const dataInput = document.getElementById("data_di_nascita");
+		const dataInput = document.getElementById("dataNascita");
 		
 		function sbloccaBottoneSeValido() {
 			const nomeOk = /^[a-zA-Z\s\']{2,50}$/.test(nomeInput.value.trim());
