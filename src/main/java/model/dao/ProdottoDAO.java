@@ -172,6 +172,77 @@ public class ProdottoDAO {
         }
         return lista;
     }
+    
+    // 10. RECUPERA I PRODOTTI FILTRATI (Per filtri laterali, barra di ricerca e ordinamento topbar)
+ // METODO PER FILTRAGGIO AVANZATO CON MACRO E MICRO CATEGORIE TRAMITE ID
+    public List<ProdottoBean> doRetrieveByFilters(String macroIdParam, String microIdParam, String marca, String prezzoRange, String searchQuery, String ordina) throws SQLException {
+        List<ProdottoBean> lista = new ArrayList<>();
+        
+        // Colleghiamo Prodotto e Microcategoria. La JOIN con Macrocategoria serve solo se filtriamo per Macro.
+        StringBuilder sqlBuilder = new StringBuilder("SELECT p.* FROM Prodotto p JOIN Microcategoria mi ON p.ID_micro = mi.ID_micro WHERE 1=1");
+        List<Object> parametri = new ArrayList<>();
+
+        // 1. Filtro Microcategoria (Ha la priorità massima)
+        if (microIdParam != null && !microIdParam.equalsIgnoreCase("All") && !microIdParam.trim().isEmpty()) {
+            sqlBuilder.append(" AND p.ID_micro = ?");
+            parametri.add(Integer.parseInt(microIdParam));
+        } 
+        // 2. Filtro Macrocategoria (Se non è selezionata una micro, prendiamo tutte le micro di questa macro)
+        else if (macroIdParam != null && !macroIdParam.equalsIgnoreCase("All") && !macroIdParam.trim().isEmpty()) {
+            sqlBuilder.append(" AND mi.ID_macro = ?");
+            parametri.add(Integer.parseInt(macroIdParam));
+        }
+
+        // 3. Filtro Marca
+        if (marca != null && !marca.equalsIgnoreCase("All")) {
+            sqlBuilder.append(" AND p.Marca = ?");
+            parametri.add(marca);
+        }
+
+        // 4. Filtro Barra di ricerca testuale
+        if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+            sqlBuilder.append(" AND (p.Marca LIKE ? OR p.Modello LIKE ? OR p.Descrizione LIKE ?)");
+            String keyword = "%" + searchQuery.trim() + "%";
+            parametri.add(keyword); parametri.add(keyword); parametri.add(keyword);
+        }
+
+        // 5. Filtro Fasce di prezzo
+        if (prezzoRange != null && !prezzoRange.equalsIgnoreCase("All")) {
+            if (prezzoRange.equals("0-500")) {
+                sqlBuilder.append(" AND p.Prezzo BETWEEN 0 AND 500");
+            } else if (prezzoRange.equals("500-2000")) {
+                sqlBuilder.append(" AND p.Prezzo BETWEEN 500 AND 2000");
+            } else if (prezzoRange.equals("2000-10000")) {
+                sqlBuilder.append(" AND p.Prezzo BETWEEN 2000 AND 10000");
+            }
+        }
+
+        // 6. Ordinamento topbar
+        if (ordina != null) {
+            if (ordina.equals("prezzo_asc")) {
+                sqlBuilder.append(" ORDER BY p.Prezzo ASC");
+            } else if (ordina.equals("prezzo_desc")) {
+                sqlBuilder.append(" ORDER BY p.Prezzo DESC");
+            } else {
+                sqlBuilder.append(" ORDER BY p.ID_prodotto DESC");
+            }
+        }
+
+        try (Connection con = util.ConPool.getConnection();
+             PreparedStatement ps = con.prepareStatement(sqlBuilder.toString())) {
+            
+            for (int i = 0; i < parametri.size(); i++) {
+                ps.setObject(i + 1, parametri.get(i));
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    lista.add(mapResultSetToBean(rs)); // Riutilizza l'utility esistente nel tuo file
+                }
+            }
+        }
+        return lista;
+    }
 
     // Metodo interno di utility per il mapping ResultSet -> Bean
     private ProdottoBean mapResultSetToBean(ResultSet rs) throws SQLException {

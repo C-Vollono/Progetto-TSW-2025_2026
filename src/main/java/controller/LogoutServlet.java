@@ -48,6 +48,6 @@ public class LogoutServlet extends HttpServlet {
         nuovaSessione.setAttribute("messaggioSuccesso", "Disconnessione effettuata con successo. A presto!");
         
         // 4. REDIRECT SICURO: l'URL del browser si aggiorna e pulisce la cronologia delle richieste
-        response.sendRedirect(request.getContextPath() + "/jsp/login.jsp");
+        response.sendRedirect(request.getContextPath() + "/jsp/index.jsp");
     }
 }
