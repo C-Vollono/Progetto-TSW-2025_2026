@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import model.bean.ProdottoBean;
 import model.dao.ProdottoDAO;
 
-@WebServlet(urlPatterns = {"/Home"})
+@WebServlet(urlPatterns = {"/Home", ""})
 public class HomeServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private ProdottoDAO prodottoDAO;

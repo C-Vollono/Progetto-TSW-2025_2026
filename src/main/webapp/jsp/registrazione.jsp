@@ -62,7 +62,7 @@
 		</form>
 		
 		<div class="form-footer">
-			<p>Hai già un account? <a href="${pageContext.request.contextPath}/jsp/login.jsp">Accedi qui</a></p>
+			<p>Hai già un account? <a href="${pageContext.request.contextPath}/Login">Accedi qui</a></p>
 			</div>
 		</div>
 	</section>
