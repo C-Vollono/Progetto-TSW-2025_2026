@@ -21,14 +21,32 @@
 		<aside class="catalog-sidebar">
 			<h3>Filtri</h3>
 			<form action="${pageContext.request.contextPath}/Catalogo" method="GET">
+				<input type="hidden" name="searchQuery" value="${searchQuery}">
+				<input type="hidden" name="ordina" value="${empty selOrdina ? 'rilevanza' : selOrdina}">
 				
 				<div class="filter-group">
 					<label for="categoria">Categoria:</label>
-					<select name="categoria" id="categoria">
+					<select name="categoria" id="categoria" onchange="caricaMicrocategorie(this.value)">
 						<option value="All" ${empty selCategoria || selCategoria == 'All' ? 'selected' : ''}>Tutte</option>
-						<option value="Chitarre" ${selCategoria == 'Chitarre' ? 'selected' : ''}>Chitarre</option>
-						<option value="Pianoforti" ${selCategoria == 'Pianoforti' ? 'selected' : ''}>Pianoforti</option>
-						<option value="Batterie" ${selCategoria == 'Batterie' ? 'selected' : ''}>Batterie</option>
+						<c:forEach var="macro" items="${tutteLeMacro}">
+							<option value="${macro.idMacro}" ${selCategoria != 'All' && selCategoria == macro.idMacro ? 'selected' : ''}>
+								${macro.nomeMacro}
+							</option>
+						</c:forEach>
+					</select>
+				</div>
+				
+				<div class="filter-group" id="filter-group-micro" style="${selCategoria == 'All' || empty selCategoria ? 'display:none;' : ''}">
+					<label for="microcategoria">Sotto-categoria:</label>
+					<select name="microcategoria" id="microcategoria">
+						<option value="All" ${empty selMicrocategoria || selMicrocategoria == 'All' ? 'selected' : ''}>Tutte le sotto-categorie</option>
+						<c:if test="${not empty microDiQuestaMacro}">
+							<c:forEach var="micro" items="${microDiQuestaMacro}">
+								<option value="${micro.idMicro}" ${selMicrocategoria != 'All' && selMicrocategoria == micro.idMicro ? 'selected' : ''}>
+									${micro.nomeMicro}
+								</option>
+							</c:forEach>
+						</c:if>
 					</select>
 				</div>
 				
@@ -58,26 +76,29 @@
 
 		<div class="catalog-main">
 		
-		<form action="${pageContext.request.contextPath}/Catalogo" method="GET" class="form-topbar-flex">
+			<form action="${pageContext.request.contextPath}/Catalogo" method="GET" class="form-topbar-flex">
 				<input type="hidden" name="categoria" value="${empty selCategoria ? 'All' : selCategoria}">
+				<input type="hidden" name="microcategoria" value="${empty selMicrocategoria ? 'All' : selMicrocategoria}">
 				<input type="hidden" name="marca" value="${empty selMarca ? 'All' : selMarca}">
 				<input type="hidden" name="prezzo" value="${empty selPrezzo ? 'All' : selPrezzo}">
 			
-			<div class="catalog-topbar">
-				<input type="text" placeholder="Cerca prodotti..." class="catalog-search" name="searchQuery" value="${searchQuery}">
-				
-				<div id="search-suggestions" class="search-suggestions"></div>
-				
-				<div class="catalog-sort">
-					<label for="ordina">Ordina per:</label>
-					<select name="ordina" id="ordina" onchange="this.form.submit()">
-						<option value="rilevanza" ${selOrdina == 'rilevanza' ? 'selected' : ''}>Rilevanza</option>
-						<option value="prezzo_asc" ${selOrdina == 'prezzo_asc' ? 'selected' : ''}>Prezzo crescente</option>
-						<option value="prezzo_desc" ${selOrdina == 'prezzo_desc' ? 'selected' : ''}>Prezzo decrescente</option>
-					</select>
+				<div class="catalog-topbar">
+					<div class="search-wrapper" style="position: relative; flex: 1;">
+						<input type="text" id="catalog-search" placeholder="Cerca prodotti..." class="catalog-search" name="searchQuery" value="${searchQuery}" autocomplete="off">
+						<div id="search-suggestions" class="search-suggestions"></div>
+					</div>
+					
+					<div class="catalog-sort">
+						<label for="ordina">Ordina per:</label>
+						<select name="ordina" id="ordina" onchange="this.form.submit()">
+							<option value="rilevanza" ${selOrdina == 'rilevanza' ? 'selected' : ''}>Rilevanza</option>
+							<option value="prezzo_asc" ${selOrdina == 'prezzo_asc' ? 'selected' : ''}>Prezzo crescente</option>
+							<option value="prezzo_desc" ${selOrdina == 'prezzo_desc' ? 'selected' : ''}>Prezzo decrescente</option>
+						</select>
+					</div>
 				</div>
-			</div>
-		</form>
+			</form>
+
 			<div class="catalog-grid">
 				<c:choose>
 					<c:when test="${empty prodottiCatalogo}">
@@ -121,6 +142,7 @@
 			</c:if>
 		</div>
 	</div>
+	
 	<script>const contextPath = '${pageContext.request.contextPath}';</script>
 	<script src="${pageContext.request.contextPath}/js/catalogo-search.js"></script>
 </section>
