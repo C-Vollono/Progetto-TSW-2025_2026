@@ -18,7 +18,7 @@
 	
 	<header class="main-header">
 		<div class="logo">
-			<a href="${pageContext.request.contextPath}/jsp/index.jsp">
+			<a href="${pageContext.request.contextPath}/Home">
 				<img src="${pageContext.request.contextPath}/images/chiaveViolinoheader.png" alt="Icona ToneMarket" class="logo-img">
 				<div>Tone<span>Market</span></div>
 			</a>
@@ -31,12 +31,12 @@
 		</div>
 		
 		<div class="user-action">
-			<a href="${pageContext.request.contextPath}/jsp/catalogo.jsp" class="btn-nav">Catalogo</a>
+			<a href="${pageContext.request.contextPath}/Catalogo" class="btn-nav">Catalogo</a>
 			
 			<c:choose>
 				<c:when test="${empty sessionScope.utenteLoggato}">
-					<a href="${pageContext.request.contextPath}/jsp/login.jsp"  class="btn-login">Accedi</a>
-					<a href="${pageContext.request.contextPath}/jsp/registrazione.jsp" class="btn-register">Registrati</a>
+					<a href="${pageContext.request.contextPath}/Login"  class="btn-login">Accedi</a>
+					<a href="${pageContext.request.contextPath}/Registrazione" class="btn-register">Registrati</a>
 				</c:when>
 				
 				<c:otherwise>
@@ -58,7 +58,7 @@
 				</c:otherwise>
 			</c:choose>
 			
-			<a href="${pageContext.request.contextPath}/jsp/carrello.jsp" class="btn-cart">Carrello</a>
+			<a href="${pageContext.request.contextPath}/Carrello" class="btn-cart">Carrello</a>
 		</div>
 		
 		<script>

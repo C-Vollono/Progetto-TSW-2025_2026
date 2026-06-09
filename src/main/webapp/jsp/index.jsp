@@ -6,17 +6,17 @@
 <section class="hero-carousel" id="heroCarousel">
     <div class="carousel-slide slide-corda active">
         <h2>Corda</h2>
-        <a href="${pageContext.request.contextPath}/jsp/catalogo.jsp?categoria=corda" class="btn-gold">Scopri la collezione</a>
+        <a href="${pageContext.request.contextPath}/Catalogo?categoria=Chitarre" class="btn-gold">Scopri la collezione</a>
     </div>
     
     <div class="carousel-slide slide-fiato">
         <h2>Fiato</h2>
-        <a href="${pageContext.request.contextPath}/jsp/catalogo.jsp?categoria=fiato" class="btn-gold">Scopri la collezione</a>
+        <a href="${pageContext.request.contextPath}/Catalogo?categoria=Fiato" class="btn-gold">Scopri la collezione</a>
     </div>
     
     <div class="carousel-slide slide-percussioni">
         <h2>Percussioni</h2>
-        <a href="${pageContext.request.contextPath}/jsp/catalogo.jsp?categoria=percussione" class="btn-gold">Scopri la collezione</a>
+        <a href="${pageContext.request.contextPath}/Catalogo?categoria=Batterie" class="btn-gold">Scopri la collezione</a>
     </div>
     
     <div class="carousel-indicators">
@@ -27,10 +27,10 @@
 </section>
 
 <section class="categories-flex">
-    <a href="${pageContext.request.contextPath}/jsp/catalogo.jsp?cat=fiato" class="cat-card">Strumenti a Fiato</a>
-    <a href="${pageContext.request.contextPath}/jsp/catalogo.jsp?categoria=corda" class="cat-card">Strumenti a Corda</a>
-    <a href="${pageContext.request.contextPath}/jsp/catalogo.jsp?cat=percussione" class="cat-card">Strumenti a Percussioni</a>
-    <a href="${pageContext.request.contextPath}/jsp/catalogo.jsp?cat=accessori" class="cat-card">Accessori</a>
+    <a href="${pageContext.request.contextPath}/Catalogo?categoria=Fiato" class="cat-card">Strumenti a Fiato</a>
+    <a href="${pageContext.request.contextPath}/Catalogo?categoria=Chitarre" class="cat-card">Strumenti a Corda</a>
+    <a href="${pageContext.request.contextPath}/Catalogo?categoria=Batterie" class="cat-card">Strumenti a Percussioni</a>
+    <a href="${pageContext.request.contextPath}/Catalogo?categoria=Accessori" class="cat-card">Accessori</a>
 </section>
 
 <section class="catalog-section">
@@ -44,18 +44,18 @@
                 <c:forEach var="prodotto" items="${prodottiInEvidenza}">
                     <div class="product-card">
                         <div class="product-image">
-                            <img src="${prodotto.immagine}" alt="${prodotto.nome}">
+                            <img src="${pageContext.request.contextPath}/${prodotto.urlImmagine}" alt="${prodotto.modello}">
                         </div>
                         <div class="product-info">
-                            <h3>${prodotto.nome}</h3>
+                            <h3>${prodotto.marca} ${prodotto.modello}</h3>
                             <p class="product-desc">${prodotto.descrizione}</p>
                             <p class="product-price">€ ${prodotto.prezzo}</p>
                             
                             <div class="product-actions">
-                                <a href="${pageContext.request.contextPath}/jsp/prodotto.jsp?id=${prodotto.id}" class="btn-details">Dettagli</a>
+                                <a href="${pageContext.request.contextPath}/Catalogo?id=${prodotto.idProdotto}" class="btn-details">Dettagli</a>
                                 
-                                <form action="${pageContext.request.contextPath}/CarrelloServlet" method="POST" class="form-add-cart">
-                                    <input type="hidden" name="idProdotto" value="${prodotto.id}">
+                                <form action="${pageContext.request.contextPath}/Carrello" method="POST" class="form-add-cart">
+                                    <input type="hidden" name="idProdotto" value="${prodotto.idProdotto}">
                                     <input type="hidden" name="quantita" value="1">
                                     <button type="submit" class="btn-gold btn-add-cart">Aggiungi</button>
                                 </form>
