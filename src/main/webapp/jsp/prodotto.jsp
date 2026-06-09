@@ -48,6 +48,8 @@
 			<div class="product-actions-block">
 				
 				<form action="${pageContext.request.contextPath}/Carrello" method="POST" class="action-form">
+					<input type="hidden" name="azione" value="aggiungi">
+					
 					<input type="hidden" name="idProdotto" value="${prodottoDettaglio.idProdotto}">
 					
 					<div class="quantity-selector">

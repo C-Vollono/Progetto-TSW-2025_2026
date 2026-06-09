@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <jsp:include page="/jsp/header.jsp" />
@@ -50,18 +51,19 @@
                 <c:forEach var="prodotto" items="${prodottiInEvidenza}">
                     <div class="product-card">
                         <div class="product-image">
-                            <img src="${pageContext.request.contextPath}/${prodotto.urlImmagine}" alt="${prodotto.modello}">
+                            <img src="${pageContext.request.contextPath}/images/${prodotto.immagine}" alt="${prodotto.nome}">
                         </div>
                         <div class="product-info">
-                            <h3>${prodotto.marca} ${prodotto.modello}</h3>
+                            <h3>${prodotto.nome}</h3>
                             <p class="product-desc">${prodotto.descrizione}</p>
                             <p class="product-price">€ ${prodotto.prezzo}</p>
                             
                             <div class="product-actions">
-                                <a href="${pageContext.request.contextPath}/Catalogo?id=${prodotto.idProdotto}" class="btn-details">Dettagli</a>
+                                <a href="${pageContext.request.contextPath}/Catalogo?id=${prodotto.id}" class="btn-details">Dettagli</a>
                                 
                                 <form action="${pageContext.request.contextPath}/Carrello" method="POST" class="form-add-cart">
-                                    <input type="hidden" name="idProdotto" value="${prodotto.idProdotto}">
+                                    <input type="hidden" name="azione" value="aggiungi">
+                                    <input type="hidden" name="idProdotto" value="${prodotto.id}">
                                     <input type="hidden" name="quantita" value="1">
                                     <button type="submit" class="btn-gold btn-add-cart">Aggiungi</button>
                                 </form>

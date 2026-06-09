@@ -125,8 +125,11 @@
 										<a href="${pageContext.request.contextPath}/Catalogo?id=${prodotto.idProdotto}" class="btn-details">Dettagli</a>
 										
 										<form action="${pageContext.request.contextPath}/Carrello" method="POST" class="form-add-cart-flex">
+											<input type="hidden" name="azione" value="aggiungi">
+											<input type="hidden" name="quantita" value="1">
+											
 											<input type="hidden" name="idProdotto" value="${prodotto.idProdotto}">
-											<button type="submit" class="btn-gold btn-add-cart">Carrello</button>
+											<button type="submit" class="btn-gold btn-add-cart">Aggiungi al Carrello</button>
 										</form>
 									</div>
 								</div>
