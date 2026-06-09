@@ -10,11 +10,12 @@
 		<p> Esplora il mondo della musica Premium, prodotti di altissima qualità.</p>
 	</div>
 	
-	<c:if test="${not empty messaggioErrore}">
-		<div class="error-msg server-error catalog-error-container">
-			${messaggioErrore}
-		</div>
-	</c:if>
+	<c:if test="${not empty sessionScope.messaggioErrore}">
+    <div class="error-msg server-error catalog-error-container">
+        ${sessionScope.messaggioErrore}
+    </div>
+    <c:remove var="messaggioErrore" scope="session" />
+</c:if>
 	
 	<div class="catalog-layout">
 		
@@ -26,8 +27,8 @@
 				
 				<div class="filter-group">
 					<label for="categoria">Categoria:</label>
-					<select name="categoria" id="categoria" onchange="caricaMicrocategorie(this.value)">
-						<option value="All" ${empty selCategoria || selCategoria == 'All' ? 'selected' : ''}>Tutte</option>
+					<select name="categoria" id="categoria">
+						<option value="All" ${empty selCategoria || selCategoria == 'All' ? 'selected' : ''}>Tutte le categorie</option>
 						<c:forEach var="macro" items="${tutteLeMacro}">
 							<option value="${macro.idMacro}" ${selCategoria != 'All' && selCategoria == macro.idMacro ? 'selected' : ''}>
 								${macro.nomeMacro}

@@ -98,7 +98,7 @@ public class CatalogoServlet extends HttpServlet {
             session.setAttribute("messaggioErrore", "Parametri identificativi non validi.");
             response.sendRedirect(request.getContextPath() + "/Catalogo");
             
-        } catch (SQLException e) {
+        }catch (SQLException e) {
             e.printStackTrace();
             HttpSession session = request.getSession();
             session.setAttribute("messaggioErrore", "Errore di sistema nel recupero dei prodotti del catalogo.");

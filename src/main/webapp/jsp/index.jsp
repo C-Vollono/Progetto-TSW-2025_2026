@@ -6,31 +6,37 @@
 <section class="hero-carousel" id="heroCarousel">
     <div class="carousel-slide slide-corda active">
         <h2>Corda</h2>
-        <a href="${pageContext.request.contextPath}/Catalogo?categoria=Chitarre" class="btn-gold">Scopri la collezione</a>
+        <a href="${pageContext.request.contextPath}/Catalogo?categoria=1" class="btn-gold">Scopri la collezione</a>
     </div>
     
     <div class="carousel-slide slide-fiato">
         <h2>Fiato</h2>
-        <a href="${pageContext.request.contextPath}/Catalogo?categoria=Fiato" class="btn-gold">Scopri la collezione</a>
+        <a href="${pageContext.request.contextPath}/Catalogo?categoria=2" class="btn-gold">Scopri la collezione</a>
     </div>
     
     <div class="carousel-slide slide-percussioni">
         <h2>Percussioni</h2>
-        <a href="${pageContext.request.contextPath}/Catalogo?categoria=Batterie" class="btn-gold">Scopri la collezione</a>
+        <a href="${pageContext.request.contextPath}/Catalogo?categoria=3" class="btn-gold">Scopri la collezione</a>
+    </div>
+    
+    <div class="carousel-slide slide-accessori">
+        <h2>Accessori</h2>
+        <a href="${pageContext.request.contextPath}/Catalogo?categoria=4" class="btn-gold">Scopri la collezione</a>
     </div>
     
     <div class="carousel-indicators">
         <span class="dot active" data-slide="0"></span>
         <span class="dot" data-slide="1"></span>
         <span class="dot" data-slide="2"></span>
+        <span class="dot" data-slide="3"></span>
     </div>
 </section>
 
 <section class="categories-flex">
-    <a href="${pageContext.request.contextPath}/Catalogo?categoria=Fiato" class="cat-card">Strumenti a Fiato</a>
-    <a href="${pageContext.request.contextPath}/Catalogo?categoria=Chitarre" class="cat-card">Strumenti a Corda</a>
-    <a href="${pageContext.request.contextPath}/Catalogo?categoria=Batterie" class="cat-card">Strumenti a Percussioni</a>
-    <a href="${pageContext.request.contextPath}/Catalogo?categoria=Accessori" class="cat-card">Accessori</a>
+    <a href="${pageContext.request.contextPath}/Catalogo?categoria=1" class="cat-card">Strumenti a Corda</a>
+    <a href="${pageContext.request.contextPath}/Catalogo?categoria=2" class="cat-card">Strumenti a Fiato</a>
+    <a href="${pageContext.request.contextPath}/Catalogo?categoria=3" class="cat-card">Strumenti a Percussioni</a>
+    <a href="${pageContext.request.contextPath}/Catalogo?categoria=4" class="cat-card">Accessori</a>
 </section>
 
 <section class="catalog-section">
