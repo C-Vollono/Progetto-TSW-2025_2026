@@ -15,6 +15,8 @@ import util.PasswordHashing;
 @WebServlet("/Login")
 public class LoginServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    
+    // Dichiarazione del Dao utente per l'utilizzo in questa servlet essendo che devo utilizzare i metodi di inserimento del Dao (doRetriveByLogin)
     private UtenteDAO utenteDao;
        
     public LoginServlet() {
@@ -36,11 +38,11 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
-        // 1. Recupero dei parametri inviati tramite form HTML
+        // Recupero dei parametri inviati tramite form HTML 
         String email = request.getParameter("email");
         String passwordInChiaro = request.getParameter("password");
 
-        // 2. Validazione formale con chiave standard 'messaggioErrore'
+        // Validazione formale con chiave standard 'messaggioErrore'
         if (email == null || email.trim().isEmpty() || passwordInChiaro == null || passwordInChiaro.isEmpty()) {
             request.setAttribute("messaggioErrore", "Tutti i campi sono obbligatori!");
             request.getRequestDispatcher("/jsp/login.jsp").forward(request, response);

@@ -261,6 +261,25 @@ public class ProdottoDAO {
         // che verrà poi catturato e scritto sul DB dalla servlet di checkout.
         p.setIva(IVA_DEFAULT); 
         
+        // Calcoliamo la media dei voti dalla tabella Recensione per questo specifico prodotto
+        int mediaValutazione = 0;
+        String sqlMedia = "SELECT COALESCE(ROUND(AVG(Valutazione)), 0) AS Media FROM Recensione WHERE ID_prodotto = ?";
+        
+        try (Connection con = util.ConPool.getConnection();
+             PreparedStatement ps = con.prepareStatement(sqlMedia)) {
+            
+            ps.setInt(1, p.getIdProdotto());
+            
+            try (ResultSet rsMedia = ps.executeQuery()) {
+                if (rsMedia.next()) {
+                    mediaValutazione = rsMedia.getInt("Media");
+                }
+            }
+        }
+        
+        // Salviamo la media calcolata nel Bean affinché il JSP la possa stampare
+        p.setValutazione(mediaValutazione);
+        
         return p;
     }
 }
