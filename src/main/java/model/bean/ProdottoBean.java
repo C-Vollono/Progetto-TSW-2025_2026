@@ -17,6 +17,8 @@ public class ProdottoBean implements Serializable {
     private int idMicro; // ID_micro INT NOT NULL
     private String urlImmagine; // Url_Immagine VARCHAR(255) NOT NULL
     private int iva; // <--- Aliquota fissa 22% default MySql
+    
+    private int valutazione; // Attributo per calcolare la media del prodotto 
 
     public ProdottoBean() {
     }
@@ -51,6 +53,9 @@ public class ProdottoBean implements Serializable {
 
     public int getIva() {return iva;}
     public void setIva(int iva) {this.iva = iva;}
+    
+    public int getValutazione() {return valutazione;}
+    public void setValutazione(int valutazione) {this.valutazione = valutazione;}
     
     // Metodo equals per fare l'uguaglianza tra oggetti Prodotto tramite ID
     @Override
