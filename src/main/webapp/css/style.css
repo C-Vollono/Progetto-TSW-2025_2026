@@ -684,6 +684,18 @@ main{
     cursor: pointer;
     transition: all 0.3s;
     border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 40px;
+}
+
+.btn-add-cart .btn-cart-icon {
+    width: 20px; 
+    height: 20px;
+    object-fit: contain;
+    /* Rimuove l'icona dai bordi in caso di resize */
+    margin: 0; 
 }
 
 .btn-details {

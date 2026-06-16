@@ -1,7 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // -------------------------------------------------------------------------
-  // 1. LOGICA SUGGERIMENTI RICERCA TESTUALE (AUTOCOMPLETE AJAX)
-  // -------------------------------------------------------------------------
+  //LOGICA SUGGERIMENTI RICERCA TESTUALE (AUTOCOMPLETE AJAX)
   const input = document.getElementById('catalog-search');
   const box   = document.getElementById('search-suggestions');
 
@@ -66,9 +64,20 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// -------------------------------------------------------------------------
-// 2. FUNZIONE GLOBALE: CARICAMENTO ASINCRONO DELLE MICROCATEGORIE (ID MACRO)
-// -------------------------------------------------------------------------
+//FUNZIONE PER AGGIORNAMENTO DELLE MICROCATEGORIE
+
+const macroSelect = document.getElementById('categoria'); 
+  
+  if (macroSelect) {
+    macroSelect.addEventListener('change', (event) => {
+      // Prende l'ID della categoria selezionata
+      const idSelezionato = event.target.value; 
+      // Richiama la funzione AJAX che popola le sotto-categorie
+      window.caricaMicrocategorie(idSelezionato); 
+    });
+  }
+
+//FUNZIONE GLOBALE: CARICAMENTO ASINCRONO DELLE MICROCATEGORIE (ID MACRO)
 window.caricaMicrocategorie = function(macroId) {
   const microSelect = document.getElementById('microcategoria');
   const microGroup = document.getElementById('filter-group-micro');

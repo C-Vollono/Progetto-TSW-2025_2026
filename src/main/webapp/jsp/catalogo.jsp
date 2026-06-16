@@ -119,19 +119,35 @@
 									<h3>${prodotto.marca} ${prodotto.modello}</h3>
 									<p class="product-brand">Categoria: ${prodotto.tipo}</p>
 									<p class="product-price">€ ${prodotto.prezzo}</p>
-									<p class="product-rating">★★★★★</p> 
+									<div class="product-rating">
+										<c:forEach begin="1" end="5" var="i">
+											<c:choose>
+												<%-- Se il contatore è minore o uguale alla valutazione del prodotto, stella piena d'oro --%>
+												<c:when test="${not empty prodotto.valutazione && i <= prodotto.valutazione}">
+													<span class="star filled">★</span>
+												</c:when>
+												<%-- Altrimenti, stella vuota grigia --%>
+												<c:otherwise>
+													<span class="star empty">☆</span>
+												</c:otherwise>
+											</c:choose>
+										</c:forEach>
+									<span class="rating-number">
+										${not empty prodotto.valutazione ? prodotto.valutazione : '0'}/5
+									</span>
+								</div>
 									
-									<div class="product-actions">
-										<a href="${pageContext.request.contextPath}/Catalogo?id=${prodotto.idProdotto}" class="btn-details">Dettagli</a>
-										
+								<div class="product-actions">
+									<a href="${pageContext.request.contextPath}/Catalogo?id=${prodotto.idProdotto}" class="btn-details">Dettagli</a>
 										<form action="${pageContext.request.contextPath}/Carrello" method="POST" class="form-add-cart-flex">
 											<input type="hidden" name="azione" value="aggiungi">
 											<input type="hidden" name="quantita" value="1">
-											
 											<input type="hidden" name="idProdotto" value="${prodotto.idProdotto}">
-											<button type="submit" class="btn-gold btn-add-cart">Aggiungi al Carrello</button>
+											<button type="submit" class="btn-gold btn-add-cart">
+												<img src="${pageContext.request.contextPath}/images/cart.svg" alt="Carrello" class="btn-cart-icon">
+											</button>
 										</form>
-									</div>
+								</div>
 								</div>
 							</div>
 						</c:forEach>
