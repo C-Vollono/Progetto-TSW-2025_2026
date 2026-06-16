@@ -28,26 +28,29 @@ public class LogoutServlet extends HttpServlet {
         processRequest(request, response);
     }
 
+    //Metodo per mantenere il codice pulito 
     private void processRequest(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
-        // 1. Recuperiamo la sessione corrente senza crearne una nuova
+        // Recuperiamo la sessione corrente senza crearne una nuova
         HttpSession session = request.getSession(false);
         
+        // Controlliamo se abbiamo recuperato la sessione
         if (session != null) {
+        	
+        	// Debug da terminale per verificare la verifica della condizione tramite messaggio di errore e recupero del ID utente 
             System.out.println("[LogoutServlet] Rimozione utente e invalidazione sessione ID: " + session.getId());
             
-            // 2. Distrugge la vecchia sessione e tutti i relativi dati dell'utente loggato
+            // Distrugge la vecchia sessione e tutti i relativi dati dell'utente loggato
             session.invalidate();
         }
         
-        // 3. CREAZIONE DI UNA NUOVA SESSIONE PULITA (Post-Invalidate)
-        // Questa sessione è totalmente nuova, non ha i vecchi dati dell'utente ma ci serve 
+        // Creazione della nuova sessione pulita. Questa sessione è totalmente nuova, non ha i vecchi dati dell'utente ma ci serve 
         // come contenitore temporaneo per far viaggiare il messaggio di successo nel redirect.
         HttpSession nuovaSessione = request.getSession(true);
         nuovaSessione.setAttribute("messaggioSuccesso", "Disconnessione effettuata con successo. A presto!");
         
-        // 4. REDIRECT SICURO: l'URL del browser si aggiorna e pulisce la cronologia delle richieste
+        // Redirect all'index che pulisce sce la cronologia delle richieste
         response.sendRedirect(request.getContextPath() + "/jsp/index.jsp");
     }
 }
