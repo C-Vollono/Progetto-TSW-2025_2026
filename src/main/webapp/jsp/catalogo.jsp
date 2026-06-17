@@ -1,12 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/catalogo.css">
 
 <jsp:include page="/jsp/header.jsp" />
 
 <section class="catalog-section">
 	<div class="catalog-header">
-		<h2>Il nostro Catalogo Premium</h2>
+		<h2>Il Nostro Catalogo <span>Premium</span></h2>
 		<p> Esplora il mondo della musica Premium, prodotti di altissima qualità.</p>
 	</div>
 	
@@ -84,8 +85,12 @@
 				<input type="hidden" name="prezzo" value="${empty selPrezzo ? 'All' : selPrezzo}">
 			
 				<div class="catalog-topbar">
-					<div class="search-wrapper" style="position: relative; flex: 1;">
+					<div class="search-wrapper">
 						<input type="text" id="catalog-search" placeholder="Cerca prodotti..." class="catalog-search" name="searchQuery" value="${searchQuery}" autocomplete="off">
+						
+						<button type="submit" class="btn-lente-catalogo" aria-label="Cerca">
+							<img src="${pageContext.request.contextPath}/images/lente.svg" alt="Cerca" class="icona-lente">
+						</button>
 						<div id="search-suggestions" class="search-suggestions"></div>
 					</div>
 					
@@ -112,26 +117,46 @@
 						<c:forEach var="prodotto" items="${prodottiCatalogo}">
 							<div class="product-card">
 								<div class="product-image">
+								<a href="${pageContext.request.contextPath}/Catalogo?id=${prodotto.idProdotto}" class="product-image-link">
 									<img src="${pageContext.request.contextPath}/images/${prodotto.urlImmagine}" alt="${prodotto.modello}">
+								</a>
 								</div>
 								
 								<div class="product-info">
+									<a href="${pageContext.request.contextPath}/Catalogo?id=${prodotto.idProdotto}" class="product-image-link">
 									<h3>${prodotto.marca} ${prodotto.modello}</h3>
+									</a>
 									<p class="product-brand">Categoria: ${prodotto.tipo}</p>
 									<p class="product-price">€ ${prodotto.prezzo}</p>
-									<p class="product-rating">★★★★★</p> 
+									<div class="product-rating">
+										<c:forEach begin="1" end="5" var="i">
+											<c:choose>
+												<%-- Se il contatore è minore o uguale alla valutazione del prodotto, stella piena d'oro --%>
+												<c:when test="${not empty prodotto.valutazione && i <= prodotto.valutazione}">
+													<span class="star filled">★</span>
+												</c:when>
+												<%-- Altrimenti, stella vuota grigia --%>
+												<c:otherwise>
+													<span class="star empty">☆</span>
+												</c:otherwise>
+											</c:choose>
+										</c:forEach>
+									<span class="rating-number">
+										${not empty prodotto.valutazione ? prodotto.valutazione : '0'}/5
+									</span>
+								</div>
 									
-									<div class="product-actions">
-										<a href="${pageContext.request.contextPath}/Catalogo?id=${prodotto.idProdotto}" class="btn-details">Dettagli</a>
-										
+								<div class="product-actions">
+									<a href="${pageContext.request.contextPath}/Catalogo?id=${prodotto.idProdotto}" class="btn-details">Dettagli</a>
 										<form action="${pageContext.request.contextPath}/Carrello" method="POST" class="form-add-cart-flex">
 											<input type="hidden" name="azione" value="aggiungi">
 											<input type="hidden" name="quantita" value="1">
-											
 											<input type="hidden" name="idProdotto" value="${prodotto.idProdotto}">
-											<button type="submit" class="btn-gold btn-add-cart">Aggiungi al Carrello</button>
+											<button type="submit" class="btn-gold btn-add-cart">
+												<img src="${pageContext.request.contextPath}/images/cart.svg" alt="Carrello" class="btn-cart-icon">
+											</button>
 										</form>
-									</div>
+								</div>
 								</div>
 							</div>
 						</c:forEach>
@@ -139,11 +164,11 @@
 				</c:choose>
 			</div>
 
-			<c:if test="${not empty prodottiCatalogo}">
+			<!--<c:if test="${not empty prodottiCatalogo}">
 				<div class="load-more-container">
 					<button class="btn-details load-more-btn">Vedi altro</button>
 				</div>
-			</c:if>
+			</c:if>-->
 		</div>
 	</div>
 	

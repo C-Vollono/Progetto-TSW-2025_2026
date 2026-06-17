@@ -1,0 +1,125 @@
+@charset "UTF-8";
+
+/*CAROSELLO E DOT*/
+.hero-carousel {
+    height: 500px;
+    position: relative;
+    overflow: hidden;
+    background-color: var(--bg-secondary); 
+    border-radius: 25px; 
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+
+.carousel-slide {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: white;
+    text-align: center;
+    opacity: 0;
+    visibility: hidden;
+    z-index: 0;
+    transition: opacity 0.8s ease-in-out, visibility 0.8s ease-in-out; 
+}
+
+.carousel-slide.active {
+    display: flex;
+    opacity: 1;
+    visibility: visible;
+    z-index: 1;
+}
+
+.carousel-slide h2 {
+    font-size: 3.5rem;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+}
+
+.slide-corda {
+    background-image: linear-gradient(rgba(11, 11, 12, 0.6), rgba(11, 11, 12, 0.6)), url('../images/corde.jpg');
+}
+
+.slide-fiato {
+    background-image: linear-gradient(rgba(11, 11, 12, 0.6), rgba(11, 11, 12, 0.6)), url('../images/fiato.jpg');
+}
+
+.slide-percussioni {
+    background-image: linear-gradient(rgba(11, 11, 12, 0.6), rgba(11, 11, 12, 0.6)), url('../images/percussioni.jpg');
+}
+
+.slide-accessori {
+    background-image: linear-gradient(rgba(11, 11, 12, 0.6), rgba(11, 11, 12, 0.6)), url('../images/accessori.jpg');
+}
+
+.carousel-indicators {
+	position: absolute;
+	bottom: 25px; 
+	left: 50%;
+	transform: translateX(-50%); 
+	display: flex;
+	gap: 12px;
+	z-index: 10; 
+}
+
+.dot {
+	width: 14px;
+	height: 14px;
+	background-color: rgba(255, 255, 255, 0.4); 
+	border-radius: 50%; 
+	cursor: pointer;
+	transition: background-color 0.3s, transform 0.3s;
+}
+
+.dot.active, .dot:hover {
+	background-color: var(--accent-gold);
+	transform: scale(1.3);
+}
+
+/*CATEGORIE*/
+.categories-flex {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 25px;
+    max-width: 1200px;
+    margin: 40px auto; 
+    padding: 0 20px;
+}
+
+.cat-card {
+    flex: 1 1 220px;
+    max-width: 280px;
+    background-color: var(--bg-card); 
+    color: var(--text-dark); 
+    text-decoration: none;
+    text-align: center;
+    padding: 40px 20px; 
+    border-radius: 8px;
+    font-size: 1.4rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08); 
+    border-bottom: 4px solid var(--accent-gold); 
+    transition: transform 0.3s, box-shadow 0.3s, color 0.3s;
+}
+
+.cat-card:hover {
+	transform: translateY(-8px);
+	box-shadow: 0 12px 20px rgba(0,0,0,0.15);
+	color: var(--accent-gold);
+}
+
+@media screen and (max-width: 768px) {
+	.cat-card {
+		padding: 25px 15px;
+		font-size: 1.1rem; 
+	}
+}

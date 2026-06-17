@@ -49,15 +49,17 @@ public class HomeServlet extends HttpServlet {
                 Map<String, Object> mappaProdotto = new HashMap<>();
                 
                 // Mappiamo le proprietà del tuo Bean sui nomi esatti cercati dall'Expression Language della tua JSP
-                mappaProdotto.put("id", p.getIdProdotto());                         // Per ${prodotto.id}
-                mappaProdotto.put("immagine", p.getUrlImmagine());                   // Per ${prodotto.immagine}
+                mappaProdotto.put("idProdotto", p.getIdProdotto());                         // Per ${prodotto.idProdotto}
+                mappaProdotto.put("urlImmagine", p.getUrlImmagine());                   // Per ${prodotto.urlImmagine}
                 
                 // Uniamo Marca e Modello nel campo unico "nome" cercato dal frontend
                 String nomeCompleto = (p.getMarca() != null ? p.getMarca() : "") + " " + (p.getModello() != null ? p.getModello() : "");
-                mappaProdotto.put("nome", nomeCompleto.trim());                      // Per ${prodotto.nome}
                 
+                mappaProdotto.put("nome", nomeCompleto.trim());                     // Per ${prodotto.nome}
                 mappaProdotto.put("descrizione", p.getDescrizione());               // Per ${prodotto.descrizione}
                 mappaProdotto.put("prezzo", p.getPrezzo());                         // Per ${prodotto.prezzo}
+                mappaProdotto.put("tipo", p.getTipo());                				// Per ${prodotto.tipo}
+                mappaProdotto.put("valutazione", p.getValutazione());  				// Per ${prodotto.valutazione}
                 
                 prodottiInEvidenzaAdattati.add(mappaProdotto);
             }

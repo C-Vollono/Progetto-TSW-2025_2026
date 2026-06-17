@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/index.css">
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/catalogo.css">
 
 <jsp:include page="/jsp/header.jsp" />
 
@@ -51,21 +53,43 @@
                 <c:forEach var="prodotto" items="${prodottiInEvidenza}">
                     <div class="product-card">
                         <div class="product-image">
-                            <img src="${pageContext.request.contextPath}/images/${prodotto.immagine}" alt="${prodotto.nome}">
+                        <a href="${pageContext.request.contextPath}/Catalogo?id=${prodotto.idProdotto}" class="product-image-link">
+                            <img src="${pageContext.request.contextPath}/images/${prodotto.urlImmagine}" alt="${prodotto.marca} ${prodotto.modello}">
+                        </a>
                         </div>
                         <div class="product-info">
-                            <h3>${prodotto.nome}</h3>
-                            <p class="product-desc">${prodotto.descrizione}</p>
+                        	<a href="${pageContext.request.contextPath}/Catalogo?id=${prodotto.idProdotto}" class="product-image-link">
+                            	<h3>${prodotto.nome}</h3>
+                            </a>
+                            <p class="product-brand">Categoria: ${prodotto.tipo}</p>
                             <p class="product-price">€ ${prodotto.prezzo}</p>
                             
+                            <div class="product-rating">
+            					<c:forEach begin="1" end="5" var="i">
+                					<c:choose>
+                    					<c:when test="${not empty prodotto.valutazione && i <= prodotto.valutazione}">
+                        					<span class="star filled">★</span>
+                    					</c:when>
+                    					<c:otherwise>
+                        					<span class="star empty">☆</span>
+                    					</c:otherwise>
+                					</c:choose>
+            					</c:forEach>
+            					<span class="rating-number">
+                					${not empty prodotto.valutazione ? prodotto.valutazione : '0'}/5
+            					</span>
+        					</div>
+                            
                             <div class="product-actions">
-                                <a href="${pageContext.request.contextPath}/Catalogo?id=${prodotto.id}" class="btn-details">Dettagli</a>
+                                <a href="${pageContext.request.contextPath}/Catalogo?id=${prodotto.idProdotto}" class="btn-details">Dettagli</a>
                                 
-                                <form action="${pageContext.request.contextPath}/Carrello" method="POST" class="form-add-cart">
+                                <form action="${pageContext.request.contextPath}/Carrello" method="POST" class="form-add-cart-flex">
                                     <input type="hidden" name="azione" value="aggiungi">
-                                    <input type="hidden" name="idProdotto" value="${prodotto.id}">
                                     <input type="hidden" name="quantita" value="1">
-                                    <button type="submit" class="btn-gold btn-add-cart">Aggiungi</button>
+                                    <input type="hidden" name="idProdotto" value="${prodotto.idProdotto}">
+                                    <button type="submit" class="btn-gold btn-add-cart">
+                                    	<img src="${pageContext.request.contextPath}/images/cart.svg" alt="Carrello" class="btn-cart-icon">
+                                    </button>
                                 </form>
                             </div>
                         </div>
@@ -81,5 +105,7 @@
         </c:choose>
     </div>
 </section>
+
+<script defer src="${pageContext.request.contextPath}/js/main.js"></script>
 
 <jsp:include page="/jsp/footer.jsp" />

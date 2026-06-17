@@ -154,13 +154,13 @@ public class ProdottoDAO {
     public List<ProdottoBean> doRetrieveBySearch(String query) throws SQLException {
         List<ProdottoBean> lista = new ArrayList<>();
         // Cerchiamo corrispondenze parziali sulla Marca o sul Modello nel DB
-        String sql = "SELECT * FROM Prodotto WHERE Marca LIKE ? OR Modello LIKE ? LIMIT 5";
+        String sql = "SELECT * FROM Prodotto WHERE CONCAT(Marca, ' ', Modello) LIKE ? OR CONCAT(Modello, ' ', Marca) LIKE ? LIMIT 5";
 
         try (Connection con = ConPool.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             
             // Applichiamo i caratteri jolly per la corrispondenza parziale
-            String keyword = "%" + query + "%";
+            String keyword = "%" + query.trim() + "%";
             ps.setString(1, keyword);
             ps.setString(2, keyword);
 
@@ -201,9 +201,11 @@ public class ProdottoDAO {
 
         // 4. Filtro Barra di ricerca testuale
         if (searchQuery != null && !searchQuery.trim().isEmpty()) {
-            sqlBuilder.append(" AND (p.Marca LIKE ? OR p.Modello LIKE ? OR p.Descrizione LIKE ?)");
+        	sqlBuilder.append(" AND (CONCAT(p.Marca, ' ', p.Modello) LIKE ? OR CONCAT(p.Modello, ' ', p.Marca) LIKE ? OR p.Descrizione LIKE ?)");
             String keyword = "%" + searchQuery.trim() + "%";
-            parametri.add(keyword); parametri.add(keyword); parametri.add(keyword);
+            parametri.add(keyword); 
+            parametri.add(keyword); 
+            parametri.add(keyword);
         }
 
         // 5. Filtro Fasce di prezzo
