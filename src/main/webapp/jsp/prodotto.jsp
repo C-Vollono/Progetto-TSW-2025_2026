@@ -89,4 +89,6 @@
 
 </main>
 
+<script src="${pageContext.request.contextPath}/js/prodotto.js"></script>
+
 <jsp:include page="/jsp/footer.jsp" />

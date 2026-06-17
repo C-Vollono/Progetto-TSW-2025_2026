@@ -9,10 +9,9 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	
 	<title>ToneMarket - Il miglior negozio di strumenti musicali sul mercato</title>
-	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/style.css">
+	<!--<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/style.css">-->
+	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/global.css">
 	<link rel="icon" type="image/png" href="${pageContext.request.contextPath}/images/chiaveViolinotrans.png" sizes="96x96">
-	
-	<script defer src="${pageContext.request.contextPath}/js/main.js"></script>
 </head>
 <body>
 	
@@ -26,7 +25,9 @@
 		
 		<div class="search-bar">
 			<input type="text" id="searchInput" placeholder="Cerca ciò che desideri..." autocomplete="off">
-			<button type="button" id="searchBtn">Cerca</button>
+			<button type="submit" class="searchBtn" aria-label="Cerca">
+				<img src="${pageContext.request.contextPath}/images/lente.svg" alt="Cerca" class="btn-lente">
+			</button>
 			<div id="searchResults" class="search-results-dropdown"></div>
 		</div>
 		
@@ -58,7 +59,9 @@
 				</c:otherwise>
 			</c:choose>
 			
-			<a href="${pageContext.request.contextPath}/Carrello" class="btn-cart">Carrello</a>
+			<a href="${pageContext.request.contextPath}/Carrello" class="btn-cart">
+				<img src="${pageContext.request.contextPath}/images/cart.svg" alt="Carrello" class="btn-cart-icon-header">
+			</a>
 		</div>
 		
 		<script>
