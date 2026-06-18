@@ -8,7 +8,7 @@ import model.bean.ProdottoBean; // Importa il tuo fagiolino ufficiale
 public class Carrello implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    // La chiave è l'oggetto ProdottoBean, il valore è la quantità scelta nel carrello
+    //Chiave: Oggetto ProdottoBean, Valore: quantità scelta nel carrello
     private Map<ProdottoBean, Integer> elementi;
 
     public Carrello() {
@@ -19,9 +19,6 @@ public class Carrello implements Serializable {
         return elementi;
     }
 
-    /**
-     * Aggiunge un prodotto al carrello o ne incrementa la quantità se già presente.
-     */
     public void aggiungiProdotto(ProdottoBean prodotto, int quantitaRichiesta) {
         ProdottoBean esistente = trovaInCarrello(prodotto.getIdProdotto());
         
@@ -38,9 +35,6 @@ public class Carrello implements Serializable {
         }
     }
 
-    /**
-     * Modifica direttamente la quantità di un prodotto esistente.
-     */
     public void modificaQuantita(int idProdotto, int nuovaQuantita) {
         ProdottoBean esistente = trovaInCarrello(idProdotto);
         if (esistente != null && nuovaQuantita > 0) {
@@ -53,9 +47,6 @@ public class Carrello implements Serializable {
         }
     }
 
-    /**
-     * Rimuove un prodotto dal carrello.
-     */
     public void rimuoviProdotto(int idProdotto) {
         ProdottoBean esistente = trovaInCarrello(idProdotto);
         if (esistente != null) {
@@ -63,9 +54,6 @@ public class Carrello implements Serializable {
         }
     }
 
-    /**
-     * Calcola il prezzo totale del carrello (somma di prezzo * quantità)
-     */
     public double getPrezzoTotale() {
         double totale = 0;
         for (Map.Entry<ProdottoBean, Integer> entry : elementi.entrySet()) {
@@ -74,9 +62,6 @@ public class Carrello implements Serializable {
         return totale;
     }
 
-    /**
-     * Metodo di utility interno per trovare un prodotto nella mappa confrontando l'ID
-     */
     private ProdottoBean trovaInCarrello(int idProdotto) {
         for (ProdottoBean p : elementi.keySet()) {
             if (p.getIdProdotto() == idProdotto) {
@@ -84,5 +69,13 @@ public class Carrello implements Serializable {
             }
         }
         return null;
+    }
+    
+    public int getTotalePezzi() {
+        int totale = 0;
+        for (Integer quantita : elementi.values()) {
+            totale += quantita;
+        }
+        return totale;
     }
 }

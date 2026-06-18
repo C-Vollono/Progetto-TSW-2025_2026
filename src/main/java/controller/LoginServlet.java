@@ -16,7 +16,7 @@ import util.PasswordHashing;
 public class LoginServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     
-    // Dichiarazione del Dao utente per l'utilizzo in questa servlet essendo che devo utilizzare i metodi di inserimento del Dao (doRetriveByLogin)
+    //Dichiarazione del Dao utente per l'utilizzo
     private UtenteDAO utenteDao;
        
     public LoginServlet() {
@@ -38,62 +38,80 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
-        // Recupero dei parametri inviati tramite form HTML 
+        //Recupero dei parametri
         String email = request.getParameter("email");
         String passwordInChiaro = request.getParameter("password");
+        String isAjax = request.getParameter("isAjax");
 
-        // Validazione formale con chiave standard 'messaggioErrore'
+        //Validazione con chiave standard 'messaggioErrore'
         if (email == null || email.trim().isEmpty() || passwordInChiaro == null || passwordInChiaro.isEmpty()) {
+        	if ("true".equals(isAjax)) {
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                response.getWriter().write("{\"success\": false, \"message\": \"Tutti i campi sono obbligatori!\"}");
+                return;
+            }
+            
             request.setAttribute("messaggioErrore", "Tutti i campi sono obbligatori!");
             request.getRequestDispatcher("/jsp/login.jsp").forward(request, response);
             return;
         }
 
-        // 3. Generazione dell'hash SHA-512 per il confronto
+        //Generazione dell'hash SHA-512 per il confronto
         String passwordCifrata = PasswordHashing.toHash(passwordInChiaro);
 
         try {
-            // 4. Interrogazione del Database
+            //Interrogazione del Database
             UtenteBean utente = utenteDao.doRetrieveByLogin(email.trim(), passwordCifrata);
 
             if (utente != null) {
-                // --- LOGIN ANDATO A BUON FINE ---
+                //Login andato a buon fine
                 HttpSession session = request.getSession(true);
                 
-                // Salviamo l'intero Bean dell'utente in sessione
+                //Salviamo l'intero Bean dell'utente in sessione
                 session.setAttribute("utenteLoggato", utente);
                 
-                // Gestione della profilazione utenti
-                if (utente.isIsAdmin()) {
-                    session.setAttribute("ruolo", "admin");
-                } else {
-                    session.setAttribute("ruolo", "customer");
-                }
+session.setAttribute("ruolo", utente.isIsAdmin() ? "admin" : "customer");
                 
-                System.out.println("[LoginServlet] Login riuscito nel DB per l'utente: " + email);
-                
-                // --- SMISTAMENTO UTENTI IN BASE AL RUOLO ---
-                if (utente.isIsAdmin()) {
-                    // Se l'utente è amministratore, lo reindirizziamo all'area admin
-                    response.sendRedirect(request.getContextPath() + "/jsp/admin/admin.jsp");
-                } else {
-                    response.sendRedirect(request.getContextPath() + "/jsp/index.jsp");
+                String url = request.getContextPath() + (utente.isIsAdmin() ? "/jsp/admin/admin.jsp" : "/jsp/index.jsp");
+
+                //Risposta AJAX
+                if ("true".equals(isAjax)) {
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("UTF-8");
+                    response.getWriter().write("{\"success\": true, \"message\": \"Login effettuato!\", \"redirect\": \"" + url + "\"}");
+                    return; 
                 }
+                System.out.println("[LoginServlet] Login riuscito per: " + email);
+                response.sendRedirect(url);
                 return; 
                 
             } else {
-                // LOGIN FALLITO: Uniformata la chiave del messaggio d'errore
-                request.setAttribute("messaggioErrore", "Email o Password errati!");
-                System.out.println("[LoginServlet] Fallimento: Credenziali non trovate nel database per " + email);
+                //Login fallito
+                //Risposta AJAX
+                if ("true".equals(isAjax)) {
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("UTF-8");
+                    response.getWriter().write("{\"success\": false, \"message\": \"Email o Password errati!\"}");
+                    return;
+                }
                 
+                System.out.println("[LoginServlet] Fallimento: Credenziali non trovate per " + email);
+                request.setAttribute("messaggioErrore", "Email o Password errati!");
                 request.getRequestDispatcher("/jsp/login.jsp").forward(request, response);
             }
 
         } catch (SQLException e) {
-            // 5. GESTIONE ECCEZIONI: Uniformata la chiave del messaggio d'errore
-            System.err.println("[LoginServlet] Errore critico di connessione al database durante il login:");
             e.printStackTrace();
             
+            //Risposta AJAX
+            if ("true".equals(isAjax)) {
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                response.getWriter().write("{\"success\": false, \"message\": \"Errore tecnico del server.\"}");
+                return;
+            }
+
             request.setAttribute("messaggioErrore", "Si è verificato un errore tecnico nel server. Riprova più tardi.");
             request.getRequestDispatcher("/jsp/login.jsp").forward(request, response);
         }
