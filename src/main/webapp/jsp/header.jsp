@@ -61,13 +61,19 @@
 			
 			<a href="${pageContext.request.contextPath}/Carrello" class="btn-cart">
 				<img src="${pageContext.request.contextPath}/images/cart.svg" alt="Carrello" class="btn-cart-icon-header">
+				
+				<span id="cart-badge-count" class="cart-badge" style="${empty sessionScope.carrello.elementi ? 'display: none;' : ''}">
+        			${not empty sessionScope.carrello ? sessionScope.carrello.totalePezzi : 0}
+    			</span>
 			</a>
 		</div>
 		
 		<script>
   			const contextPath = '${pageContext.request.contextPath}';
 		</script>
-		<script src="${pageContext.request.contextPath}/js/header.js"></script>
+		<script defer src="${pageContext.request.contextPath}/js/header.js"></script>
+		<script defer src="${pageContext.request.contextPath}/js/notifica.js"></script>
+		<script defer src="${pageContext.request.contextPath}/js/carrello-ue.js"></script>
 	</header>
 	
 	<main>

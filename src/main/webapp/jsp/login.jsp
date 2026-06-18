@@ -37,4 +37,6 @@
 	</div>
 </section>
 
+<script defer src="${pageContext.request.contextPath}/js/login.js"></script>
+
 <jsp:include page="/jsp/footer.jsp" />

@@ -68,6 +68,9 @@
 		</div>
 	</section>
 	
+<script defer src="${pageContext.request.contextPath}/js/registrazione.js"></script>
+<script defer src="${pageContext.request.contextPath}/js/validazione.js"></script>
+
 <jsp:include page="/jsp/footer.jsp" />
 	
-<script src="${pageContext.request.contextPath}/js/validazione.js"></script>	
+	

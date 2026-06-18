@@ -76,10 +76,68 @@
 	</div>
 
 	<div class="product-reviews-section">
-		<h2>Recensioni dei Clienti</h2>
-		<div class="reviews-container">
-			<p class="no-reviews-msg">Ancora nessuna recensione per questo prodotto. Sii il primo a scriverne una!</p>
-		</div>
+    	<h2>Recensioni dei Clienti</h2>
+    
+    		<c:choose>
+        		<c:when test="${not empty sessionScope.utenteLoggato}">
+            		<div class="review-form-container">
+                		<h3>Scrivi una recensione</h3>
+                		<form action="${pageContext.request.contextPath}/Recensione" method="POST" id="form-recensione">
+                    		<input type="hidden" name="azione" value="inserisci">
+                    		<input type="hidden" name="idProdotto" value="${prodottoDettaglio.idProdotto}">
+                    
+                    	<div class="form-group-review">
+                        	<label for="titoloRecensione">Titolo</label>
+                        	<input type="text" id="titoloRecensione" name="titolo" required placeholder="Riassumi la tua esperienza" maxlength="100">
+                    	</div>
+
+                    	<div class="form-group-review">
+                        	<label for="valutazione">Valutazione</label>
+                        	<select name="valutazione" id="valutazione" required>
+                            	<option value="5">5 Stelle (Eccellente)</option>
+                            	<option value="4">4 Stelle (Molto Buono)</option>
+                            	<option value="3">3 Stelle (Nella media)</option>
+                            	<option value="2">2 Stelle (Scarso)</option>
+                            	<option value="1">1 Stella (Pessimo)</option>
+                        	</select>
+                    	</div>
+
+                    	<div class="form-group-review">
+                        	<label for="corpoRecensione">Recensione</label>
+                        	<textarea id="corpoRecensione" name="corpo" rows="4" required placeholder="Condividi i dettagli..."></textarea>
+                    	</div>
+
+                    	<button type="submit" class="btn-gold">Pubblica Recensione</button>
+                	</form>
+            	</div>
+        	</c:when>
+        	<c:otherwise>
+            	<div class="review-login-prompt">
+                	<p><a href="${pageContext.request.contextPath}/Login" class="btn-login-review">Accedi</a> per scrivere una recensione.</p>
+            	</div>
+        	</c:otherwise>
+    	</c:choose>
+
+    	<div class="reviews-list">
+        	<c:choose>
+            	<c:when test="${empty recensioniProdotto}">
+                	<p class="no-reviews-msg">Ancora nessuna recensione. Sii il primo a scriverne una!</p>
+            	</c:when>
+            	<c:otherwise>
+                	<c:forEach var="rec" items="${recensioniProdotto}">
+                    	<div class="review-item">
+                        	<div class="review-rating">
+                            	<c:forEach begin="1" end="5" var="i">
+                                	<span class="star ${i <= rec.valutazione ? 'filled' : 'empty'}">★</span>
+                            	</c:forEach>
+                        	</div>
+                        	<h4 class="review-title">${rec.titolo}</h4>
+                        	<p class="review-body">${rec.corpo}</p>
+                    	</div>
+                	</c:forEach>
+            	</c:otherwise>
+       		</c:choose>
+    	</div>
 	</div>
 
 	<div class="related-products-section">
