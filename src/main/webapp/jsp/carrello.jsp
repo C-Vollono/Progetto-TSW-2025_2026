@@ -41,9 +41,16 @@
                     <c:forEach var="item" items="${sessionScope.carrello.elementi}">
                         <div class="cart-item">
                             
-                            <img src="${pageContext.request.contextPath}/${item.key.urlImmagine}" alt="${item.key.modello}" class="cart-item-img">
+                            <a href="${pageContext.request.contextPath}/Catalogo?id=${item.key.idProdotto}">
+                            	<img src="${pageContext.request.contextPath}/${item.key.urlImmagine}" alt="${item.key.modello}" class="cart-item-img">
+                            </a>
                             <div class="cart-item-details">
-                                <h3>${item.key.marca} ${item.key.modello}</h3>
+                                <h3>
+                                	<a href="${pageContext.request.contextPath}/Catalogo?id=${item.key.idProdotto}" class="cart-title-link">
+                                		${item.key.marca} ${item.key.modello}
+                                	</a>
+                                </h3>	
+                                	
                                 <p class="item-cat">Categoria: ${item.key.tipo}</p>
                                 <p class="cart-item-price">€ <fmt:formatNumber value="${item.key.prezzo}" pattern="#,##0.00"/></p>
                             </div>

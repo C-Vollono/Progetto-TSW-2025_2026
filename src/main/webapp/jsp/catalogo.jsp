@@ -173,7 +173,7 @@
 	</div>
 	
 	<script>const contextPath = '${pageContext.request.contextPath}';</script>
-	<script src="${pageContext.request.contextPath}/js/catalogo-search.js"></script>
+	<script defer src="${pageContext.request.contextPath}/js/catalogo-search.js"></script>
 </section>
 
 <jsp:include page="/jsp/footer.jsp" />
