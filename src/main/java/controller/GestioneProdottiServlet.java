@@ -2,7 +2,6 @@ package controller;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,154 +9,140 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
 import model.bean.ProdottoBean;
-import model.bean.UtenteBean;
+import model.bean.MacrocategoriaBean;
+import model.bean.MicrocategoriaBean;
 import model.dao.ProdottoDAO;
+import model.dao.MacrocategoriaDAO;
+import model.dao.MicrocategoriaDAO;
 
 @WebServlet("/Admin/GestioneProdotti")
 public class GestioneProdottiServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private ProdottoDAO prodottoDAO;
+    
+    // Inizializzazione dei DAO in modalità sicura anti-crash container v5+
+    private ProdottoDAO prodottoDAO = new ProdottoDAO();
+    private MacrocategoriaDAO macrocategoriaDAO = new MacrocategoriaDAO();
+    private MicrocategoriaDAO microcategoriaDAO = new MicrocategoriaDAO();
 
-    @Override
-    public void init() throws ServletException {
-        this.prodottoDAO = new ProdottoDAO();
-    }
-
-    // IL METODO GET GESTISCE SOLO LA LETTURA DEI DATI E IL RENDERING DELLE FORM
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
-            throws ServletException, IOException {
-        
-        // Controllo di sicurezza Admin
-        HttpSession session = request.getSession(false);
-        UtenteBean utente = (session != null) ? (UtenteBean) session.getAttribute("utenteLoggato") : null;
-        if (utente == null || !utente.isIsAdmin()) { 
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Accesso non autorizzato.");
-            return;
-        }
-
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
-        if (action == null) action = "list";
-
+        
         try {
-            if ("editForm".equals(action)) {
-                // Carica il prodotto per riempire il form di modifica
-                int idEdit = Integer.parseInt(request.getParameter("idProdotto"));
-                ProdottoBean prodDaModificare = prodottoDAO.doRetrieveByKey(idEdit);
-                
-                if (prodDaModificare != null) {
-                    request.setAttribute("prodotto", prodDaModificare);
-                    request.getRequestDispatcher("/jsp/admin/formProdotto.jsp").forward(request, response);
-                } else {
-                    session = request.getSession();
-                    session.setAttribute("messaggioErrore", "Strumento non trovato.");
-                    response.sendRedirect(request.getContextPath() + "/Admin/GestioneProdotti");
+            // 1. GESTIONE APERTURA FORM DI MODIFICA (Precompilato come da wireframe)
+            if (action != null && action.equalsIgnoreCase("editForm")) {
+                String idParam = request.getParameter("idProdotto");
+                if (idParam != null && !idParam.trim().isEmpty()) {
+                    int idProdotto = Integer.parseInt(idParam);
+                    ProdottoBean prodotto = prodottoDAO.doRetrieveByKey(idProdotto); 
+                    request.setAttribute("prodotto", prodotto);
                 }
-            } else {
-                // Caso di default: list
-                mostraLista(request, response);
+                // Inoltro corretto al nuovo file del form di modifica
+                request.getRequestDispatcher("/jsp/admin/modificaProdottoForm.jsp").forward(request, response);
+                return;
             }
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-            mostraListaConErrore(request, response, "Identificativo prodotto non valido.");
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new ServletException(e);
-        }
-    }
 
-    // IL METODO POST GESTISCE TUTTE REALI SCRITTURE/CANCELLAZIONI SUL DB (PRG)
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
-            throws ServletException, IOException {
-        
-        // Sicurezza sulle richieste POST
-        HttpSession session = request.getSession(false);
-        UtenteBean utente = (session != null) ? (UtenteBean) session.getAttribute("utenteLoggato") : null;
-        if (utente == null || !utente.isIsAdmin()) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN);
-            return;
-        }
-
-        String action = request.getParameter("action");
-        session = request.getSession(); // Recuperiamo la sessione per i Flash Attributes dei messaggi
-
-        // CASO 1: ELIMINAZIONE STRUMENTO (Spostato in POST per sicurezza architetturale)
-        if ("delete".equals(action)) {
-            try {
-                int idDel = Integer.parseInt(request.getParameter("idProdotto"));
-                prodottoDAO.doDelete(idDel);
-                session.setAttribute("messaggioSuccesso", "Prodotto rimosso con successo dal catalogo.");
-            } catch (NumberFormatException e) {
-                session.setAttribute("messaggioErrore", "Impossibile eliminare: ID non valido.");
-            } catch (SQLException e) {
-                // Gestione vincolo RESTRICT 
-                session.setAttribute("messaggioErrore", "Impossibile eliminare: lo strumento è presente in ordini già effettuati.");
-            }
-            response.sendRedirect(request.getContextPath() + "/Admin/GestioneProdotti");
-            return;
-        }
-
-        // CASO 2 & 3: INSERIMENTO O MODIFICA
-        try {
-            String idParam = request.getParameter("idProdotto");
+            // 2. LOGICA DI FILTRO E CARICAMENTO DEL CATALOGO PRINCIPALE ADMIN
+            String searchQuery = request.getParameter("searchQuery");
+            String categoria = request.getParameter("categoria");
+            String microcategoria = request.getParameter("microcategoria");
             String marca = request.getParameter("marca");
-            String modello = request.getParameter("modello");
-            String tipo = request.getParameter("tipo");
-            int quantita = Integer.parseInt(request.getParameter("quantita"));
-            String descrizione = request.getParameter("descrizione");
-            double prezzo = Double.parseDouble(request.getParameter("prezzo"));
-            int idMicro = Integer.parseInt(request.getParameter("idMicro"));
-            String urlImmagine = request.getParameter("urlImmagine");
+            String prezzoRange = request.getParameter("prezzo");
+            String ordina = request.getParameter("ordina");
 
-            ProdottoBean p = new ProdottoBean();
-            p.setMarca(marca);
-            p.setModello(modello);
-            p.setTipo(tipo);
-            p.setQuantita(quantita);
-            p.setDescrizione(descrizione);
-            p.setPrezzo(prezzo);
-            p.setIdMicro(idMicro);
-            p.setUrlImmagine(urlImmagine);
+            // Valori di default per evitare NullPointerException
+            if (categoria == null) categoria = "All";
+            if (microcategoria == null) microcategoria = "All";
+            if (marca == null) marca = "All";
+            if (prezzoRange == null) prezzoRange = "All";
+            if (ordina == null) ordina = "rilevanza";
+            if (searchQuery == null) searchQuery = "";
 
-            if ("update".equals(action)) {
-                p.setIdProdotto(Integer.parseInt(idParam));
-                prodottoDAO.doUpdate(p);
-                session.setAttribute("messaggioSuccesso", "Prodotto '" + modello + "' aggiornato con successo.");
-            } else { 
-                prodottoDAO.doSave(p);
-                session.setAttribute("messaggioSuccesso", "Nuovo strumento '" + modello + "' inserito correttamente.");
+            // Caricamento macro-categorie per filtri sidebar
+            List<MacrocategoriaBean> tutteLeMacro = macrocategoriaDAO.doRetrieveAll(); 
+            request.setAttribute("tutteLeMacro", tutteLeMacro);
+
+            // Caricamento micro-categorie associate alla macro selezionata
+            if (!categoria.equals("All")) {
+                int idMacro = Integer.parseInt(categoria);
+                List<MicrocategoriaBean> microDiQuestaMacro = microcategoriaDAO.doRetrieveByMacro(idMacro);
+                request.setAttribute("microDiQuestaMacro", microDiQuestaMacro);
             }
-            
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-            session.setAttribute("messaggioErrore", "Errore di formattazione: controlla che i campi Quantità e Prezzo siano numerici.");
-        } catch (SQLException e) {
-            e.printStackTrace();
-            session.setAttribute("messaggioErrore", "Errore nel salvataggio dei dati sul Database.");
-        }
 
-        // APPLICAZIONE RIGOROSA DEL PATTERN PRG
-        response.sendRedirect(request.getContextPath() + "/Admin/GestioneProdotti");
+            // Chiamata al metodo del ProdottoDAO per estrarre la lista filtrata
+            List<ProdottoBean> listaProdottiFiltrati = prodottoDAO.doRetrieveByFilters(categoria, microcategoria, marca, prezzoRange, searchQuery, ordina);
+            request.setAttribute("prodottiCatalogo", listaProdottiFiltrati); 
+
+            // Mantenimento dello stato dei filtri nella JSP
+            request.setAttribute("searchQuery", searchQuery);
+            request.setAttribute("selCategoria", categoria);
+            request.setAttribute("selMicrocategoria", microcategoria);
+            request.setAttribute("selMarca", marca);
+            request.setAttribute("selPrezzo", prezzoRange);
+            request.setAttribute("selOrdina", ordina);
+
+            // Inoltro alla griglia del catalogo principale admin
+            request.getRequestDispatcher("/jsp/admin/formProdotto.jsp").forward(request, response);
+
+        } catch (SQLException | NumberFormatException e) {
+            e.printStackTrace();
+            request.getSession().setAttribute("messaggioErrore", "Errore nel caricamento del catalogo amministrativo.");
+            response.sendRedirect(request.getContextPath() + "/jsp/admin/admin.jsp");
+        }
     }
 
-    private void mostraLista(HttpServletRequest request, HttpServletResponse response) 
-            throws ServletException, IOException {
-        List<ProdottoBean> prodotti = new ArrayList<>();
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        String action = request.getParameter("action");
+        HttpSession session = request.getSession();
+        
         try {
-            prodotti = prodottoDAO.doRetrieveAll();
-        } catch (SQLException e) {
+            if (action != null) {
+                // INSERIMENTO NUOVO PRODOTTO
+                if (action.equalsIgnoreCase("save")) {
+                    ProdottoBean p = new ProdottoBean();
+                    p.setModello(request.getParameter("modello"));
+                    p.setMarca(request.getParameter("marca"));
+                    p.setTipo(request.getParameter("tipo"));
+                    p.setPrezzo(Double.parseDouble(request.getParameter("prezzo")));
+                    p.setQuantita(Integer.parseInt(request.getParameter("quantita")));
+                    p.setDescrizione(request.getParameter("descrizione"));
+                    p.setUrlImmagine(request.getParameter("urlImmagine"));
+                    p.setIdMicro(Integer.parseInt(request.getParameter("idMicro")));
+                    
+                    prodottoDAO.doSave(p);
+                    session.setAttribute("messaggioSuccesso", "Prodotto inserito con successo!");
+                    
+                // AGGIORNAMENTO PRODOTTO ESISTENTE (Inviato dal form di modifica)
+                } else if (action.equalsIgnoreCase("update")) {
+                    ProdottoBean p = new ProdottoBean();
+                    p.setIdProdotto(Integer.parseInt(request.getParameter("idProdotto")));
+                    p.setModello(request.getParameter("modello"));
+                    p.setMarca(request.getParameter("marca"));
+                    p.setTipo(request.getParameter("tipo"));
+                    p.setPrezzo(Double.parseDouble(request.getParameter("prezzo")));
+                    p.setQuantita(Integer.parseInt(request.getParameter("quantita")));
+                    p.setDescrizione(request.getParameter("descrizione"));
+                    p.setUrlImmagine(request.getParameter("urlImmagine"));
+                    p.setIdMicro(Integer.parseInt(request.getParameter("idMicro")));
+                    
+                    prodottoDAO.doUpdate(p);
+                    session.setAttribute("messaggioSuccesso", "Prodotto aggiornato con successo!");
+                    
+                // CANCELLAZIONE PRODOTTO
+                } else if (action.equalsIgnoreCase("delete")) {
+                    int idProdotto = Integer.parseInt(request.getParameter("idProdotto"));
+                    prodottoDAO.doDelete(idProdotto);
+                    session.setAttribute("messaggioSuccesso", "Prodotto eliminato correttamente!");
+                }
+            }
+        } catch (SQLException | NumberFormatException e) {
             e.printStackTrace();
-            request.setAttribute("messaggioErrore", "Errore critico durante il recupero dei prodotti dal database.");
+            session.setAttribute("messaggioErrore", "Errore durante l'elaborazione dei dati del prodotto.");
         }
-        request.setAttribute("listaProdotti", prodotti);
-        request.getRequestDispatcher("/jsp/admin/admin.jsp").forward(request, response);
-    }
-
-    private void mostraListaConErrore(HttpServletRequest request, HttpServletResponse response, String msg) 
-            throws ServletException, IOException {
-        request.setAttribute("messaggioErrore", msg);
-        mostraLista(request, response);
+        
+        // Ritorna sempre al catalogo principale aggiornato
+        response.sendRedirect(request.getContextPath() + "/Admin/GestioneProdotti");
     }
 }
