@@ -1,4 +1,4 @@
-/* LAYOUT PRINCIPALE DASHBOARD */
+/*LAYOUT PRINCIPALE DASHBOARD*/
 .dashboard-container {
     display: flex;
     gap: 30px;
@@ -8,7 +8,7 @@
     align-items: flex-start;
 }
 
-/* SIDEBAR */
+/*SIDEBAR*/
 .dashboard-sidebar {
     flex: 0 0 280px;
     background-color: var(--bg-card);
@@ -59,7 +59,7 @@
     border-left-color: var(--accent-gold);
 }
 
-/* AREA CONTENUTO CENTRALE */
+/*AREA CONTENUTO CENTRALE*/
 .dashboard-content {
     flex: 1;
     background-color: var(--bg-card);
@@ -69,7 +69,7 @@
     min-height: 550px;
 }
 
-/* GESTIONE ANIMAZIONE CAMBIO SCHEDA */
+/*ANIMAZIONE CAMBIO SCHEDA*/
 .dashboard-section {
     display: none;
     animation: fadeIn 0.4s ease;
@@ -96,7 +96,7 @@
     font-size: 1.1rem;
 }
 
-/* CARDS PANORAMICA (MOCKUP) */
+/*PANORAMICA*/
 .overview-cards {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -156,7 +156,7 @@
     font-style: italic;
 }
 
-/* LISTE ELEMENTI RECENTI (ORDINI E TICKET) */
+/*LISTA RECENTI*/
 .recent-list {
     list-style: none;
     padding: 0;
@@ -193,7 +193,7 @@
     color: #888;
 }
 
-/* BADGES DI STATO (SPEDITO, IN LAVORAZIONE, ECC.) */
+/*BADGES DI STATO SPEDIZIONE*/
 .status-badge {
     padding: 5px 10px;
     border-radius: 20px;
@@ -217,7 +217,7 @@
     color: #b91c1c;
 }
 
-/* BOTTONE LINK PICCOLO ("Vedi tutti") */
+/*BOTTONE Vedi tutti*/
 .btn-link-small {
     background: none;
     border: none;
@@ -233,7 +233,7 @@
     color: var(--text-dark);
 }
 
-/* --- SEZIONE IMPOSTAZIONI ACCOUNT --- */
+/*IMPOSTAZIONI ACCOUNT*/
 .settings-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -284,7 +284,24 @@
     box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
 }
 
-/* Stile per i campi che l'utente non può modificare */
+.input-group-settings select {
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 1rem;
+    background-color: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.input-group-settings select:focus {
+    outline: none;
+    border-color: var(--accent-gold);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+}
+
+/*CAMPI UTENTE NON MODIFICABILI*/
 .disabled-group input {
     background-color: #f5f5f5;
     color: #888;
@@ -297,10 +314,109 @@
     box-shadow: none;
 }
 
+/*INDIRIZZI DI SPEDIZIONE*/
+.settings-card--full {
+    grid-column: 1 / -1;
+}
+
+.settings-card h4.indirizzi-subtitle {
+    margin-top: 30px;
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+    color: var(--text-dark);
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+
+.indirizzi-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px 0;
+}
+
+.indirizzo-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.indirizzo-item:last-child {
+    border-bottom: none;
+}
+
+.indirizzo-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.indirizzo-via {
+    font-weight: bold;
+    color: var(--text-dark);
+    font-size: 1rem;
+}
+
+.indirizzo-citta, .indirizzo-telefono {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.indirizzo-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.btn-danger-small {
+    background: none;
+    border: 1px solid #b91c1c;
+    color: #b91c1c;
+    font-size: 0.85rem;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+.btn-danger-small:hover {
+    background-color: #fee2e2;
+}
+
+.indirizzi-form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0 20px;
+}
+
 /* RESPONSIVE */
 @media screen and (max-width: 900px) {
-    .dashboard-container { flex-direction: column; }
-    .dashboard-sidebar { flex: none; width: 100%; position: static; }
-    .overview-cards { grid-template-columns: 1fr; }
-    .dashboard-content { padding: 20px; }
+    .dashboard-container { 
+    	flex-direction: column; 
+    }
+    .dashboard-sidebar { 
+    	flex: none; 
+    	width: 100%; 
+    	position: static; 
+    }
+    .overview-cards { 
+    	grid-template-columns: 1fr; 
+    }
+    .dashboard-content { 
+    	padding: 20px; 
+    }
+    .indirizzi-form-grid { 
+    	grid-template-columns: 1fr; 
+    }
+    .indirizzo-item { 
+    	flex-direction: column; 
+    	align-items: flex-start; 
+    	gap: 10px; 
+    }
+    .indirizzo-actions { 
+    	width: 100%; 
+    	justify-content: flex-end; 
+    }
 }

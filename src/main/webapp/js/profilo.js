@@ -4,16 +4,16 @@ document.addEventListener("DOMContentLoaded", function() {
 
     menuLinks.forEach(link => {
         link.addEventListener("click", function(e) {
-            e.preventDefault(); // Evita che il browser "salti" in cima alla pagina
+            e.preventDefault();
 
-            // 1. Rimuove lo stato attivo da tutti i link e nasconde tutte le sezioni
+            //Rimuove lo stato attivo da tutti i link e nasconde tutte le sezioni
             menuLinks.forEach(l => l.classList.remove("active"));
             sections.forEach(sec => sec.classList.remove("active"));
 
-            // 2. Aggiunge lo stato attivo al bottone cliccato
+            //Aggiunge lo stato attivo al bottone cliccato
             this.classList.add("active");
 
-            // 3. Mostra la sezione collegata tramite il "data-target"
+            //Mostra la sezione collegata tramite il "data-target"
             const targetId = this.getAttribute("data-target");
             const targetSection = document.getElementById(targetId);
             if (targetSection) {
@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 	
-	// --- GESTIONE FORM IMPOSTAZIONI VIA AJAX (Stile form.css) ---
+	//GESTIONE FORM IMPOSTAZIONI VIA AJAX
 	    
 	    const formAggiornaDati = document.getElementById("formAggiornaDati");
 	    if (formAggiornaDati) {
@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	            e.preventDefault(); 
 	            const msgDati = document.getElementById("msgDati");
 	            msgDati.textContent = "Salvataggio in corso..."; 
-	            msgDati.className = ""; // Pulisce le classi precedenti
+	            msgDati.className = "";
 
 	            const params = new URLSearchParams(new FormData(this));
 	            params.append('action', 'aggiornaDati');
@@ -40,13 +40,12 @@ document.addEventListener("DOMContentLoaded", function() {
 	            .then(data => {
 	                msgDati.textContent = data.message;
 	                if (data.success) {
-	                    msgDati.className = "success-msg-js"; // Usa la nuova classe verde
+	                    msgDati.className = "success-msg-js";
 	                    
-	                    // Aggiorna i testi nella panoramica in tempo reale
 	                    document.querySelector("#panoramica p:nth-child(1) strong").nextSibling.textContent = " " + document.getElementById("nomeEdit").value;
 	                    document.querySelector("#panoramica p:nth-child(2) strong").nextSibling.textContent = " " + document.getElementById("cognomeEdit").value;
 	                } else {
-	                    msgDati.className = "error-msg-js"; // Usa la TUA classe di form.css
+	                    msgDati.className = "error-msg-js";
 	                }
 	            })
 	            .catch(() => {
@@ -71,12 +70,12 @@ document.addEventListener("DOMContentLoaded", function() {
 	            const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 	            if (!regex.test(newPwd)) {
 	                msgPassword.textContent = "La password deve avere min. 8 caratteri, una lettera e un numero.";
-	                msgPassword.className = "error-msg-js"; // Usa la TUA classe
+	                msgPassword.className = "error-msg-js";
 	                return;
 	            }
 	            if (newPwd !== confPwd) {
 	                msgPassword.textContent = "Le nuove password non coincidono.";
-	                msgPassword.className = "error-msg-js"; // Usa la TUA classe
+	                msgPassword.className = "error-msg-js";
 	                return;
 	            }
 
@@ -91,10 +90,10 @@ document.addEventListener("DOMContentLoaded", function() {
 	            .then(data => {
 	                msgPassword.textContent = data.message;
 	                if (data.success) {
-	                    msgPassword.className = "success-msg-js"; // Usa la nuova classe verde
+	                    msgPassword.className = "success-msg-js";
 	                    formCambiaPassword.reset(); 
 	                } else {
-	                    msgPassword.className = "error-msg-js"; // Usa la TUA classe
+	                    msgPassword.className = "error-msg-js";
 	                }
 	            })
 	            .catch(() => {
@@ -104,7 +103,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	        });
 	    }
 		
-		// --- VALIDAZIONE ON BLUR PER IL CAMBIO PASSWORD ---
+		//VALIDAZIONE ON BLUR PER IL CAMBIO PASSWORD
 		    
 		    const newPwdInput = document.getElementById("newPassword");
 		    const confPwdInput = document.getElementById("confirmNewPassword");
@@ -112,7 +111,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		    const regexPwd = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
 		    if (newPwdInput && confPwdInput) {
-		        // Controllo quando si esce dal campo "Nuova Password"
+		        
 		        newPwdInput.addEventListener("blur", function() {
 		            if (this.value !== "") {
 		                if (!regexPwd.test(this.value)) {
@@ -128,7 +127,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		            }
 		        });
 
-		        // Controllo quando si esce dal campo "Conferma Nuova Password"
+		        
 		        confPwdInput.addEventListener("blur", function() {
 		            if (this.value !== "") {
 		                if (this.value !== newPwdInput.value) {
@@ -143,8 +142,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		                }
 		            }
 		        });
-
-		        // Pulisce il messaggio di errore appena l'utente ricomincia a digitare
+				
 		        newPwdInput.addEventListener("input", () => { msgPasswordBlur.textContent = ""; });
 		        confPwdInput.addEventListener("input", () => { msgPasswordBlur.textContent = ""; });
 		    }
