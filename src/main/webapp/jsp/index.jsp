@@ -6,6 +6,8 @@
 
 <jsp:include page="/jsp/header.jsp" />
 
+<main>
+
 <section class="hero-carousel" id="heroCarousel">
     <div class="carousel-slide slide-corda active">
         <h2>Corda</h2>
