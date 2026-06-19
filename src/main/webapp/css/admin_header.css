@@ -1,0 +1,102 @@
+@charset "UTF-8";
+
+/* Header base */
+.main-admin-header {
+    background-color: #111111;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+}
+
+.admin-nav-container {
+    width: 100%;
+    max-width: 100%; 
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    padding: 15px 30px; 
+    box-sizing: border-box;
+}
+
+.admin-brand a {
+    display: flex;
+    align-items: center;
+    gap: 10px; 
+    font-weight: bold;
+    font-size: 1.6rem;
+    text-decoration: none;
+    font-family: Arial, sans-serif;
+}
+
+.admin-logo-img {
+    height: 40px; 
+}
+
+.brand-text {
+    color: #ffffff; 
+}
+
+.brand-text span {
+    color: #D4AF37; 
+}
+
+.admin-menu-links {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 25px; 
+    margin: 0;
+    padding: 0;
+}
+
+.admin-menu-links li a {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.admin-menu-links li a:hover {
+    color: #e5b82e;
+}
+
+.btn-logout-admin {
+    background-color: #d9534f;
+    color: #ffffff !important; 
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    justify-content: flex-end;
+}
+
+.btn-logout-admin:hover {
+    background-color: #c9302c;
+}
+
+/* ==========================================================================
+   RESPONSIVITÀ HEADER (Tablet & Smartphone)
+   ========================================================================== */
+@media (max-width: 850px) {
+    .admin-nav-container {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px;
+    }
+    
+    .admin-menu-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+    }
+    
+    .admin-user-actions {
+        width: 100%;
+        text-align: center;
+        margin-top: 5px;
+    }
+}
