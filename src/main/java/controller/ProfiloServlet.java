@@ -13,9 +13,11 @@ import javax.servlet.http.HttpSession;
 import model.bean.UtenteBean;
 import model.bean.OrdineBean;
 import model.bean.TicketBean;
+import model.bean.DatiSpedizioneBean;
 import model.dao.OrdineDAO;
 import model.dao.TicketDAO;
 import model.dao.UtenteDAO;
+import model.dao.DatiSpedizioneDAO;
 
 @WebServlet("/Profilo")
 public class ProfiloServlet extends HttpServlet {
@@ -23,12 +25,14 @@ public class ProfiloServlet extends HttpServlet {
     private OrdineDAO ordineDAO;
     private TicketDAO ticketDAO;
     private UtenteDAO utenteDAO;
+    private DatiSpedizioneDAO spedizioneDAO;
 
     @Override
     public void init() throws ServletException {
         this.ordineDAO = new OrdineDAO();
         this.ticketDAO = new TicketDAO();
         this.utenteDAO = new UtenteDAO();
+        this.spedizioneDAO = new DatiSpedizioneDAO();
     }
 
     @Override
@@ -38,29 +42,28 @@ public class ProfiloServlet extends HttpServlet {
         HttpSession session = request.getSession();
         UtenteBean utente = (UtenteBean) session.getAttribute("utenteLoggato");
 
-        // Sicurezza: se non sei loggato, non puoi vedere il profilo
         if (utente == null) {
             response.sendRedirect(request.getContextPath() + "/Login");
             return;
         }
 
         try {
-            // Sfruttiamo i DAO per recuperare tutti gli ordini e ticket dell'utente
             List<OrdineBean> tuttiOrdini = ordineDAO.doRetrieveByUtente(utente.getIdUtente()); 
             List<TicketBean> tuttiTicket = ticketDAO.doRetrieveByUtente(utente.getIdUtente()); 
+            List<DatiSpedizioneBean> datiSpedizione = spedizioneDAO.doRetrieveByUtente(utente.getIdUtente());
 
-            // Estrapoliamo solo i primi 3 per la vista compatta della panoramica
             int maxOrdini = Math.min(tuttiOrdini.size(), 3);
             request.setAttribute("ordiniRecenti", tuttiOrdini.subList(0, maxOrdini));
 
             int maxTicket = Math.min(tuttiTicket.size(), 3);
             request.setAttribute("ticketRecenti", tuttiTicket.subList(0, maxTicket));
+            
+            request.setAttribute("datiSpedizione", datiSpedizione);
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        // Dopo aver caricato i dati, andiamo alla pagina
         request.getRequestDispatcher("/jsp/common/profilo.jsp").forward(request, response);
     }
     
@@ -82,42 +85,37 @@ public class ProfiloServlet extends HttpServlet {
         String action = request.getParameter("action");
 
         try {
-            // --- AZIONE 1: AGGIORNAMENTO DATI PERSONALI ---
+            //AGGIORNAMENTO DATI PERSONALI
             if ("aggiornaDati".equals(action)) {
                 String nome = request.getParameter("nome");
                 String cognome = request.getParameter("cognome");
                 String dataNascitaStr = request.getParameter("dataNascita");
 
-                // Aggiorniamo solo i campi modificabili nel Bean
                 utente.setNome(nome.trim());
                 utente.setCognome(cognome.trim());
                 if (dataNascitaStr != null && !dataNascitaStr.trim().isEmpty()) {
                     utente.setDataDiNascita(java.sql.Date.valueOf(dataNascitaStr));
                 }
 
-                // Chiamiamo il metodo di Update del DAO (che aggiorna l'intera riga nel DB)
                 utenteDAO.doUpdate(utente); 
                 
-                // Aggiorniamo l'utente in sessione per far apparire le modifiche in tempo reale sulla pagina
                 session.setAttribute("utenteLoggato", utente);
 
                 response.getWriter().write("{\"success\": true, \"message\": \"Dati aggiornati con successo!\"}");
                 return;
             }
 
-            // --- AZIONE 2: CAMBIO PASSWORD ---
+            //CAMBIO PASSWORD
             if ("cambiaPassword".equals(action)) {
                 String oldPassword = request.getParameter("oldPassword");
                 String newPassword = request.getParameter("newPassword");
                 
-                // 1. Verifichiamo che la vecchia password coincida
                 String hashedOld = util.PasswordHashing.toHash(oldPassword);
                 if (!hashedOld.equals(utente.getPassword())) {
                     sendJsonError(response, "La password attuale inserita non è corretta.");
                     return;
                 }
                 
-                // 2. Hash della nuova password e salvataggio
                 String hashedNew = util.PasswordHashing.toHash(newPassword);
                 utente.setPassword(hashedNew);
                 
@@ -127,6 +125,35 @@ public class ProfiloServlet extends HttpServlet {
                 response.getWriter().write("{\"success\": true, \"message\": \"Password modificata con successo!\"}");
                 return;
             }
+            
+         //AGGIUNGI INDIRIZZO
+            if ("aggiungiIndirizzo".equals(action)) {
+                DatiSpedizioneBean ind = new DatiSpedizioneBean();
+                ind.setIdUtente(utente.getIdUtente());
+                ind.setVia(request.getParameter("via").trim());
+                ind.setNumeroCivico(request.getParameter("numeroCivico").trim());
+                ind.setCitta(request.getParameter("citta").trim());
+                ind.setProvincia(request.getParameter("provincia").trim().toUpperCase());
+                ind.setCap(request.getParameter("cap").trim());
+                String tel = request.getParameter("telefono");
+                ind.setTelefono(tel != null ? tel.trim() : "");
+                spedizioneDAO.doSave(ind);
+                response.getWriter().write("{\"success\": true, \"message\": \"Indirizzo aggiunto con successo!\"}");
+                return;
+            }
+
+            //ELIMINA INDIRIZZO
+            if ("eliminaIndirizzo".equals(action)) {
+                int idSpedizione = Integer.parseInt(request.getParameter("idSpedizione"));
+                DatiSpedizioneBean ind = spedizioneDAO.doRetrieveByKey(idSpedizione);
+                if (ind != null && ind.getIdUtente() == utente.getIdUtente()) {
+                    spedizioneDAO.doDelete(idSpedizione);
+                    response.getWriter().write("{\"success\": true, \"message\": \"Indirizzo eliminato.\"}");
+                } else {
+                    sendJsonError(response, "Indirizzo non trovato o non autorizzato.");
+                }
+                return;
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -134,7 +161,6 @@ public class ProfiloServlet extends HttpServlet {
         }
     }
 
-    // Metodo di supporto per gli errori JSON
     private void sendJsonError(HttpServletResponse response, String message) throws IOException {
         response.getWriter().write("{\"success\": false, \"message\": \"" + message + "\"}");
     }

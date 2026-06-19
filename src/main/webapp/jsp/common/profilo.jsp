@@ -56,8 +56,18 @@
                         <button class="btn-edit" aria-label="Modifica indirizzi" onclick="document.querySelector('[data-target=\'impostazioni\']').click()">✎</button>
                     </div>
                     <div class="card-body">
-                        <p class="text-empty">Nessun indirizzo di spedizione salvato.</p>
-                    </div>
+    					<c:choose>
+        					<c:when test="${empty datiSpedizione}">
+            					<p class="text-empty">Nessun indirizzo di spedizione salvato.</p>
+        					</c:when>
+        					<c:otherwise>
+            					<c:forEach var="ind" items="${datiSpedizione}" end="0">
+                					<p><strong>${ind.via}, ${ind.numeroCivico}</strong></p>
+                					<p>${ind.citta} (${ind.provincia}) &mdash; ${ind.cap}</p>
+            					</c:forEach>
+        					</c:otherwise>
+    					</c:choose>
+					</div>
                 </div>
 
                 <div class="overview-card">
@@ -187,6 +197,132 @@
                         <button type="submit" class="btn-gold form-btn">Aggiorna Password</button>
                     </form>
                 </div>
+                
+                <div class="settings-card settings-card--full">
+    				<h3>Indirizzi di Spedizione</h3>
+
+    					<c:choose>
+        					<c:when test="${empty datiSpedizione}">
+            					<p class="text-empty">Nessun indirizzo di spedizione salvato.</p>
+        					</c:when>
+        					<c:otherwise>
+            					<ul class="indirizzi-list">
+                					<c:forEach var="ind" items="${datiSpedizione}">
+                    					<li class="indirizzo-item">
+                        					<div class="indirizzo-info">
+                            					<span class="indirizzo-via">${ind.via}, ${ind.numeroCivico}</span>
+                            					<span class="indirizzo-citta">${ind.citta} (${ind.provincia}) &mdash; ${ind.cap}</span>
+                            						<c:if test="${not empty ind.telefono}">
+                                						<span class="indirizzo-telefono">Tel: ${ind.telefono}</span>
+                            						</c:if>
+                        					</div>
+                        					<div class="indirizzo-actions">
+                            					<form action="${pageContext.request.contextPath}/Profilo" method="POST">
+                                					<input type="hidden" name="action" value="eliminaIndirizzo">
+                                					<input type="hidden" name="idSpedizione" value="${ind.idSpedizione}">
+                                					<button type="submit" class="btn-danger-small" onclick="return confirm('Eliminare questo indirizzo?')">Elimina</button>
+                            					</form>
+                        					</div>
+                    					</li>
+                					</c:forEach>
+            					</ul>
+        					</c:otherwise>
+    					</c:choose>
+
+    					<h4 class="indirizzi-subtitle">Aggiungi un nuovo indirizzo</h4>
+    					<form id="formAggiungiIndirizzo" action="${pageContext.request.contextPath}/Profilo" method="POST">
+        				<input type="hidden" name="action" value="aggiungiIndirizzo">
+        					<div class="indirizzi-form-grid">
+            					<div class="input-group-settings">
+                					<label for="via">Via / Piazza</label>
+                					<input type="text" id="via" name="via" placeholder="Es. Via Roma" required>
+            					</div>
+            					<div class="input-group-settings">
+                					<label for="numeroCivico">Numero civico</label>
+                					<input type="text" id="numeroCivico" name="numeroCivico" placeholder="Es. 12" required>
+            					</div>
+            					<div class="input-group-settings">
+                					<label for="citta">Città</label>
+                					<input type="text" id="citta" name="citta" placeholder="Es. Napoli" required>
+            					</div>
+            					<div class="input-group-settings">
+                					<label for="provincia">Provincia</label>
+                					<input type="text" id="provincia" name="provincia" placeholder="Es. NA" maxlength="2" required>
+            					</div>
+            					<div class="input-group-settings">
+                					<label for="cap">CAP</label>
+                					<input type="text" id="cap" name="cap" placeholder="Es. 80053" pattern="\d{5}" required>
+            					</div>
+            					<div class="input-group-settings">
+                					<label for="telefono">Telefono</label>
+                					<input type="tel" id="telefono" name="telefono" placeholder="Es. 3331234567">
+            					</div>
+        					</div>
+        					<div id="msgIndirizzo"></div>
+        					<button type="submit" class="btn-gold form-btn">Aggiungi Indirizzo</button>
+    					</form>
+				</div>
+				
+				<div class="settings-card settings-card--full">
+    				<h3>Metodi di Pagamento</h3>
+
+    				<c:choose>
+        				<c:when test="${empty datiPagamento}">
+            				<p class="text-empty">Nessun metodo di pagamento salvato.</p>
+        				</c:when>
+        				<c:otherwise>
+            				<ul class="indirizzi-list">
+                				<c:forEach var="carta" items="${datiPagamento}">
+                    				<li class="indirizzo-item">
+                        				<div class="indirizzo-info">
+                            				<span class="indirizzo-via">${carta.circuitoCarta} &mdash; ${carta.numeroCartaOscurato}</span>
+                            				<span class="indirizzo-citta">Intestatario: ${carta.intestatario}</span>
+                            				<span class="indirizzo-telefono">Scadenza: <fmt:formatDate value="${carta.scadenzaCarta}" pattern="MM/yyyy" /></span>
+                        				</div>
+                        				<div class="indirizzo-actions">
+                            				<form action="${pageContext.request.contextPath}/Profilo" method="POST">
+                                				<input type="hidden" name="action" value="eliminaPagamento">
+                                				<input type="hidden" name="idPagamento" value="${carta.idPagamento}">
+                                				<button type="submit" class="btn-danger-small"onclick="return confirm('Rimuovere questo metodo di pagamento?')">Rimuovi</button>
+                            				</form>
+                        				</div>
+                    				</li>
+                				</c:forEach>
+            				</ul>
+        				</c:otherwise>
+    				</c:choose>
+
+    				<h4 class="indirizzi-subtitle">Aggiungi una carta</h4>
+    					<form id="formAggiungiPagamento" action="${pageContext.request.contextPath}/Profilo" method="POST">
+        					<input type="hidden" name="action" value="aggiungiPagamento">
+        						<div class="indirizzi-form-grid">
+            						<div class="input-group-settings">
+                						<label for="circuitoCarta">Circuito</label>
+                							<select id="circuitoCarta" name="circuitoCarta" required>
+                    							<option value="" disabled selected>Seleziona...</option>
+                    							<option value="Visa">Visa</option>
+                    							<option value="Mastercard">Mastercard</option>
+                    							<option value="American Express">American Express</option>
+                    							<option value="PayPal">PayPal</option>
+                							</select>
+            						</div>
+            						<div class="input-group-settings">
+                						<label for="numeroCarta">Numero carta</label>
+                							<input type="text" id="numeroCarta" name="numeroCarta" placeholder="Es. 1234 5678 9012 3456" pattern="\d{4}\s?\d{4}\s?\d{4}\s?\d{4}" maxlength="19" required>
+            						</div>
+            						<div class="input-group-settings">
+                						<label for="intestatario">Intestatario</label>
+                							<input type="text" id="intestatario" name="intestatario" placeholder="Es. Mario Rossi" required>
+            						</div>
+            							<div class="input-group-settings">
+                							<label for="scadenzaCarta">Scadenza</label>
+                							<input type="month" id="scadenzaCarta" name="scadenzaCarta" required>
+            							</div>
+        							</div>
+        							<div id="msgPagamento"></div>
+        								<button type="submit" class="btn-gold form-btn">Aggiungi Carta</button>
+    					</form>
+				</div>	                
             </div>
         </div>
 
