@@ -130,3 +130,11 @@
     margin-top: 5px;
     font-weight: 600;
 }
+
+.success-msg-js {
+    display: block;
+    color: #166534;
+    font-size: 0.85rem;
+    margin-top: 5px;
+    font-weight: 600;
+}
