@@ -12,11 +12,12 @@ import javax.servlet.http.HttpSession;
 import model.bean.ProdottoBean;
 import model.bean.MacrocategoriaBean;
 import model.bean.MicrocategoriaBean;
+import model.bean.RecensioneBean;
 import model.dao.ProdottoDAO;
 import model.dao.MacrocategoriaDAO;
 import model.dao.MicrocategoriaDAO;
 import model.dao.RecensioneDAO;
-import model.bean.RecensioneBean;
+
 
 @WebServlet("/Catalogo")
 public class CatalogoServlet extends HttpServlet {
