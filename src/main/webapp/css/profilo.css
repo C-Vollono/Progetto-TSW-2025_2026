@@ -1,0 +1,306 @@
+/* LAYOUT PRINCIPALE DASHBOARD */
+.dashboard-container {
+    display: flex;
+    gap: 30px;
+    padding: 40px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    align-items: flex-start;
+}
+
+/* SIDEBAR */
+.dashboard-sidebar {
+    flex: 0 0 280px;
+    background-color: var(--bg-card);
+    padding: 30px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border-top: 4px solid var(--accent-gold);
+    position: sticky;
+    top: 100px;
+    height: fit-content;
+    align-self: flex-start;
+    margin-bottom: 40px;
+    z-index: 10;
+}
+
+.dashboard-sidebar h3 {
+    font-size: 1.5rem;
+    color: var(--text-dark);
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.dashboard-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.dashboard-menu li {
+    margin-bottom: 10px;
+}
+
+.menu-link {
+    display: block;
+    padding: 12px 15px;
+    color: var(--text-dark);
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+}
+
+.menu-link:hover, .menu-link.active {
+    background-color: #f8f9fa;
+    color: var(--accent-gold);
+    border-left-color: var(--accent-gold);
+}
+
+/* AREA CONTENUTO CENTRALE */
+.dashboard-content {
+    flex: 1;
+    background-color: var(--bg-card);
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    min-height: 550px;
+}
+
+/* GESTIONE ANIMAZIONE CAMBIO SCHEDA */
+.dashboard-section {
+    display: none;
+    animation: fadeIn 0.4s ease;
+}
+
+.dashboard-section.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.dashboard-section h2 {
+    font-size: 2rem;
+    color: var(--text-dark);
+    margin-bottom: 10px;
+}
+
+.section-subtitle {
+    color: #666;
+    margin-bottom: 30px;
+    font-size: 1.1rem;
+}
+
+/* CARDS PANORAMICA (MOCKUP) */
+.overview-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+}
+
+.overview-card {
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 25px;
+    background-color: #fff;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.card-header h3 {
+    font-size: 1.3rem;
+    color: var(--text-dark);
+}
+
+.btn-edit {
+    background: none;
+    border: none;
+    color: var(--accent-gold);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.btn-edit:hover {
+    transform: scale(1.1);
+}
+
+.card-body p {
+    margin-bottom: 12px;
+    color: #444;
+    line-height: 1.5;
+    overflow-wrap: break-word;
+}
+
+.card-body strong {
+    color: var(--text-dark);
+    font-weight: 700;
+    margin-right: 8px;
+}
+
+.text-empty {
+    color: #888;
+    font-style: italic;
+}
+
+/* LISTE ELEMENTI RECENTI (ORDINI E TICKET) */
+.recent-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.recent-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.recent-list li:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.recent-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.recent-title {
+    font-weight: bold;
+    color: var(--text-dark);
+    font-size: 1rem;
+}
+
+.recent-date {
+    font-size: 0.85rem;
+    color: #888;
+}
+
+/* BADGES DI STATO (SPEDITO, IN LAVORAZIONE, ECC.) */
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.status-success {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+.status-warning {
+    background-color: #fef08a;
+    color: #854d0e;
+}
+
+.status-danger {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+/* BOTTONE LINK PICCOLO ("Vedi tutti") */
+.btn-link-small {
+    background: none;
+    border: none;
+    color: var(--accent-gold);
+    font-size: 0.9rem;
+    text-decoration: none; /* Rimuove la sottolineatura */
+    cursor: pointer;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.btn-link-small:hover {
+    color: var(--text-dark);
+}
+
+/* --- SEZIONE IMPOSTAZIONI ACCOUNT --- */
+.settings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 30px;
+}
+
+.settings-card {
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+}
+
+.settings-card h3 {
+    margin-bottom: 25px;
+    color: var(--text-dark);
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+    font-size: 1.3rem;
+}
+
+.input-group-settings {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 18px;
+}
+
+.input-group-settings label {
+    font-weight: bold;
+    margin-bottom: 6px;
+    color: #444;
+    font-size: 0.9rem;
+}
+
+.input-group-settings input {
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.input-group-settings input:focus {
+    outline: none;
+    border-color: var(--accent-gold);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+}
+
+/* Stile per i campi che l'utente non può modificare */
+.disabled-group input {
+    background-color: #f5f5f5;
+    color: #888;
+    cursor: not-allowed;
+    border-color: #eee;
+}
+
+.disabled-group input:focus {
+    border-color: #eee;
+    box-shadow: none;
+}
+
+/* RESPONSIVE */
+@media screen and (max-width: 900px) {
+    .dashboard-container { flex-direction: column; }
+    .dashboard-sidebar { flex: none; width: 100%; position: static; }
+    .overview-cards { grid-template-columns: 1fr; }
+    .dashboard-content { padding: 20px; }
+}

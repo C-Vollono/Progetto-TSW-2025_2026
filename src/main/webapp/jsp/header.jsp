@@ -47,7 +47,7 @@
 						</button>
 						
 						<div class="user-dropdown-menu">
-							<a href="${pageContext.request.contextPath}/jsp/common/profilo.jsp">Il mio Profilo</a>
+							<a href="${pageContext.request.contextPath}/Profilo">Il mio Profilo</a>
 							
 							<c:if test="${sessionScope.ruolo == 'admin'}">
 								<a href="${pageContext.request.contextPath}/jsp/admin/admin.jsp">Pannello Admin</a>
