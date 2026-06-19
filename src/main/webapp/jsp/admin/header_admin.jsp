@@ -8,24 +8,31 @@
     
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/style.css">
     
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/admin-style.css">
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/admin_header.css">
 </head>
 <body>
 
-<header class="main-header">
-    <div class="logo">
-			<a href="${pageContext.request.contextPath}/Home">
-				<img src="${pageContext.request.contextPath}/images/chiaveViolinoheader.png" alt="Icona ToneMarket" class="logo-img">
-				<div>Tone<span>Market</span></div>
-			</a>
-		</div>
-        </div>
+<header class="main-admin-header">
+    <div class="admin-nav-container">
+        
+      <div class="admin-brand">
+    <a href="${pageContext.request.contextPath}/Home">
+        <img src="${pageContext.request.contextPath}/images/chiaveViolinoheader.png" alt="Icona" class="admin-logo-img">
+        <!-- Racchiudiamo tutto il testo in uno span principale -->
+        <span class="brand-text">Tone<span>Market</span></span>
+    </a>
+</div>
+        
         <ul class="admin-menu-links">
             <li><a href="${pageContext.request.contextPath}/jsp/admin/admin.jsp">Dashboard</a></li>
             <li><a href="${pageContext.request.contextPath}/Admin/GestioneProdotti">Catalogo Manager</a></li>
             <li><a href="${pageContext.request.contextPath}/GestioneOrdini">Ordini Manager</a></li>
             <li><a href="${pageContext.request.contextPath}/jsp/admin/ordiniAdmin.jsp">Ticket Assistenza</a></li>
-            <li><a href="${pageContext.request.contextPath}/Logout" class="admin-logout-link">Esci</a></li>
         </ul>
+
+        <div class="admin-user-actions">
+            <a href="${pageContext.request.contextPath}/Logout" class="btn-logout-admin">Logout</a>
+        </div>
+
     </div>
 </header>

@@ -3,8 +3,9 @@
 
 <jsp:include page="header_admin.jsp" />
 
-<main class="admin-dashboard-container">
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/admin_dashboard.css">
 
+<main class="admin-dashboard-container">
     <h1 class="admin-title">Pannello di Controllo</h1>
 
     <section class="admin-grid-buttons">
@@ -18,7 +19,6 @@
             Gestisci Ticket Assistenza
         </a>
     </section>
-
 </main>
 
 <jsp:include page="/jsp/footer.jsp" />
