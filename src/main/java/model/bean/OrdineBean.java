@@ -13,7 +13,6 @@ public class OrdineBean implements Serializable {
     private Timestamp dataOrdine; // Data_ordine DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
     private double totaleOrdine; // Totale_ordine DECIMAL(10, 2) NOT NULL
     private String statoOrdine; // Stato_ordine VARCHAR(30) NOT NULL DEFAULT 'IN_ATTESA'
-    
     // Dati Spedizione congelati
     private String spedizioneNomeCognome; // Spedizione_Nome_Cognome VARCHAR(100) NOT NULL
     private String spedizioneVia; // Spedizione_Via VARCHAR(100) NOT NULL

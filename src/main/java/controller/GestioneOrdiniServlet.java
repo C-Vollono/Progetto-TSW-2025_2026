@@ -13,17 +13,20 @@ import javax.servlet.http.HttpSession;
 import model.bean.OrdineBean;
 import model.bean.UtenteBean;
 import model.dao.OrdineDAO;
+import model.dao.DettagliOrdineDAO;
+import model.bean.DettaglioOrdineBean;
 
 @WebServlet("/Admin/GestioneOrdini")
 public class GestioneOrdiniServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private OrdineDAO ordineDAO;
+    private DettagliOrdineDAO dettagliOrdineDAO;
 
     @Override
     public void init() throws ServletException {
         this.ordineDAO = new OrdineDAO();
+        this.dettagliOrdineDAO = new DettagliOrdineDAO(); // <-- AGGIUNTO
     }
-
     // IL METODO GET SI OCCUPA SOLO DI LETTURA E FILTRAGGIO (IDEMPOTENTE)
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
@@ -37,6 +40,44 @@ public class GestioneOrdiniServlet extends HttpServlet {
             return;
         }
 
+        String action = request.getParameter("action");
+
+        // ==========================================
+        // NUOVO SCENARIO: VISUALIZZAZIONE DETTAGLI
+        // ==========================================
+        if ("dettagli".equals(action)) {
+            try {
+                int idOrdine = Integer.parseInt(request.getParameter("idOrdine"));
+                
+                // 1. Recuperiamo i dati generali dell'ordine (Spedizione, Totale, Stato, ecc...)
+                OrdineBean ordine = ordineDAO.doRetrieveByKey(idOrdine);
+                
+                if (ordine != null) {
+                    // 2. Recuperiamo la lista degli articoli associati a quell'ordine dal DettagliOrdineDAO
+                    List<DettaglioOrdineBean> articoliOrdine = dettagliOrdineDAO.doRetrieveByOrdine(idOrdine);
+                    
+                    // 3. Passiamo tutto alla JSP tramite la request
+                    request.setAttribute("ordine", ordine);
+                    request.setAttribute("articoliOrdine", articoliOrdine);
+                    
+                    // 4. Inoltriamo alla pagina dei dettagli dell'ordine per l'admin
+                    request.getRequestDispatcher("/jsp/admin/dettaglioOrdineAdmin.jsp").forward(request, response);
+                    return; // Interrompiamo il metodo qui
+                } else {
+                    request.setAttribute("messaggioErrore", "Ordine non trovato nel sistema.");
+                }
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+                request.setAttribute("messaggioErrore", "Identificativo ordine non valido.");
+            } catch (SQLException e) {
+                e.printStackTrace();
+                request.setAttribute("messaggioErrore", "Errore nel recupero dei dettagli dal database.");
+            }
+        }
+
+        // =========================================================================
+        // IL TUO CODICE PREESISTENTE PER IL FILTRAGGIO GLOBALE (Resta invariato)
+        // =========================================================================
         String dataInizio = request.getParameter("dataInizio");
         String dataFine = request.getParameter("dataFine");
         String filtroCliente = request.getParameter("filtroCliente");
@@ -48,7 +89,6 @@ public class GestioneOrdiniServlet extends HttpServlet {
             boolean haDate = (dataInizio != null && !dataInizio.trim().isEmpty() && dataFine != null && !dataFine.trim().isEmpty());
             boolean haCliente = (filtroCliente != null && !filtroCliente.trim().isEmpty());
 
-            // SCENARIO 1: Filtro Combinato (ID Cliente + Intervallo Date)
             if (haCliente && haDate) {
                 try {
                     int idCliente = Integer.parseInt(filtroCliente.trim());
@@ -62,7 +102,6 @@ public class GestioneOrdiniServlet extends HttpServlet {
                     listaOrdini = ordineDAO.doRetrieveAll();
                 }
             }
-            // SCENARIO 2: Solo Filtro ID Cliente
             else if (haCliente) {
                 try {
                     int idCliente = Integer.parseInt(filtroCliente.trim());
@@ -74,14 +113,12 @@ public class GestioneOrdiniServlet extends HttpServlet {
                     listaOrdini = ordineDAO.doRetrieveAll();
                 }
             }
-            // SCENARIO 3: Solo Filtro Intervallo Date
             else if (haDate) {
                 listaOrdini = ordineDAO.doRetrieveByDates(dataInizio, dataFine);
                 request.setAttribute("dataInizioSelezionata", dataInizio);
                 request.setAttribute("dataFineSelezionata", dataFine);
                 filtroAttivo = true;
             }
-            // SCENARIO 4: Nessun filtro attivo (Caricamento globale)
             else {
                 listaOrdini = ordineDAO.doRetrieveAll();
             }
@@ -96,7 +133,7 @@ public class GestioneOrdiniServlet extends HttpServlet {
         request.setAttribute("listaOrdiniTotali", listaOrdini);
         request.getRequestDispatcher("/jsp/admin/ordiniAdmin.jsp").forward(request, response);
     }
-
+    
     // IL METODO POST GESTISCE LE MODIFICHE AL DATABASE (CAMBIO STATO ORDINE)
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
