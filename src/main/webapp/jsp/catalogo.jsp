@@ -5,6 +5,7 @@
 
 <jsp:include page="/jsp/header.jsp" />
 
+<main class="main-catalogo">
 <section class="catalog-section">
 	<div class="catalog-header">
 		<h2>Il Nostro Catalogo <span>Premium</span></h2>

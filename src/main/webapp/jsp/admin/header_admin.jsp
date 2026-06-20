@@ -26,7 +26,7 @@
         <ul class="admin-menu-links">
             <li><a href="${pageContext.request.contextPath}/jsp/admin/admin.jsp">Dashboard</a></li>
             <li><a href="${pageContext.request.contextPath}/Admin/GestioneProdotti">Catalogo Manager</a></li>
-            <li><a href="${pageContext.request.contextPath}/GestioneOrdini">Ordini Manager</a></li>
+            <li><a href="${pageContext.request.contextPath}/Admin/GestioneOrdini">Ordini Manager</a></li>
             <li><a href="${pageContext.request.contextPath}/jsp/admin/ordiniAdmin.jsp">Ticket Assistenza</a></li>
         </ul>
 

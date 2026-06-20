@@ -5,6 +5,8 @@
 
 <jsp:include page="/jsp/header.jsp" />
 
+<main>
+
 <section class="form-section">
 	<div class="form-card">
 		<h2>Ottieni il diritto di acquistare da noi!</h2>
