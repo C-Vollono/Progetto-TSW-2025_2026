@@ -75,5 +75,3 @@
 		<script defer src="${pageContext.request.contextPath}/js/notifica.js"></script>
 		<script defer src="${pageContext.request.contextPath}/js/carrello-ue.js"></script>
 	</header>
-	
-	<main>

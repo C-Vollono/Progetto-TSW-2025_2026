@@ -5,6 +5,8 @@
 
 <jsp:include page="/jsp/header.jsp" />
 
+<main>
+
 <section class="form-section">
 	<div class="form-card">
 		<h2>Registra il tuo Account</h2>
