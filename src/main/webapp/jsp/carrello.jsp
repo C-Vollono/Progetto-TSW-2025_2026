@@ -99,7 +99,7 @@
                 </div>
                 
                 <c:choose>
-                    <c:when test="${not empty sessionScope.utente}">
+                    <c:when test="${not empty sessionScope.utenteLoggato}">
                         <form action="${pageContext.request.contextPath}/Checkout" method="POST">
                             <button type="submit" class="btn-gold btn-checkout">Procedi al checkout</button>
                         </form>

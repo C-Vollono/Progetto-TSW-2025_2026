@@ -25,14 +25,17 @@ public class ConfermaOrdineServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        
+            
         HttpSession session = request.getSession(false);
-        
-        // 1. Verifica autenticazione Utente
+            
+        // CORRETTO: Cerca "utenteLoggato" per allinearsi alla LoginServlet
         UtenteBean utente = (session != null) ? (UtenteBean) session.getAttribute("utenteLoggato") : null;
         if (utente == null) {
+            if (session == null) {
+                session = request.getSession(true);
+            }
             request.setAttribute("erroreLogin", "Devi effettuare l'accesso per poter completare l'acquisto!");
-            request.getRequestDispatcher("/jsp/login.jsp").forward(request, response);
+            response.sendRedirect(request.getContextPath() + "/Login");
             return;
         }
 
