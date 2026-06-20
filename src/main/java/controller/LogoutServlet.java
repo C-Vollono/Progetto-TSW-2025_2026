@@ -45,11 +45,6 @@ public class LogoutServlet extends HttpServlet {
             session.invalidate();
         }
         
-        // Creazione della nuova sessione pulita. Questa sessione è totalmente nuova, non ha i vecchi dati dell'utente ma ci serve 
-        // come contenitore temporaneo per far viaggiare il messaggio di successo nel redirect.
-        HttpSession nuovaSessione = request.getSession(true);
-        nuovaSessione.setAttribute("messaggioSuccesso", "Disconnessione effettuata con successo. A presto!");
-        
         // Redirect all'index che pulisce sce la cronologia delle richieste
         response.sendRedirect(request.getContextPath() + "/jsp/index.jsp");
     }
