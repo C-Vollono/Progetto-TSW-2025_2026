@@ -18,6 +18,8 @@ import model.dao.OrdineDAO;
 import model.dao.TicketDAO;
 import model.dao.UtenteDAO;
 import model.dao.DatiSpedizioneDAO;
+import model.bean.DatiPagamentoBean;
+import model.dao.DatiPagamentoDAO;
 
 @WebServlet("/Profilo")
 public class ProfiloServlet extends HttpServlet {
@@ -26,6 +28,7 @@ public class ProfiloServlet extends HttpServlet {
     private TicketDAO ticketDAO;
     private UtenteDAO utenteDAO;
     private DatiSpedizioneDAO spedizioneDAO;
+    private DatiPagamentoDAO pagamentoDAO;
 
     @Override
     public void init() throws ServletException {
@@ -33,6 +36,7 @@ public class ProfiloServlet extends HttpServlet {
         this.ticketDAO = new TicketDAO();
         this.utenteDAO = new UtenteDAO();
         this.spedizioneDAO = new DatiSpedizioneDAO();
+        this.pagamentoDAO = new DatiPagamentoDAO();
     }
 
     @Override
@@ -51,6 +55,7 @@ public class ProfiloServlet extends HttpServlet {
             List<OrdineBean> tuttiOrdini = ordineDAO.doRetrieveByUtente(utente.getIdUtente()); 
             List<TicketBean> tuttiTicket = ticketDAO.doRetrieveByUtente(utente.getIdUtente()); 
             List<DatiSpedizioneBean> datiSpedizione = spedizioneDAO.doRetrieveByUtente(utente.getIdUtente());
+            List<DatiPagamentoBean> datiPagamento = pagamentoDAO.doRetrieveByUtente(utente.getIdUtente());
 
             int maxOrdini = Math.min(tuttiOrdini.size(), 3);
             request.setAttribute("ordiniRecenti", tuttiOrdini.subList(0, maxOrdini));
@@ -59,6 +64,8 @@ public class ProfiloServlet extends HttpServlet {
             request.setAttribute("ticketRecenti", tuttiTicket.subList(0, maxTicket));
             
             request.setAttribute("datiSpedizione", datiSpedizione);
+            
+            request.setAttribute("datiPagamento", datiPagamento);
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -151,6 +158,38 @@ public class ProfiloServlet extends HttpServlet {
                     response.getWriter().write("{\"success\": true, \"message\": \"Indirizzo eliminato.\"}");
                 } else {
                     sendJsonError(response, "Indirizzo non trovato o non autorizzato.");
+                }
+                return;
+            }
+            
+         // --- AZIONE 5: AGGIUNGI CARTA DI PAGAMENTO ---
+            if ("aggiungiPagamento".equals(action)) {
+                String numeroCarta = request.getParameter("numeroCarta").replaceAll("\\s+", "");
+                // Salviamo solo le ultime 4 cifre oscurate
+                String oscurato = "****" + numeroCarta.substring(numeroCarta.length() - 4);
+
+                DatiPagamentoBean carta = new DatiPagamentoBean();
+                carta.setIdUtente(utente.getIdUtente());
+                carta.setCircuitoCarta(request.getParameter("circuitoCarta"));
+                carta.setNumeroCartaOscurato(oscurato);
+                carta.setIntestatario(request.getParameter("intestatario").trim());
+                // input type="month" restituisce "yyyy-MM", convertiamo in Date aggiungendo il giorno 01
+                carta.setScadenzaCarta(java.sql.Date.valueOf(request.getParameter("scadenzaCarta") + "-01"));
+                pagamentoDAO.doSave(carta);
+
+                response.getWriter().write("{\"success\": true, \"message\": \"Carta aggiunta con successo!\"}");
+                return;
+            }
+
+            // --- AZIONE 6: ELIMINA CARTA DI PAGAMENTO ---
+            if ("eliminaPagamento".equals(action)) {
+                int idPagamento = Integer.parseInt(request.getParameter("idPagamento"));
+                DatiPagamentoBean carta = pagamentoDAO.doRetrieveByKey(idPagamento);
+                if (carta != null && carta.getIdUtente() == utente.getIdUtente()) {
+                    pagamentoDAO.doDelete(idPagamento);
+                    response.getWriter().write("{\"success\": true, \"message\": \"Carta rimossa.\"}");
+                } else {
+                    sendJsonError(response, "Carta non trovata o non autorizzata.");
                 }
                 return;
             }

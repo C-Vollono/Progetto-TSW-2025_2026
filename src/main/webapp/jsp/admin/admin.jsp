@@ -15,7 +15,7 @@
         <a href="${pageContext.request.contextPath}/Admin/GestioneOrdini" class="btn-admin-box">
             Gestisci Ordini
         </a>
-        <a href="${pageContext.request.contextPath}/jsp/admin/ordiniAdmin.jsp" class="btn-admin-box">
+        <a href="${pageContext.request.contextPath}/Admin/GestioneTicket" class="btn-admin-box">
             Gestisci Ticket Assistenza
         </a>
     </section>
