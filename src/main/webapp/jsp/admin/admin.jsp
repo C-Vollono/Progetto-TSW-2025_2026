@@ -12,7 +12,7 @@
         <a href="${pageContext.request.contextPath}/Admin/GestioneProdotti" class="btn-admin-box">
             Gestisci Catalogo
         </a>
-        <a href="${pageContext.request.contextPath}/GestioneOrdini" class="btn-admin-box">
+        <a href="${pageContext.request.contextPath}/Admin/GestioneOrdini" class="btn-admin-box">
             Gestisci Ordini
         </a>
         <a href="${pageContext.request.contextPath}/jsp/admin/ordiniAdmin.jsp" class="btn-admin-box">

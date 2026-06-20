@@ -25,12 +25,14 @@ public class CatalogoServlet extends HttpServlet {
     private ProdottoDAO prodottoDAO;
     private MacrocategoriaDAO macrocategoriaDAO;
     private MicrocategoriaDAO microcategoriaDAO;
+    private RecensioneDAO recensioneDAO;
 
     @Override
     public void init() throws ServletException {
         this.prodottoDAO = new ProdottoDAO();
         this.macrocategoriaDAO = new MacrocategoriaDAO();
         this.microcategoriaDAO = new MicrocategoriaDAO();
+        this.recensioneDAO = new RecensioneDAO();
     }
 
     @Override
@@ -45,7 +47,11 @@ public class CatalogoServlet extends HttpServlet {
                 ProdottoBean prodotto = prodottoDAO.doRetrieveByKey(id);
                 
                 if (prodotto != null) {
-                    request.setAttribute("prodottoDettaglio", prodotto);
+                	
+                	List<RecensioneBean> recensioni = recensioneDAO.doRetrieveByProdotto(id);
+                    request.setAttribute("recensioniProdotto", recensioni);
+                	
+                	request.setAttribute("prodottoDettaglio", prodotto);
                     request.getRequestDispatcher("/jsp/prodotto.jsp").forward(request, response);
                 } else {
                     HttpSession session = request.getSession();
@@ -53,9 +59,7 @@ public class CatalogoServlet extends HttpServlet {
                     response.sendRedirect(request.getContextPath() + "/Catalogo");
                 }
             } else {
-                // ==========================================
-                // CASO CATALOGO GENERALE CON DOPPIO FILTRO ID
-                // ==========================================
+                //CATALOGO GENERALE CON DOPPIO FILTRO ID
                 String categoria = request.getParameter("categoria"); // ID Macrocategoria
                 String microcategoria = request.getParameter("microcategoria"); // ID Microcategoria
                 String marca = request.getParameter("marca");
@@ -70,21 +74,21 @@ public class CatalogoServlet extends HttpServlet {
                 if (searchQuery == null) searchQuery = "";
                 if (ordina == null) ordina = "rilevanza";
 
-                // 1. Chiamata al DAO con i filtri per ID
+                //Chiamata al DAO con i filtri per ID
                 List<ProdottoBean> listaProdotti = prodottoDAO.doRetrieveByFilters(categoria, microcategoria, marca, prezzoRange, searchQuery, ordina);
                 
-                // 2. Carichiamo dinamicamente tutte le Macrocategorie dal DB per la sidebar
+                //Carichiamo dinamicamente tutte le Macrocategorie dal DB per la sidebar
                 List<MacrocategoriaBean> tutteLeMacro = macrocategoriaDAO.doRetrieveAll();
                 request.setAttribute("tutteLeMacro", tutteLeMacro);
 
-                // 3. Se una macro è selezionata, pre-carichiamo le sue micro per mantenere lo stato dei select
+                //Se una macro è selezionata, pre-carichiamo le sue micro per mantenere lo stato dei select
                 if (!categoria.equalsIgnoreCase("All") && !categoria.trim().isEmpty()) {
                     int idMacro = Integer.parseInt(categoria);
                     List<MicrocategoriaBean> microDiQuestaMacro = microcategoriaDAO.doRetrieveByMacro(idMacro);
                     request.setAttribute("microDiQuestaMacro", microDiQuestaMacro);
                 }
                 
-                // 4. Ripassiamo i parametri per il "selected" in JSTL
+                //Ripassiamo i parametri per il "selected" in JSTL
                 request.setAttribute("selCategoria", categoria);
                 request.setAttribute("selMicrocategoria", microcategoria);
                 request.setAttribute("selMarca", marca);
