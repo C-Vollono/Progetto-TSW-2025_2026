@@ -61,7 +61,7 @@ public class GestioneOrdiniServlet extends HttpServlet {
                     request.setAttribute("articoliOrdine", articoliOrdine);
                     
                     // 4. Inoltriamo alla pagina dei dettagli dell'ordine per l'admin
-                    request.getRequestDispatcher("/jsp/admin/dettaglioOrdineAdmin.jsp").forward(request, response);
+                    request.getRequestDispatcher("/jsp/admin/dettagliOrdine.jsp").forward(request, response);
                     return; // Interrompiamo il metodo qui
                 } else {
                     request.setAttribute("messaggioErrore", "Ordine non trovato nel sistema.");
