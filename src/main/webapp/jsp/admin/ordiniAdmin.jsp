@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <jsp:include page="header_admin.jsp" />
 
@@ -45,21 +46,24 @@
                                 <td>${ordine.spedizioneNomeCognome}</td>
                                 <td><fmt:formatDate value="${ordine.dataOrdine}" pattern="dd/MM/yyyy HH:mm" /></td>
                                 <td class="fw-bold text-gold">€ <fmt:formatNumber value="${ordine.totaleOrdine}" pattern="#,##0.00" /></td>
+                               
                                 <td>
-                                    <form action="${pageContext.request.contextPath}/Admin/GestioneOrdini" method="POST" class="inline-form">
-                                        <input type="hidden" name="action" value="cambiaStato">
-                                        <input type="hidden" name="idOrdine" value="${ordine.idOrdine}">
-                                        
-                                        <select name="stato" onchange="this.form.submit()">
-                                            <option value="In elaborazione" ${ordine.statoOrdine == 'In elaborazione' ? 'selected' : ''}>In elaborazione</option>
-                                            <option value="Spedito" ${ordine.statoOrdine == 'Spedito' ? 'selected' : ''}>Spedito</option>
-                                            <option value="Consegnato" ${ordine.statoOrdine == 'Consegnato' ? 'selected' : ''}>Consegnato</option>
-                                            <option value="Annullato" ${ordine.statoOrdine == 'Annullato' ? 'selected' : ''}>Annullato</option>
-                                        </select>
-                                    </form>
-                                </td>
+								    <span class="status-badge 
+								        <c:choose>
+								           
+								            <c:when test="${fn:toLowerCase(ordine.statoOrdine) == 'in elaborazione'}">status-elaborazione</c:when>
+								            <c:when test="${fn:toLowerCase(ordine.statoOrdine) == 'spedito'}">status-spedito</c:when>
+								            <c:when test="${fn:toLowerCase(ordine.statoOrdine) == 'consegnato'}">status-consegnato</c:when>
+								            <c:when test="${fn:toLowerCase(ordine.statoOrdine) == 'annullato'}">status-annullato</c:when>
+								            <c:when test="${fn:toLowerCase(ordine.statoOrdine) == 'in_attesa'}">status-elaborazione</c:when>
+								            <c:otherwise>status-default</c:otherwise>
+								        </c:choose>">
+								        ${ordine.statoOrdine}
+								    </span>
+								</td>
+                                
                                 <td class="actions-cell">
-                                    <a href="${pageContext.request.contextPath}/Admin/GestioneOrdini?action=dettagli&id=${ordine.idOrdine}" class="btn-action btn-dark">Dettagli</a>
+                                    <a href="${pageContext.request.contextPath}/Admin/GestioneOrdini?action=dettagli&idOrdine=${ordine.idOrdine}" class="btn-action btn-dark">Dettagli</a>
                                 </td>
                             </tr>
                         </c:forEach>
