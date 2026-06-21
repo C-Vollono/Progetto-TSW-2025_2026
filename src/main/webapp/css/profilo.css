@@ -1,4 +1,54 @@
-/*LAYOUT PRINCIPALE DASHBOARD*/
+/*STILI CONDIVISI: CARD*/
+.overview-card, .settings-card, .order-card, .preferiti-card, .recensione-card {
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+}
+
+/*STILI CONDIVISI: LISTE*/
+.recent-list, .indirizzi-list, .ticket-list, .dettagli-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/*STILI CONDIVISI: RIGHE LISTE*/
+.recent-list li, .indirizzo-item, .ticket-item, .dettaglio-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+}
+
+/*STILI CONDIVISI: ULTIMO BORDO*/
+.recent-list li:last-child, .indirizzo-item:last-child, .ticket-item:last-child, .dettaglio-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+/*STILI CONDIVISI: INFO*/
+.recent-info, .indirizzo-info, .order-info-group, .recensione-info, .ticket-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+/*STILI CONDIVISI: TESTI PRINCIPALI*/
+.recent-title, .indirizzo-via, .recensione-titolo, .ticket-id, .dettaglio-nome {
+    font-weight: bold;
+    color: var(--text-dark);
+    font-size: 1rem;
+}
+
+/* STILI CONDIVISI: TESTI SECONDARI*/
+.recent-date, .indirizzo-citta, .indirizzo-telefono, .recensione-data, .ticket-date, .dettaglio-quantita {
+    font-size: 0.85rem;
+    color: #888;
+}
+
+/*DASHBOARD*/
 .dashboard-container {
     display: flex;
     gap: 30px;
@@ -59,7 +109,7 @@
     border-left-color: var(--accent-gold);
 }
 
-/*AREA CONTENUTO CENTRALE*/
+/*CONTENUTO CENTRALE*/
 .dashboard-content {
     flex: 1;
     background-color: var(--bg-card);
@@ -80,8 +130,14 @@
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { 
+    	opacity: 0; 
+    	transform: translateY(10px); 
+    }
+    to { 
+    	opacity: 1; 
+    	transform: translateY(0); 
+    }
 }
 
 .dashboard-section h2 {
@@ -104,11 +160,7 @@
 }
 
 .overview-card {
-    border: 1px solid #eee;
-    border-radius: 8px;
     padding: 25px;
-    background-color: #fff;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
 }
 
 .card-header {
@@ -156,44 +208,7 @@
     font-style: italic;
 }
 
-/*LISTA RECENTI*/
-.recent-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.recent-list li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 0;
-    border-bottom: 1px solid #eee;
-}
-
-.recent-list li:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
-}
-
-.recent-info {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.recent-title {
-    font-weight: bold;
-    color: var(--text-dark);
-    font-size: 1rem;
-}
-
-.recent-date {
-    font-size: 0.85rem;
-    color: #888;
-}
-
-/*BADGES DI STATO SPEDIZIONE*/
+/*BADGE SPEDIZIONE E TICKET*/
 .status-badge {
     padding: 5px 10px;
     border-radius: 20px;
@@ -202,28 +217,28 @@
     text-transform: uppercase;
 }
 
-.status-success {
-    background-color: #dcfce7;
-    color: #166534;
+.status-success { 
+	background-color: #dcfce7; 
+	color: #166534; 
 }
 
-.status-warning {
-    background-color: #fef08a;
-    color: #854d0e;
+.status-warning { 
+	background-color: #fef08a; 
+	color: #854d0e; 
 }
 
-.status-danger {
-    background-color: #fee2e2;
-    color: #b91c1c;
+.status-danger { 
+	background-color: #fee2e2; 
+	color: #b91c1c; 
 }
 
-/*BOTTONE Vedi tutti*/
+/*BOTTONI LINK*/
 .btn-link-small {
     background: none;
     border: none;
     color: var(--accent-gold);
     font-size: 0.9rem;
-    text-decoration: none; /* Rimuove la sottolineatura */
+    text-decoration: none;
     cursor: pointer;
     font-weight: bold;
     transition: color 0.3s ease;
@@ -233,7 +248,23 @@
     color: var(--text-dark);
 }
 
-/*IMPOSTAZIONI ACCOUNT*/
+.btn-danger-small {
+    background: none;
+    border: 1px solid #b91c1c;
+    color: #b91c1c;
+    font-size: 0.85rem;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+.btn-danger-small:hover {
+    background-color: #fee2e2;
+}
+
+/*SEZIONE IMPOSTAZIONI ACCOUNT*/
 .settings-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -241,11 +272,7 @@
 }
 
 .settings-card {
-    background-color: #fff;
-    border: 1px solid #eee;
-    border-radius: 8px;
     padding: 30px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
 }
 
 .settings-card h3 {
@@ -269,39 +296,38 @@
     font-size: 0.9rem;
 }
 
-.input-group-settings input {
+.input-group-settings input, .input-group-settings select, .input-group-settings textarea {
     padding: 12px;
     border: 1px solid #ccc;
     border-radius: 6px;
     font-family: inherit;
     font-size: 1rem;
     transition: all 0.3s ease;
-}
-
-.input-group-settings input:focus {
-    outline: none;
-    border-color: var(--accent-gold);
-    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
-}
-
-.input-group-settings select {
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-family: inherit;
-    font-size: 1rem;
     background-color: #fff;
-    cursor: pointer;
-    transition: all 0.3s ease;
 }
 
-.input-group-settings select:focus {
+.input-group-settings input:focus, .input-group-settings select:focus, .input-group-settings textarea:focus {
     outline: none;
     border-color: var(--accent-gold);
     box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
 }
 
-/*CAMPI UTENTE NON MODIFICABILI*/
+.input-group-settings textarea {
+    resize: vertical;
+}
+
+/*PLACEHOLDER*/
+.input-group-settings input::placeholder, .input-group-settings textarea::placeholder {
+    color: #a0a0a0;
+    font-style: italic;
+    opacity: 1;
+}
+
+.input-group-settings input:focus::placeholder, .input-group-settings textarea:focus::placeholder {
+    color: transparent;
+    transition: color 0.3s ease;
+}
+
 .disabled-group input {
     background-color: #f5f5f5;
     color: #888;
@@ -309,12 +335,6 @@
     border-color: #eee;
 }
 
-.disabled-group input:focus {
-    border-color: #eee;
-    box-shadow: none;
-}
-
-/*INDIRIZZI DI SPEDIZIONE*/
 .settings-card--full {
     grid-column: 1 / -1;
 }
@@ -329,60 +349,7 @@
 }
 
 .indirizzi-list {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 20px 0;
-}
-
-.indirizzo-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 0;
-    border-bottom: 1px solid #eee;
-}
-
-.indirizzo-item:last-child {
-    border-bottom: none;
-}
-
-.indirizzo-info {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.indirizzo-via {
-    font-weight: bold;
-    color: var(--text-dark);
-    font-size: 1rem;
-}
-
-.indirizzo-citta, .indirizzo-telefono {
-    font-size: 0.9rem;
-    color: #666;
-}
-
-.indirizzo-actions {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.btn-danger-small {
-    background: none;
-    border: 1px solid #b91c1c;
-    color: #b91c1c;
-    font-size: 0.85rem;
-    padding: 5px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: all 0.2s ease;
-}
-
-.btn-danger-small:hover {
-    background-color: #fee2e2;
+    margin-bottom: 20px;
 }
 
 .indirizzi-form-grid {
@@ -391,30 +358,334 @@
     gap: 0 20px;
 }
 
-/* RESPONSIVE */
+.indirizzo-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/*SEZIONE I MIEI ORDINI*/
+.orders-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.order-card {
+    overflow: hidden;
+}
+
+.order-header {
+    background-color: #f8f9fa;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #ddd;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.order-number-group {
+    align-items: flex-end;
+}
+
+.order-label {
+    font-size: 0.85rem;
+    color: #666;
+    text-transform: uppercase;
+}
+
+.order-value {
+    font-weight: bold;
+    color: var(--text-dark);
+}
+
+.order-body {
+    padding: 20px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+/*SEZIONE MODAL*/
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal-content {
+    background-color: #fff;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    overflow: hidden;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-header {
+    background-color: var(--bg-card);
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: var(--text-dark);
+}
+
+.btn-close-modal {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #888;
+    transition: color 0.2s;
+}
+
+.btn-close-modal:hover { color: #b91c1c; }
+
+.modal-body {
+    padding: 20px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.dettaglio-prezzo {
+    color: var(--accent-gold);
+    font-weight: bold;
+}
+
+/*SEZIONE I MIEI PREFERITI*/
+.preferiti-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 25px;
+}
+
+.preferiti-card {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.preferiti-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+}
+
+.preferiti-img {
+    width: 100%;
+    max-width: 150px;
+    height: auto;
+    object-fit: contain;
+    margin-bottom: 15px;
+}
+
+.preferiti-nome {
+    font-weight: bold;
+    color: var(--text-dark);
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    flex-grow: 1;
+}
+
+.preferiti-prezzo {
+    color: var(--accent-gold);
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.preferiti-actions {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-add-cart .btn-gold {
+    width: 100%;
+    padding: 10px;
+    font-size: 0.9rem;
+}
+
+.btn-rimuovi-preferito {
+    width: 100%;
+    padding: 8px;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+}
+
+/*SEZIONE LE MIE RECENSIONI*/
+.recensioni-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.recensione-card {
+    padding: 20px;
+    transition: box-shadow 0.2s ease;
+}
+
+.recensione-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.recensione-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px solid #f5f5f5;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.recensione-titolo {
+    font-size: 1.1rem;
+}
+
+.recensione-stelle { 
+	font-size: 1.2rem; 
+}
+
+.stella-piena { 
+	color: var(--accent-gold); 
+}
+
+.stella-vuota { 
+	color: #e0e0e0; 
+}
+
+.recensione-body { 
+	margin-bottom: 15px; 
+}
+
+.recensione-testo {
+    color: #555;
+    font-style: italic;
+    line-height: 1.6;
+    overflow-wrap: break-word; 
+}
+
+.recensione-footer {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.form-message-margin {
+    min-height: 20px;
+    margin-bottom: 15px;
+}
+
+/*SEZIONE ASSISTENZA CLIENTI*/
+.support-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 30px;
+}
+
+.ticket-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.ticket-msg-box {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    border-left: 4px solid #ccc;
+}
+
+.ticket-msg-box.admin-response {
+    background-color: #f0fdf4;
+    border-left-color: #166534;
+}
+
+.ticket-msg-title {
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+    color: var(--text-dark);
+}
+
+.ticket-msg-text {
+    font-size: 0.95rem;
+    color: #444;
+    white-space: pre-wrap;
+}
+
+/*STILE FILE TICKET*/
+.file-input-custom {
+    padding: 10px !important;
+    background-color: #f8f9fa !important;
+    cursor: pointer;
+    font-size: 0.9rem !important;
+}
+
+/*STILE IMMAGINE TICKET*/
+.ticket-msg-img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+    margin-top: 15px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/*RESPONSIVE*/
 @media screen and (max-width: 900px) {
     .dashboard-container { 
     	flex-direction: column; 
     }
+    
     .dashboard-sidebar { 
     	flex: none; 
     	width: 100%; 
     	position: static; 
     }
+    
     .overview-cards { 
     	grid-template-columns: 1fr; 
     }
+    
     .dashboard-content { 
     	padding: 20px; 
     }
+    
     .indirizzi-form-grid { 
     	grid-template-columns: 1fr; 
     }
+    
     .indirizzo-item { 
     	flex-direction: column; 
     	align-items: flex-start; 
     	gap: 10px; 
     }
+    
     .indirizzo-actions { 
     	width: 100%; 
     	justify-content: flex-end; 

@@ -134,12 +134,212 @@
 		
         <div id="ordini" class="dashboard-section">
             <h2>I Miei Ordini</h2>
-            <p>Caricamento ordini in corso...</p>
+            <p class="section-subtitle">Visualizza lo storico dei tuoi acquisti e i relativi dettagli.</p>
+            
+            <c:choose>
+                <c:when test="${empty tuttiOrdini}">
+                    <p class="text-empty">Non hai ancora effettuato ordini.</p>
+                </c:when>
+                <c:otherwise>
+                    <div class="orders-container">
+                        <c:forEach var="ordine" items="${tuttiOrdini}">
+                            <div class="order-card">
+                                <div class="order-header">
+                                    <div class="order-info-group">
+                                        <span class="order-label">Data Ordine</span>
+                                        <span class="order-value"><fmt:formatDate value="${ordine.dataOrdine}" pattern="dd MMM yyyy" /></span>
+                                    </div>
+                                    <div class="order-info-group">
+                                        <span class="order-label">Totale</span>
+                                        <span class="order-value">&euro; ${ordine.totaleOrdine}</span>
+                                    </div>
+                                    <div class="order-info-group">
+                                        <span class="order-label">Spedito a</span>
+                                        <span class="order-value">${ordine.spedizioneNomeCognome}</span>
+                                    </div>
+                                    <div class="order-info-group order-number-group">
+                                        <span class="order-label">Ordine # ${ordine.idOrdine}</span>
+                                        <button class="btn-link-small btn-dettagli" data-id="${ordine.idOrdine}">Vedi Dettagli</button>
+                                    </div>
+                                </div>
+                                <div class="order-body">
+                                    <span class="status-badge 
+                                        ${ordine.statoOrdine == 'Spedito' || ordine.statoOrdine == 'Consegnato' ? 'status-success' : 
+                                          (ordine.statoOrdine == 'Annullato' ? 'status-danger' : 'status-warning')}">
+                                        ${ordine.statoOrdine}
+                                    </span>
+                                </div>
+                            </div>
+                        </c:forEach>
+                    </div>
+                </c:otherwise>
+            </c:choose>
         </div>
 
-        <div id="preferiti" class="dashboard-section"><h2>I Miei Preferiti</h2></div>
-        <div id="recensioni" class="dashboard-section"><h2>Le Mie Recensioni</h2></div>
-        <div id="assistenza" class="dashboard-section"><h2>Assistenza Clienti</h2></div>
+        <div id="modalDettagli" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Dettagli Ordine <span id="modalOrdineTitle"></span></h3>
+                    <button class="btn-close-modal" id="closeModalBtn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <ul id="listaDettagliProdotti" class="dettagli-list">
+                        </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="preferiti" class="dashboard-section">
+            <h2>I Miei Preferiti</h2>
+            <p class="section-subtitle">I prodotti che hai salvato per i tuoi futuri acquisti.</p>
+            
+            <div id="msgPreferiti" class="form-message"></div>
+
+            <c:choose>
+                <c:when test="${empty preferiti}">
+                    <p class="text-empty" id="emptyPreferitiText">Non hai ancora aggiunto prodotti ai preferiti.</p>
+                </c:when>
+                <c:otherwise>
+                    <div class="preferiti-grid" id="preferitiContainer">
+                        <c:forEach var="prodotto" items="${preferiti}">
+                            <div class="preferiti-card" data-card-id="${prodotto.idProdotto}">
+                                <img src="${pageContext.request.contextPath}/images/${prodotto.immagine}" alt="Immagine Prodotto" class="preferiti-img">
+                                <div class="preferiti-nome">${prodotto.nome}</div>
+                                <div class="preferiti-prezzo">&euro; ${prodotto.prezzo}</div>
+                                
+                                <div class="preferiti-actions">
+                                    <form action="${pageContext.request.contextPath}/Carrello" method="POST" class="form-add-cart">
+                                        <input type="hidden" name="action" value="aggiungi">
+                                        <input type="hidden" name="idProdotto" value="${prodotto.idProdotto}">
+                                        <button type="submit" class="btn-gold form-btn">Al Carrello</button>
+                                    </form>
+                                    
+                                    <button class="btn-danger-small btn-rimuovi-preferito" data-id="${prodotto.idProdotto}">Rimuovi</button>
+                                </div>
+                            </div>
+                        </c:forEach>
+                    </div>
+                </c:otherwise>
+            </c:choose>
+        </div>
+        
+        <div id="recensioni" class="dashboard-section">
+            <h2>Le Mie Recensioni</h2>
+            <p class="section-subtitle">Lo storico dei pareri che hai condiviso sui nostri prodotti.</p>
+            
+            <div id="msgRecensioni"></div>
+
+            <c:choose>
+                <c:when test="${empty mieRecensioni}">
+                    <p class="text-empty" id="emptyRecensioniText">Non hai ancora scritto nessuna recensione.</p>
+                </c:when>
+                <c:otherwise>
+                    <div class="recensioni-container" id="recensioniContainer">
+                        <c:forEach var="recensione" items="${mieRecensioni}">
+                            <div class="recensione-card" data-card-id="${recensione.idRecensione}">
+                                <div class="recensione-header">
+                                    <div class="recensione-info">
+                                        <span class="recensione-titolo">${recensione.titolo}</span>
+                                        <span class="recensione-data"><fmt:formatDate value="${recensione.dataRecensione}" pattern="dd MMM yyyy HH:mm" /></span>
+                                    </div>
+                                    <div class="recensione-stelle">
+                                        <c:forEach begin="1" end="5" var="i">
+                                            <c:choose>
+                                                <c:when test="${i <= recensione.valutazione}">
+                                                    <span class="stella-piena">★</span>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="stella-vuota">☆</span>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </c:forEach>
+                                    </div>
+                                </div>
+                                <div class="recensione-body">
+                                    <p class="recensione-testo">"${recensione.corpo}"</p>
+                                </div>
+                                <div class="recensione-footer">
+                                    <button class="btn-danger-small btn-elimina-recensione" data-id="${recensione.idRecensione}">Elimina</button>
+                                </div>
+                            </div>
+                        </c:forEach>
+                    </div>
+                </c:otherwise>
+            </c:choose>
+        </div>
+        
+        <div id="assistenza" class="dashboard-section">
+            <h2>Assistenza Clienti</h2>
+            <p class="section-subtitle">Hai un problema con un ordine o uno strumento? Apri un ticket e ti aiuteremo al più presto.</p>
+
+            <div class="support-grid">
+                <div class="settings-card">
+                    <h3>Apri un Nuovo Ticket</h3>
+                    <form id="formApriTicket" action="${pageContext.request.contextPath}/Profilo" method="POST">
+                        <div class="input-group-settings">
+                            <label for="oggettoTicket">Oggetto della richiesta</label>
+                            <input type="text" id="oggettoTicket" name="oggetto" placeholder="Es. Problema con spedizione ordine #123" required>
+                        </div>
+                        
+                        <div class="input-group-settings">
+                            <label for="messaggioTicket">Dettagli del problema</label>
+                            <textarea id="messaggioTicket" name="messaggio" rows="5" placeholder="Descrivi il tuo problema in modo dettagliato..." required></textarea>
+                        </div>
+                        
+                        <div class="input-group-settings">
+                            <label for="allegatoTicket">Allega una foto (Opzionale)</label>
+                            <input type="file" id="allegatoTicket" name="allegato" accept="image/*" class="file-input-custom">
+                        </div>
+                        
+                        <div id="msgTicket" class="form-message-margin"></div>
+                        
+                        <button type="submit" class="btn-gold form-btn">Invia Richiesta</button>
+                    </form>
+                </div>
+
+                <div class="settings-card">
+                    <h3>I Tuoi Ticket</h3>
+                    <c:choose>
+                        <c:when test="${empty tuttiTicket}">
+                            <p class="text-empty" id="emptyTicketText">Non hai aperto nessun ticket di assistenza.</p>
+                            <ul class="ticket-list" id="ticketListContainer"></ul>
+                        </c:when>
+                        <c:otherwise>
+                            <ul class="ticket-list" id="ticketListContainer">
+                                <c:forEach var="ticket" items="${tuttiTicket}">
+                                    <li class="ticket-item">
+                                        <div class="ticket-info">
+                                            <span class="ticket-id">Ticket #${ticket.idTicket} - ${ticket.oggetto}</span>
+                                            <span class="ticket-date"><fmt:formatDate value="${ticket.dataApertura}" pattern="dd MMM yyyy" /></span>
+                                        </div>
+                                        
+                                        <div class="ticket-actions">
+                                            <span class="status-badge 
+                                                ${ticket.stato == 'Risolto' ? 'status-success' : 
+                                                  (ticket.stato == 'Chiuso' ? 'status-danger' : 'status-warning')}">
+                                                ${ticket.stato}
+                                            </span>
+                                            <button class="btn-link-small btn-leggi-ticket" data-id="${ticket.idTicket}">Leggi</button>
+                                        </div>
+                                        
+                                    </li>
+                                </c:forEach>
+                            </ul>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
+            </div>
+        </div> <div id="modalTicket" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Dettagli Ticket <span id="modalTicketTitle"></span></h3>
+                    <button class="btn-close-modal" id="closeModalTicketBtn">&times;</button>
+                </div>
+                <div class="modal-body" id="corpoModalTicket">
+                    </div>
+            </div>
+        </div>
+        
         <div id="impostazioni" class="dashboard-section">
             <h2>Impostazioni Account</h2>
             <p class="section-subtitle">Aggiorna le tue informazioni personali o modifica la tua password di accesso.</p>
