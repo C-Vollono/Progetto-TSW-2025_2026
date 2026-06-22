@@ -370,14 +370,27 @@ document.addEventListener("DOMContentLoaded", function() {
 					divInfo.appendChild(spanId);
 					divInfo.appendChild(spanDate);
 
+                    const divActions = document.createElement("div");
+                    divActions.className = "ticket-actions";
+
 					const spanStatus = document.createElement("span");
 					spanStatus.className = "status-badge status-warning";
 					spanStatus.textContent = "Aperto";
 
-					li.appendChild(divInfo);
-					li.appendChild(spanStatus);
+                    const btnLeggi = document.createElement("button");
+                    btnLeggi.className = "btn-link-small btn-leggi-ticket";
+                    btnLeggi.setAttribute("data-id", "Nuovo"); 
+                    btnLeggi.textContent = "Leggi";
 
-                    ticketListContainer.prepend(li);
+                    divActions.appendChild(spanStatus);
+                    divActions.appendChild(btnLeggi);
+
+					li.appendChild(divInfo);
+					li.appendChild(divActions);
+
+                    if (ticketListContainer) {
+                        ticketListContainer.prepend(li);
+                    }
 
                     formApriTicket.reset();
                } else {
