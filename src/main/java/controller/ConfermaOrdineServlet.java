@@ -205,7 +205,7 @@ public class ConfermaOrdineServlet extends HttpServlet {
             session.setAttribute("messaggioSuccesso", "Complimenti! Il tuo ordine è stato registrato con successo. ID Ordine: #" + idOrdineGenerato);
             
             // Qui momentaneamente rimandiamo alla home, ma potresti creare una pagina "conferma.jsp" dedicata!
-            response.sendRedirect(request.getContextPath() + "/jsp/index.jsp");
+            response.sendRedirect(request.getContextPath() + "/jsp/common/confermaOrdine.jsp");
 
         } catch (SQLException e) {
             if (con != null) {
