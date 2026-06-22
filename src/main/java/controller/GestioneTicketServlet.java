@@ -85,7 +85,7 @@ public class GestioneTicketServlet extends HttpServlet {
         
         // Passiamo la lista alla pagina JSP di amministrazione
         request.setAttribute("listaTicket", listaTicket);
-        request.getRequestDispatcher("/admin/listaTicket.jsp").forward(request, response);
+        request.getRequestDispatcher("/jsp/admin/ticket_admin.jsp").forward(request, response);
     }
 
     // AZIONE: Mostra i dettagli di un singolo ticket selezionato
@@ -97,7 +97,7 @@ public class GestioneTicketServlet extends HttpServlet {
         
         if (ticket != null) {
             request.setAttribute("ticket", ticket);
-            request.getRequestDispatcher("/admin/dettaglioTicket.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/admin/dettagliTicket.jsp").forward(request, response);
         } else {
             // Se il ticket non esiste, torna alla lista con un redirect di sicurezza
             response.sendRedirect(request.getContextPath() + "/Admin/GestioneTicket?action=list");

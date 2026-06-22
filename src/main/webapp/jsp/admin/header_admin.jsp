@@ -18,7 +18,6 @@
       <div class="admin-brand">
     <a href="${pageContext.request.contextPath}/Home">
         <img src="${pageContext.request.contextPath}/images/chiaveViolinoheader.png" alt="Icona" class="admin-logo-img">
-        <!-- Racchiudiamo tutto il testo in uno span principale -->
         <span class="brand-text">Tone<span>Market</span></span>
     </a>
 </div>
@@ -27,7 +26,7 @@
             <li><a href="${pageContext.request.contextPath}/jsp/admin/admin.jsp">Dashboard</a></li>
             <li><a href="${pageContext.request.contextPath}/Admin/GestioneProdotti">Catalogo Manager</a></li>
             <li><a href="${pageContext.request.contextPath}/Admin/GestioneOrdini">Ordini Manager</a></li>
-            <li><a href="${pageContext.request.contextPath}/jsp/admin/ordiniAdmin.jsp">Ticket Assistenza</a></li>
+            <li><a href="${pageContext.request.contextPath}/Admin/GestioneTicket">Ticket Assistenza</a></li>
         </ul>
 
         <div class="admin-user-actions">

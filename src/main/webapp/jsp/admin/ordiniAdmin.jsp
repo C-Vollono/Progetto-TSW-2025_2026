@@ -20,6 +20,35 @@
         <c:remove var="messaggioSuccesso" scope="session"/>
     </c:if>
 
+    <div class="orders-controls-bar">
+        <form action="${pageContext.request.contextPath}/Admin/GestioneOrdini" method="GET" class="orders-filter-form">
+            
+            <div class="orders-search-wrapper">
+                <input type="number" name="filtroCliente" placeholder="Cerca per ID Cliente..." value="${clienteSelezionato}" min="1">
+            </div>
+
+            <div class="orders-filters">
+                <div class="filter-item">
+                    <label for="dataInizio">Da:</label>
+                    <input type="date" id="dataInizio" name="dataInizio" value="${dataInizioSelezionata}" style="padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+                
+                <div class="filter-item">
+                    <label for="dataFine">A:</label>
+                    <input type="date" id="dataFine" name="dataFine" value="${dataFineSelezionata}" style="padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+
+                <div class="filter-item actions-cell">
+                    <button type="submit" class="btn-action btn-dark">Filtra</button>
+                    <c:if test="${filtroAttivo}">
+                        <a href="${pageContext.request.contextPath}/Admin/GestioneOrdini" class="btn-action btn-gold-outline" style="line-height: normal;">Reset</a>
+                    </c:if>
+                </div>
+            </div>
+            
+        </form>
+    </div>
+ 
     <div class="table-responsive">
         <table class="orders-table">
             <thead>
@@ -32,6 +61,7 @@
                     <th class="text-center">Azioni</th>
                 </tr>
             </thead>
+         
             <tbody>
                 <c:choose>
                     <c:when test="${empty listaOrdiniTotali}">
@@ -50,7 +80,6 @@
                                 <td>
 								    <span class="status-badge 
 								        <c:choose>
-								           
 								            <c:when test="${fn:toLowerCase(ordine.statoOrdine) == 'in elaborazione'}">status-elaborazione</c:when>
 								            <c:when test="${fn:toLowerCase(ordine.statoOrdine) == 'spedito'}">status-spedito</c:when>
 								            <c:when test="${fn:toLowerCase(ordine.statoOrdine) == 'consegnato'}">status-consegnato</c:when>
