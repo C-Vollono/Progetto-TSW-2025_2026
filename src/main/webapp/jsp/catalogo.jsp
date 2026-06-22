@@ -56,10 +56,10 @@
 				<div class="filter-group">
 					<label for="marca">Marca:</label>
 					<select name="marca" id="marca">
-						<option value="All" ${empty selMarca || selMarca == 'All' ? 'selected' : ''}>Tutte</option>
-						<option value="Yamaha" ${selMarca == 'Yamaha' ? 'selected' : ''}>Yamaha</option>
-						<option value="Roland" ${selMarca == 'Roland' ? 'selected' : ''}>Roland</option>
-						<option value="Fender" ${selMarca == 'Fender' ? 'selected' : ''}>Fender</option>
+						<option value="All" ${empty selMarca || selMarca == 'All' ? 'selected' : ''}>Tutte le marche</option>						
+						<c:forEach var="m" items="${tutteLeMarche}">
+							<option value="${m}" ${selMarca == m ? 'selected' : ''}>${m}</option>
+						</c:forEach>						
 					</select>
 				</div>
 				

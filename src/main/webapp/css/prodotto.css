@@ -282,6 +282,27 @@
     grid-column: 1 / -1;
 }
 
+/*STILI PREFERITI*/
+.wishlist-container {
+    text-align: center;
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.msg-preferito {
+    font-size: 0.95rem;
+    font-weight: bold;
+    min-height: 20px;
+}
+
+.btn-wishlist.wishlist-added {
+    opacity: 0.6;
+    cursor: default;
+    pointer-events: none; 
+}
+
 @media screen and (max-width: 900px) {
     .product-top-container {
         flex-direction: column;
