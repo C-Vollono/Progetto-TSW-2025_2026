@@ -1,0 +1,119 @@
+/*LAYOUT PAGINA CONFERMA*/
+.confirmation-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 20px;
+    background-color: #fcfcfc;
+}
+
+.confirmation-card {
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 50px 40px;
+    max-width: 600px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border-top: 5px solid #166534;
+}
+
+/*ICONA SUCCESSO*/
+.success-icon {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 80px;
+    height: 80px;
+    background-color: #dcfce7;
+    color: #166534;
+    font-size: 3rem;
+    border-radius: 50%;
+    margin-bottom: 20px;
+}
+
+.confirmation-card h2 {
+    color: var(--text-dark);
+    font-size: 2rem;
+    margin-bottom: 15px;
+}
+
+.confirmation-message {
+    font-size: 1.2rem;
+    color: #166534;
+    font-weight: bold;
+    margin-bottom: 25px;
+}
+
+.confirmation-details {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 40px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid #eee;
+}
+
+/*PULSANTI CONFERMA ORDINE*/
+.confirmation-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.btn-secondary {
+    padding: 12px 20px;
+    background-color: #f8f9fa;
+    color: #444;
+    text-decoration: none;
+    font-weight: bold;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.btn-secondary.btn-hover {
+    background-color: #eee;
+    color: var(--text-dark);
+}
+
+.print-only-footer {
+    display: none;
+}
+
+
+/*FATTURA TRAMITE MEDIA QUERY*/
+@media print {
+    .no-print {
+        display: none;
+    }
+
+    body, .confirmation-wrapper, .confirmation-card {
+        background-color: #fff;
+        box-shadow: none;
+        border: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .confirmation-message, .confirmation-card h2, .confirmation-details {
+        color: #000;
+    }
+
+    .success-icon {
+        border: 2px solid #000;
+        background-color: transparent;
+        color: #000;
+    }
+
+    .print-only-footer {
+        display: block;
+        margin-top: 50px;
+        padding-top: 20px;
+        border-top: 1px dashed #000;
+        color: #000;
+        font-size: 0.9rem;
+    }
+}

@@ -2,6 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/form.css">
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/profilo.css">
 
 <jsp:include page="/jsp/header.jsp" />
