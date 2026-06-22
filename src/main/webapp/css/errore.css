@@ -1,0 +1,91 @@
+@charset "UTF-8";
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #ffffff;
+    color: #000000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.error-box {
+    border: 3px solid #000000;
+    background-color: #ffffff;
+    padding: 40px;
+    max-width: 550px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 12px 12px 0px #000000;
+}
+
+.brand-error {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.brand-error span {
+    color: #b5832e; /* Colore Oro di ToneMarket */
+}
+
+.error-icon {
+    font-size: 3.5rem;
+    margin: 10px 0;
+}
+
+h2 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+
+p {
+    color: #444444;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+#countdown {
+    font-weight: bold;
+    color: #d9534f; /* Rosso per l'avviso del timer */
+}
+
+.actions-bar {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.btn-link {
+    color: #000000;
+    text-decoration: none;
+    font-weight: bold;
+    line-height: 40px;
+}
+
+.btn-link:hover {
+    text-decoration: underline;
+}
+
+.btn-action {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #000000;
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: bold;
+    text-transform: uppercase;
+    border: 2px solid #000000;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.btn-action:hover {
+    background-color: #ffffff;
+    color: #000000;
+}
