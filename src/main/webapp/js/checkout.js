@@ -86,16 +86,16 @@ document.addEventListener("DOMContentLoaded", function() {
 
     if (radioSpedizioni.length > 0) toggleSpedizioneForm();
     if (radioPagamenti.length > 0) togglePagamentoForm();
-	
-	//VALIDAZIONE FORM
+
+    //VALIDAZIONE FORM
     const formCheckout = document.getElementById("formCheckout");
 
     if (formCheckout) {
         formCheckout.addEventListener("submit", function(e) {
             let isValid = true;
-            
             document.querySelectorAll(".error-msg-js").forEach(span => span.textContent = "");
-            
+
+            //VALIDAZIONE NUOVA SPEDIZIONE
             const radioSpedizione = document.querySelector('input[name="idSpedizione"]:checked');
             if (radioSpedizione && radioSpedizione.value === 'nuovo') {
                 const via = document.getElementById("nuovaVia").value.trim();
@@ -105,36 +105,24 @@ document.addEventListener("DOMContentLoaded", function() {
                 const cap = document.getElementById("nuovoCap").value.trim();
                 const telefono = document.getElementById("nuovoTelefono").value.trim();
 
-                if (via === "") {
-                    document.getElementById("errNuovaVia").textContent = "Inserisci la via.";
-                    isValid = false;
-                }
-                if (civico === "") {
-                    document.getElementById("errNuovoCivico").textContent = "Inserisci il civico.";
-                    isValid = false;
-                }
-                if (citta === "") {
-                    document.getElementById("errNuovaCitta").textContent = "Inserisci la città.";
-                    isValid = false;
-                }
-                
-                //Esattamente 2 lettere
-                if (!/^[A-Za-z]{2}$/.test(provincia)) {
-                    document.getElementById("errNuovaProvincia").textContent = "Inserisci la sigla di 2 lettere (es. NA).";
-                    isValid = false;
-                }
-                
-                //Esattamente 5 numeri
-                if (!/^\d{5}$/.test(cap)) {
-                    document.getElementById("errNuovoCap").textContent = "Il CAP deve contenere 5 numeri.";
-                    isValid = false;
-                }
-                
-                // Regex Telefono almeno 9-10 numeri
-                if (telefono !== "" && !/^\d{9,10}$/.test(telefono)) {
-                    document.getElementById("errNuovoTelefono").textContent = "Inserisci un numero valido.";
-                    isValid = false;
-                }
+                if (via === "") { 
+					document.getElementById("errNuovaVia").textContent = "Inserisci la via."; isValid = false; 
+				}
+                if (civico === "") { 
+					document.getElementById("errNuovoCivico").textContent = "Inserisci il civico."; isValid = false; 
+				}
+                if (citta === "") { 
+					document.getElementById("errNuovaCitta").textContent = "Inserisci la città."; isValid = false; 
+				}
+                if (!/^[A-Za-z]{2}$/.test(provincia)) { 
+					document.getElementById("errNuovaProvincia").textContent = "Inserisci la sigla (es. NA)."; isValid = false; 
+				}
+                if (!/^\d{5}$/.test(cap)) { 
+					document.getElementById("errNuovoCap").textContent = "Il CAP deve avere 5 numeri."; isValid = false; 
+				}
+                if (telefono !== "" && !/^\d{9,10}$/.test(telefono)) { 
+					document.getElementById("errNuovoTelefono").textContent = "Numero non valido."; isValid = false; 
+				}
             }
 
             //VALIDAZIONE NUOVO PAGAMENTO
@@ -145,38 +133,22 @@ document.addEventListener("DOMContentLoaded", function() {
                 const intestatario = document.getElementById("nuovoIntestatario").value.trim();
                 const scadenza = document.getElementById("nuovaScadenza").value;
 
-                if (circuito === "") {
-                    document.getElementById("errNuovoCircuito").textContent = "Seleziona un circuito.";
-                    isValid = false;
-                }
-                
-                //16 numeri con spazi vuoti ogni 4
-                if (!/^(\d{4}\s?){3}\d{4}$/.test(numeroCarta)) {
-                    document.getElementById("errNuovoNumeroCarta").textContent = "Inserisci le 16 cifre della carta.";
-                    isValid = false;
-                }
-                
-                //Solo lettere e spazi per il nome
-                if (!/^[A-Za-z\s]+$/.test(intestatario)) {
-                    document.getElementById("errNuovoIntestatario").textContent = "Inserisci un nome valido.";
-                    isValid = false;
-                }
-                
-                if (scadenza === "") {
-                    document.getElementById("errNuovaScadenza").textContent = "Inserisci la scadenza.";
-                    isValid = false;
+                if (circuito === "") { 
+					document.getElementById("errNuovoCircuito").textContent = "Seleziona un circuito."; isValid = false; 
+				}
+                if (!/^(\d{4}\s?){3}\d{4}$/.test(numeroCarta)) { document.getElementById("errNuovoNumeroCarta").textContent = "Inserisci 16 cifre."; isValid = false; }
+                if (!/^[A-Za-z\s]+$/.test(intestatario)) { document.getElementById("errNuovoIntestatario").textContent = "Nome non valido."; isValid = false; }
+                if (scadenza === "") { 
+                    document.getElementById("errNuovaScadenza").textContent = "Inserisci la scadenza."; isValid = false; 
                 } else {
                     const inputDate = new Date(scadenza + "-01");
                     const currentDate = new Date();
-                    currentDate.setDate(1); // Ignoriamo il giorno attuale
+                    currentDate.setDate(1);
                     currentDate.setHours(0,0,0,0);
-                    
-                    if (inputDate < currentDate) {
-                        document.getElementById("errNuovaScadenza").textContent = "La carta risulta scaduta.";
-                        isValid = false;
-                    }
+                    if (inputDate < currentDate) { document.getElementById("errNuovaScadenza").textContent = "Carta scaduta."; isValid = false; }
                 }
             }
+
             if (!isValid) {
                 e.preventDefault();
             }

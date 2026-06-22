@@ -276,7 +276,9 @@
             <div class="support-grid">
                 <div class="settings-card">
                     <h3>Apri un Nuovo Ticket</h3>
-                    <form id="formApriTicket" action="${pageContext.request.contextPath}/Profilo" method="POST">
+                    <form id="formApriTicket" action="${pageContext.request.contextPath}/Profilo" method="POST" enctype="multipart/form-data">
+                        <input type="hidden" name="action" value="apriTicket">
+                        
                         <div class="input-group-settings">
                             <label for="oggettoTicket">Oggetto della richiesta</label>
                             <input type="text" id="oggettoTicket" name="oggetto" placeholder="Es. Problema con spedizione ordine #123" required>
@@ -288,8 +290,8 @@
                         </div>
                         
                         <div class="input-group-settings">
-                            <label for="allegatoTicket">Allega una foto (Opzionale)</label>
-                            <input type="file" id="allegatoTicket" name="allegato" accept="image/*" class="file-input-custom">
+                            <label for="allegatoTicket">Allega un file o una foto (Opzionale)</label>
+                            <input type="file" id="allegatoTicket" name="allegato" class="file-input-custom">
                         </div>
                         
                         <div id="msgTicket" class="form-message-margin"></div>
