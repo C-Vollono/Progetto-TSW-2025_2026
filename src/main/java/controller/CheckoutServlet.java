@@ -30,18 +30,20 @@ public class CheckoutServlet extends HttpServlet {
         pagamentoDAO = new DatiPagamentoDAO();
     }
 
-    // Se provano ad accedere direttamente digitando l'URL, li rimandiamo al carrello
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        response.sendRedirect(request.getContextPath() + "/Carrello");
+        // Rimanda la GET alla POST (utile per quando il Login ci reindirizza qui)
+        doPost(request, response);
     }
 
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
         HttpSession session = request.getSession(false);
         
-        // CORRETTO: Cerca "utenteLoggato" per allinearsi alla LoginServlet
+        // 1. CONTROLLO LOGIN
         UtenteBean utente = (session != null) ? (UtenteBean) session.getAttribute("utenteLoggato") : null;
         
         if (utente == null) {
@@ -49,21 +51,27 @@ public class CheckoutServlet extends HttpServlet {
                 session = request.getSession(true);
             }
             session.setAttribute("messaggioErrore", "Devi effettuare il login per procedere al checkout.");
+            session.setAttribute("redirectDopoLogin", "/Checkout"); // Salva la destinazione
             response.sendRedirect(request.getContextPath() + "/Login");
             return;
         }
 
-        try {
-            // Recuperiamo i dati salvati nel DB per l'utente corrente usando i tuoi DAO
-            List<DatiSpedizioneBean> listaSpedizioni = spedizioneDAO.doRetrieveByUtente(utente.getIdUtente()); //
-            List<DatiPagamentoBean> listaPagamenti = pagamentoDAO.doRetrieveByUtente(utente.getIdUtente()); //
+        // 2. CONTROLLO CARRELLO (Dev'esserci e non deve essere vuoto)
+        model.Carrello carrello = (session != null) ? (model.Carrello) session.getAttribute("carrello") : null;
+        if (carrello == null || carrello.getElementi().isEmpty()) {
+            response.sendRedirect(request.getContextPath() + "/Carrello");
+            return;
+        }
 
-            // Passiamo le liste come attributi della richiesta alla pagina di checkout
+        try {
+            // 3. RECUPERO DATI E INOLTRO ALLA PAGINA COMMON
+            List<DatiSpedizioneBean> listaSpedizioni = spedizioneDAO.doRetrieveByUtente(utente.getIdUtente()); 
+            List<DatiPagamentoBean> listaPagamenti = pagamentoDAO.doRetrieveByUtente(utente.getIdUtente()); 
+
             request.setAttribute("listaSpedizioni", listaSpedizioni);
             request.setAttribute("listaPagamenti", listaPagamenti);
 
-            // Inoltriamo alla pagina di riepilogo dati
-            request.getRequestDispatcher("/jsp/checkout.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/common/checkout.jsp").forward(request, response);
             
         } catch (SQLException e) {
             e.printStackTrace();

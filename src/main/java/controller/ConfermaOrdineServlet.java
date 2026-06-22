@@ -13,9 +13,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
 import model.Carrello;
 import model.bean.ProdottoBean;
 import model.bean.UtenteBean;
+import model.bean.DatiSpedizioneBean;
+import model.bean.DatiPagamentoBean;
+import model.dao.DatiSpedizioneDAO;
+import model.dao.DatiPagamentoDAO;
 import util.ConPool;
 
 @WebServlet("/ConfermaOrdine")
@@ -28,7 +33,7 @@ public class ConfermaOrdineServlet extends HttpServlet {
             
         HttpSession session = request.getSession(false);
             
-        // CORRETTO: Cerca "utenteLoggato" per allinearsi alla LoginServlet
+        // 1. VERIFICA UTENTE LOGGATO
         UtenteBean utente = (session != null) ? (UtenteBean) session.getAttribute("utenteLoggato") : null;
         if (utente == null) {
             if (session == null) {
@@ -39,82 +44,93 @@ public class ConfermaOrdineServlet extends HttpServlet {
             return;
         }
 
-        // 2. Verifica stato del carrello
+        // 2. VERIFICA STATO DEL CARRELLO
         Carrello carrello = (session != null) ? (Carrello) session.getAttribute("carrello") : null;
         if (carrello == null || carrello.getElementi().isEmpty()) {
-            request.setAttribute("messaggioErrore", "Il tuo carrello è vuoto. Impossibile procedere.");
-            request.getRequestDispatcher("/jsp/carrello.jsp").forward(request, response);
+            session.setAttribute("messaggioErrore", "Il tuo carrello è vuoto. Impossibile procedere.");
+            response.sendRedirect(request.getContextPath() + "/Carrello");
             return;
         }
 
-        // 3. Recupero parametri form Spedizione/Pagamento con Fallback Intelligente dal DB o Mock
-        String nomeCognome = request.getParameter("spedizioneNomeCognome");
-        if (nomeCognome == null || nomeCognome.trim().isEmpty()) {
-            nomeCognome = utente.getNome() + " " + utente.getCognome();
-        }
+        // 3. RECUPERO DATI DAL FORM DEL CHECKOUT
+        String nomeCognome = utente.getNome() + " " + utente.getCognome();
+        String via = "", civico = "", cap = "", citta = "", provincia = "", telefono = "";
+        String circuito = "", cartaOscurata = "";
 
-        String via = "Via dei Musicisti";
-        String civico = "45";
-        String cap = "84100";
-        String citta = "Salerno";
-        String provincia = "SA";
-        String telefono = "3331234567";
-        String circuito = "Visa";
-        String cartaOscurata = "************1234";
-
-        try (Connection conDati = ConPool.getConnection()) {
-            String sqlSped = "SELECT * FROM Dati_spedizione WHERE ID_Utente = ? LIMIT 1";
-            try (PreparedStatement psSped = conDati.prepareStatement(sqlSped)) {
-                psSped.setInt(1, utente.getIdUtente());
-                try (ResultSet rsSped = psSped.executeQuery()) {
-                    if (rsSped.next()) {
-                        via = rsSped.getString("Via");
-                        civico = rsSped.getString("Numero_civico");
-                        cap = rsSped.getString("Cap");
-                        citta = rsSped.getString("Citta");
-                        provincia = rsSped.getString("Provincia");
-                        telefono = rsSped.getString("Telefono");
-                    }
-                }
-            }
+        try {
+            // --- GESTIONE SPEDIZIONE ---
+            String idSpedizione = request.getParameter("idSpedizione");
+            DatiSpedizioneDAO spedizioneDAO = new DatiSpedizioneDAO();
             
-            String sqlPag = "SELECT * FROM Dati_pagamento WHERE ID_Utente = ? LIMIT 1";
-            try (PreparedStatement psPag = conDati.prepareStatement(sqlPag)) {
-                psPag.setInt(1, utente.getIdUtente());
-                try (ResultSet rsPag = psPag.executeQuery()) {
-                    if (rsPag.next()) {
-                        circuito = rsPag.getString("Circuito_carta");
-                        cartaOscurata = rsPag.getString("Numero_carta_oscurato");
-                    }
-                }
+            if ("nuovo".equals(idSpedizione)) {
+                // Prende i dati dal form a comparsa
+                via = request.getParameter("nuovaVia").trim();
+                civico = request.getParameter("nuovoCivico").trim();
+                citta = request.getParameter("nuovaCitta").trim();
+                provincia = request.getParameter("nuovaProvincia").trim().toUpperCase();
+                cap = request.getParameter("nuovoCap").trim();
+                telefono = request.getParameter("nuovoTelefono") != null ? request.getParameter("nuovoTelefono").trim() : "";
+                
+                // SALVATAGGIO BONUS: Memorizza il nuovo indirizzo nel DB per i prossimi acquisti!
+                DatiSpedizioneBean nuovoInd = new DatiSpedizioneBean();
+                nuovoInd.setIdUtente(utente.getIdUtente());
+                nuovoInd.setVia(via);
+                nuovoInd.setNumeroCivico(civico);
+                nuovoInd.setCitta(citta);
+                nuovoInd.setProvincia(provincia);
+                nuovoInd.setCap(cap);
+                nuovoInd.setTelefono(telefono);
+                spedizioneDAO.doSave(nuovoInd);
+            } else {
+                // Recupera i dati dell'indirizzo selezionato dal DB
+                DatiSpedizioneBean indEsistente = spedizioneDAO.doRetrieveByKey(Integer.parseInt(idSpedizione));
+                via = indEsistente.getVia();
+                civico = indEsistente.getNumeroCivico();
+                citta = indEsistente.getCitta();
+                provincia = indEsistente.getProvincia();
+                cap = indEsistente.getCap();
+                telefono = indEsistente.getTelefono() != null ? indEsistente.getTelefono() : "";
             }
-        } catch (SQLException e) {
-            System.out.println("[ConfermaOrdineServlet] Dati di default non trovati, uso i mock strutturati.");
+
+            // --- GESTIONE PAGAMENTO ---
+            String idPagamento = request.getParameter("idPagamento");
+            DatiPagamentoDAO pagamentoDAO = new DatiPagamentoDAO();
+
+            if ("nuovo".equals(idPagamento)) {
+                // Prende i dati dal form a comparsa
+                circuito = request.getParameter("nuovoCircuito");
+                String numeroCarta = request.getParameter("nuovoNumeroCarta").replaceAll("\\s+", "");
+                cartaOscurata = "**" + numeroCarta.substring(numeroCarta.length() - 4);
+                
+                // SALVATAGGIO BONUS: Memorizza la nuova carta nel DB
+                DatiPagamentoBean nuovaCarta = new DatiPagamentoBean();
+                nuovaCarta.setIdUtente(utente.getIdUtente());
+                nuovaCarta.setCircuitoCarta(circuito);
+                nuovaCarta.setNumeroCartaOscurato(cartaOscurata);
+                nuovaCarta.setIntestatario(request.getParameter("nuovoIntestatario").trim());
+                nuovaCarta.setScadenzaCarta(java.sql.Date.valueOf(request.getParameter("nuovaScadenza") + "-01"));
+                pagamentoDAO.doSave(nuovaCarta);
+            } else {
+                // Recupera la carta selezionata dal DB
+                DatiPagamentoBean cartaEsistente = pagamentoDAO.doRetrieveByKey(Integer.parseInt(idPagamento));
+                circuito = cartaEsistente.getCircuitoCarta();
+                cartaOscurata = cartaEsistente.getNumeroCartaOscurato();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            session.setAttribute("messaggioErrore", "Errore nel recupero dei dati di fatturazione.");
+            response.sendRedirect(request.getContextPath() + "/Checkout");
+            return;
         }
 
-        if (request.getParameter("spedizioneVia") != null && !request.getParameter("spedizioneVia").trim().isEmpty()) 
-            via = request.getParameter("spedizioneVia");
-        if (request.getParameter("spedizioneNumeroCivico") != null && !request.getParameter("spedizioneNumeroCivico").trim().isEmpty()) 
-            civico = request.getParameter("spedizioneNumeroCivico");
-        if (request.getParameter("spedizioneCap") != null && !request.getParameter("spedizioneCap").trim().isEmpty()) 
-            cap = request.getParameter("spedizioneCap");
-        if (request.getParameter("spedizioneCitta") != null && !request.getParameter("spedizioneCitta").trim().isEmpty()) 
-            citta = request.getParameter("spedizioneCitta");
-        if (request.getParameter("spedizioneProvincia") != null && !request.getParameter("spedizioneProvincia").trim().isEmpty()) 
-            provincia = request.getParameter("spedizioneProvincia");
-        if (request.getParameter("spedizioneTelefono") != null && !request.getParameter("spedizioneTelefono").trim().isEmpty()) 
-            telefono = request.getParameter("spedizioneTelefono");
-        if (request.getParameter("pagamentoCircuito") != null && !request.getParameter("pagamentoCircuito").trim().isEmpty()) 
-            circuito = request.getParameter("pagamentoCircuito");
-        if (request.getParameter("pagamentoNumeroCartaOscurato") != null && !request.getParameter("pagamentoNumeroCartaOscurato").trim().isEmpty()) 
-            cartaOscurata = request.getParameter("pagamentoNumeroCartaOscurato");
-
-        // 4. APERTURA DELLA TRANSAZIONE ATOMICA (ACID)
+        // 4. TRANSAZIONE ATOMICA (ACID): Ordine + Dettagli + Magazzino
         Connection con = null;
         try {
             con = ConPool.getConnection();
             con.setAutoCommit(false); 
 
+            // A) Creazione Ordine
             String sqlOrdine = "INSERT INTO Ordine (ID_Utente, Totale_ordine, Stato_ordine, Spedizione_Nome_Cognome, "
                            + "Spedizione_Via, Spedizione_Numero_civico, Spedizione_Cap, Spedizione_Citta, "
                            + "Spedizione_Provincia, Spedizione_Telefono, Pagamento_Circuito, Pagamento_Numero_Carta_Oscurato) "
@@ -124,7 +140,7 @@ public class ConfermaOrdineServlet extends HttpServlet {
             try (PreparedStatement psO = con.prepareStatement(sqlOrdine, Statement.RETURN_GENERATED_KEYS)) {
                 psO.setInt(1, utente.getIdUtente());
                 psO.setDouble(2, carrello.getPrezzoTotale());
-                psO.setString(3, "IN_ATTESA");
+                psO.setString(3, "In elaborazione"); // Stato iniziale più professionale
                 psO.setString(4, nomeCognome);
                 psO.setString(5, via);
                 psO.setString(6, civico);
@@ -147,7 +163,8 @@ public class ConfermaOrdineServlet extends HttpServlet {
                 throw new SQLException("Errore critico: Impossibile generare la chiave primaria per l'Ordine.");
             }
 
-            String sqlDettaglio = "INSERT INTO Dettaglio_Ordine (ID_ordine, ID_prodotto, Quantita, Prezzo_unitario_storico) VALUES (?, ?, ?, ?)";
+            // B) Creazione Dettagli e Aggiornamento Magazzino (Aggiunta IVA per l'integrità storica)
+            String sqlDettaglio = "INSERT INTO Dettaglio_Ordine (ID_ordine, ID_prodotto, Quantita, Prezzo_unitario_storico, Iva_storicizzata) VALUES (?, ?, ?, ?, ?)";
             String sqlUpdateStock = "UPDATE Prodotto SET Quantita = Quantita - ? WHERE ID_prodotto = ? AND Quantita >= ?";
 
             try (PreparedStatement psD = con.prepareStatement(sqlDettaglio);
@@ -157,35 +174,37 @@ public class ConfermaOrdineServlet extends HttpServlet {
                     ProdottoBean prodotto = entry.getKey();
                     int qtaRichiesta = entry.getValue();
 
+                    // Salvataggio Dettaglio con IVA (fissata al 22% come da standard italiano)
                     psD.setInt(1, idOrdineGenerato);
                     psD.setInt(2, prodotto.getIdProdotto());
                     psD.setInt(3, qtaRichiesta);
                     psD.setDouble(4, prodotto.getPrezzo());
+                    psD.setInt(5, 22); 
                     psD.executeUpdate();
 
+                    // Controllo e aggiornamento Magazzino
                     psU.setInt(1, qtaRichiesta);
                     psU.setInt(2, prodotto.getIdProdotto());
                     psU.setInt(3, qtaRichiesta); 
                     
                     int rowsAffected = psU.executeUpdate();
                     if (rowsAffected == 0) {
-                        con.rollback(); 
+                        con.rollback(); // Annulla tutto se un prodotto è andato esaurito nel frattempo!
                         
-                        // CORREZIONE PRG: Messaggio in sessione e redirect al carrello
-                        session.setAttribute("messaggioErrore", "Errore: Lo strumento '" + prodotto.getMarca() + " " + prodotto.getModello() + "' è esaurito o non disponibile nella quantità richiesta!");
+                        session.setAttribute("messaggioErrore", "Siamo spiacenti, lo strumento '" + prodotto.getMarca() + " " + prodotto.getModello() + "' è appena andato esaurito. Aggiorna il carrello.");
                         response.sendRedirect(request.getContextPath() + "/Carrello");
                         return;
                     }
                 }
             }
 
-            con.commit();
+            con.commit(); // Se tutto è andato bene, consolida i dati nel DB!
 
-            // 5. SVUOTAMENTO DEL CARRELLO DALLA SESSIONE UTENTE
+            // 5. SVUOTAMENTO CARRELLO E REDIRECT (Pattern PRG)
             session.removeAttribute("carrello");
-
-            // Successo con PRG completo
             session.setAttribute("messaggioSuccesso", "Complimenti! Il tuo ordine è stato registrato con successo. ID Ordine: #" + idOrdineGenerato);
+            
+            // Qui momentaneamente rimandiamo alla home, ma potresti creare una pagina "conferma.jsp" dedicata!
             response.sendRedirect(request.getContextPath() + "/jsp/index.jsp");
 
         } catch (SQLException e) {
@@ -194,9 +213,8 @@ public class ConfermaOrdineServlet extends HttpServlet {
             }
             e.printStackTrace();
             
-            // CORREZIONE PRG: Messaggio in sessione e redirect al carrello per evitare duplicazioni al refresh
             if (session != null) {
-                session.setAttribute("messaggioErrore", "Si è verificato un errore imprevisto nel server durante il salvataggio dei dati dell'ordine.");
+                session.setAttribute("messaggioErrore", "Si è verificato un errore imprevisto durante la creazione dell'ordine. Riprova.");
             }
             response.sendRedirect(request.getContextPath() + "/Carrello");
         } finally {

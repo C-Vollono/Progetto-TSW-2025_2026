@@ -46,6 +46,6 @@ public class LogoutServlet extends HttpServlet {
         }
         
         // Redirect all'index che pulisce sce la cronologia delle richieste
-        response.sendRedirect(request.getContextPath() + "/jsp/index.jsp");
+        response.sendRedirect(request.getContextPath() + "/Home");
     }
 }

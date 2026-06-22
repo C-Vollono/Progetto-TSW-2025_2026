@@ -70,10 +70,19 @@ public class LoginServlet extends HttpServlet {
                 
                 //Salviamo l'intero Bean dell'utente in sessione
                 session.setAttribute("utenteLoggato", utente);
+                session.setAttribute("ruolo", utente.isIsAdmin() ? "admin" : "customer");
                 
-session.setAttribute("ruolo", utente.isIsAdmin() ? "admin" : "customer");
+                // --- INIZIO REDIRECT INTELLIGENTE ---
+                String url;
+                String redirectDopoLogin = (String) session.getAttribute("redirectDopoLogin");
                 
-                String url = request.getContextPath() + (utente.isIsAdmin() ? "/jsp/admin/admin.jsp" : "/jsp/index.jsp");
+                if (redirectDopoLogin != null) {
+                    url = request.getContextPath() + redirectDopoLogin;
+                    session.removeAttribute("redirectDopoLogin"); // Puliamo per non falsare futuri login
+                } else {
+                    url = request.getContextPath() + (utente.isIsAdmin() ? "/jsp/admin/admin.jsp" : "/Home");
+                }
+                // --- FINE REDIRECT INTELLIGENTE ---
 
                 //Risposta AJAX
                 if ("true".equals(isAjax)) {
@@ -84,7 +93,7 @@ session.setAttribute("ruolo", utente.isIsAdmin() ? "admin" : "customer");
                 }
                 System.out.println("[LoginServlet] Login riuscito per: " + email);
                 response.sendRedirect(url);
-                return; 
+                return;
                 
             } else {
                 //Login fallito
