@@ -34,7 +34,6 @@ import model.bean.RecensioneBean;
 
 
 @WebServlet("/Profilo")
-
 @MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 1024 * 1024 * 5, maxRequestSize = 1024 * 1024 * 5 * 5)
 public class ProfiloServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -113,7 +112,7 @@ public class ProfiloServlet extends HttpServlet {
         String action = request.getParameter("action");
 
         try {
-            //AGGIORNAMENTO DATI PERSONALI
+            // AGGIORNAMENTO DATI PERSONALI
             if ("aggiornaDati".equals(action)) {
                 String nome = request.getParameter("nome");
                 String cognome = request.getParameter("cognome");
@@ -126,14 +125,13 @@ public class ProfiloServlet extends HttpServlet {
                 }
 
                 utenteDAO.doUpdate(utente); 
-                
                 session.setAttribute("utenteLoggato", utente);
 
                 response.getWriter().write("{\"success\": true, \"message\": \"Dati aggiornati con successo!\"}");
                 return;
             }
 
-            //CAMBIO PASSWORD
+            // CAMBIO PASSWORD
             if ("cambiaPassword".equals(action)) {
                 String oldPassword = request.getParameter("oldPassword");
                 String newPassword = request.getParameter("newPassword");
@@ -154,7 +152,7 @@ public class ProfiloServlet extends HttpServlet {
                 return;
             }
             
-         //AGGIUNGI INDIRIZZO
+            // AGGIUNGI INDIRIZZO
             if ("aggiungiIndirizzo".equals(action)) {
                 DatiSpedizioneBean ind = new DatiSpedizioneBean();
                 ind.setIdUtente(utente.getIdUtente());
@@ -170,7 +168,7 @@ public class ProfiloServlet extends HttpServlet {
                 return;
             }
 
-            //ELIMINA INDIRIZZO
+            // ELIMINA INDIRIZZO
             if ("eliminaIndirizzo".equals(action)) {
                 int idSpedizione = Integer.parseInt(request.getParameter("idSpedizione"));
                 DatiSpedizioneBean ind = spedizioneDAO.doRetrieveByKey(idSpedizione);
@@ -183,10 +181,9 @@ public class ProfiloServlet extends HttpServlet {
                 return;
             }
             
-         // --- AZIONE 5: AGGIUNGI CARTA DI PAGAMENTO ---
+            // --- CARTA DI PAGAMENTO ---
             if ("aggiungiPagamento".equals(action)) {
                 String numeroCarta = request.getParameter("numeroCarta").replaceAll("\\s+", "");
-                // Salviamo solo le ultime 4 cifre oscurate
                 String oscurato = "****" + numeroCarta.substring(numeroCarta.length() - 4);
 
                 DatiPagamentoBean carta = new DatiPagamentoBean();
@@ -194,7 +191,6 @@ public class ProfiloServlet extends HttpServlet {
                 carta.setCircuitoCarta(request.getParameter("circuitoCarta"));
                 carta.setNumeroCartaOscurato(oscurato);
                 carta.setIntestatario(request.getParameter("intestatario").trim());
-                // input type="month" restituisce "yyyy-MM", convertiamo in Date aggiungendo il giorno 01
                 carta.setScadenzaCarta(java.sql.Date.valueOf(request.getParameter("scadenzaCarta") + "-01"));
                 pagamentoDAO.doSave(carta);
 
@@ -202,7 +198,6 @@ public class ProfiloServlet extends HttpServlet {
                 return;
             }
 
-            // --- AZIONE 6: ELIMINA CARTA DI PAGAMENTO ---
             if ("eliminaPagamento".equals(action)) {
                 int idPagamento = Integer.parseInt(request.getParameter("idPagamento"));
                 DatiPagamentoBean carta = pagamentoDAO.doRetrieveByKey(idPagamento);
@@ -210,12 +205,12 @@ public class ProfiloServlet extends HttpServlet {
                     pagamentoDAO.doDelete(idPagamento);
                     response.getWriter().write("{\"success\": true, \"message\": \"Carta rimossa.\"}");
                 } else {
-                    sendJsonError(response, "Carta non trovata o non autorizzata.");
+                    sendJsonError(response, "Carta non trovata o non autorizzato.");
                 }
                 return;
             }
             
-         // --- AZIONE 7: RECUPERA DETTAGLI ORDINE (AJAX) ---
+            // --- DETTAGLI ORDINE (AJAX) ---
             if ("dettagliOrdine".equals(action)) {
                 int idOrdine = Integer.parseInt(request.getParameter("idOrdine"));
                 
@@ -223,7 +218,6 @@ public class ProfiloServlet extends HttpServlet {
                 ProdottoDAO prodDao = new ProdottoDAO();
                 List<DettaglioOrdineBean> dettagli = dettDao.doRetrieveByOrdine(idOrdine);
 
-                // Costruiamo una risposta JSON manuale con i dettagli e i nomi dei prodotti
                 StringBuilder json = new StringBuilder("[");
                 for(int i=0; i<dettagli.size(); i++) {
                     DettaglioOrdineBean d = dettagli.get(i);
@@ -248,33 +242,28 @@ public class ProfiloServlet extends HttpServlet {
                 return;
             }
 
-         // --- AZIONE 8: RIMUOVI DAI PREFERITI (AJAX) ---
+            // --- RIMUOVI DAI PREFERITI (AJAX) ---
             if ("rimuoviPreferito".equals(action)) {
                 int idProdotto = Integer.parseInt(request.getParameter("idProdotto"));
-                
-                // Chiama il metodo del tuo DAO che elimina la riga corrispondente a utente e prodotto
                 preferitiDAO.doDelete(utente.getIdUtente(), idProdotto);
-                
                 response.getWriter().write("{\"success\": true, \"message\": \"Prodotto rimosso dai preferiti.\"}");
                 return;
             }
             
-         // --- AZIONE 9: ELIMINA RECENSIONE (AJAX) ---
+            // --- ELIMINA RECENSIONE (AJAX) ---
             if ("eliminaRecensione".equals(action)) {
                 int idRecensione = Integer.parseInt(request.getParameter("idRecensione"));
-                
-                // Recuperiamo la recensione per assicurarci che appartenga a questo utente
                 RecensioneBean r = recensioneDAO.doRetrieveByKey(idRecensione);
                 if (r != null && r.getIdUtente() == utente.getIdUtente()) {
                     recensioneDAO.doDelete(idRecensione);
                     response.getWriter().write("{\"success\": true, \"message\": \"Recensione eliminata.\"}");
                 } else {
-                    sendJsonError(response, "Recensione non trovata o non autorizzata.");
+                    sendJsonError(response, "Recensione non trovato o non autorizzata.");
                 }
                 return;
             }
             
-            // AZIONE 10: APRI NUOVO TICKET CON FILE MULTIPART (AJAX) --
+            // --- APRI NUOVO TICKET (AJAX) --
             if ("apriTicket".equals(action)) {
                 String oggetto = request.getParameter("oggetto");
                 String messaggio = request.getParameter("messaggio");
@@ -284,110 +273,83 @@ public class ProfiloServlet extends HttpServlet {
                     return;
                 }
 
-                // Concatenazione coerente con la logica consigliata
                 String descrizioneCompleta = "OGGETTO: " + (oggetto != null ? oggetto.trim() : "Nessuno") + "\n\n" + messaggio.trim();
 
-                try {
-                    TicketBean nuovoTicket = new TicketBean();
-                    nuovoTicket.setIdUtente(utente.getIdUtente());
-                    nuovoTicket.setDescrizione(descrizioneCompleta);
-                    nuovoTicket.setStato("Aperto");
+                TicketBean nuovoTicket = new TicketBean();
+                nuovoTicket.setIdUtente(utente.getIdUtente());
+                nuovoTicket.setDescrizione(descrizioneCompleta);
+                nuovoTicket.setStato("Aperto");
 
-                    // Gestione fisica del file immagine inviato tramite FormData
-                    Part filePart = request.getPart("allegato");
-                    if (filePart != null && filePart.getSize() > 0) {
-                        String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
-                        
-                        // Generazione nome univoco per evitare sovrascritture sul server
-                        String uniqueFileName = System.currentTimeMillis() + "_" + fileName;
-                        
-                        String uploadPath = getServletContext().getRealPath("") + File.separator + "images" + File.separator + "tickets";
-                        File uploadDir = new File(uploadPath);
-                        if (!uploadDir.exists()) {
-                            uploadDir.mkdirs(); // Crea ricorsivamente la cartella images/tickets se manca
-                        }
-                        
-                        filePart.write(uploadPath + File.separator + uniqueFileName);
-                        nuovoTicket.setAllegato(uniqueFileName); // Salva la stringa del nome univoco nel DB
-                    } else {
-                        nuovoTicket.setAllegato(null);
-                    }
-
-                    ticketDAO.doSave(nuovoTicket);
-                    response.getWriter().write("{\"success\": true, \"message\": \"Ticket aperto con successo!\"}");
+                Part filePart = request.getPart("allegato");
+                if (filePart != null && filePart.getSize() > 0) {
+                    String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+                    String uniqueFileName = System.currentTimeMillis() + "_" + fileName;
                     
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    sendJsonError(response, "Errore del database durante l'apertura del ticket.");
+                    String uploadPath = getServletContext().getRealPath("") + File.separator + "images" + File.separator + "tickets";
+                    File uploadDir = new File(uploadPath);
+                    if (!uploadDir.exists()) {
+                        uploadDir.mkdirs();
+                    }
+                    
+                    filePart.write(uploadPath + File.separator + uniqueFileName);
+                    nuovoTicket.setAllegato(uniqueFileName);
+                } else {
+                    nuovoTicket.setAllegato(null);
                 }
+
+                ticketDAO.doSave(nuovoTicket);
+                response.getWriter().write("{\"success\": true, \"message\": \"Ticket aperto con successo!\"}");
                 return;
             }
             
-            // --- AZIONE 11: MODIFICATA - LEGGI DETTAGLI TICKET CON RISPOSTA JSON COMPATIBILE AL JS ---
+            // --- DETTAGLI TICKET (AJAX) ---
             if ("dettagliTicket".equals(action)) {
                 int idTicket = Integer.parseInt(request.getParameter("idTicket"));
+                TicketBean ticket = ticketDAO.doRetrieveByKey(idTicket);
                 
-                try {
-                    TicketBean ticket = ticketDAO.doRetrieveByKey(idTicket);
-                    
-                    if (ticket != null && ticket.getIdUtente() == utente.getIdUtente()) {
+                if (ticket != null && ticket.getIdUtente() == utente.getIdUtente()) {
+                    String descrizione = ticket.getDescrizione() != null ? 
+                        ticket.getDescrizione().replace("\"", "\\\"").replace("\n", "\\n") : "";
                         
-                        String descrizione = ticket.getDescrizione() != null ? 
-                            ticket.getDescrizione().replace("\"", "\\\"").replace("\n", "\\n") : "";
-                            
-                        String stato = ticket.getStato() != null ? ticket.getStato() : "";
-                        String allegato = ticket.getAllegato() != null ? ticket.getAllegato().replace("\"", "\\\"") : "";
-                        
-                        // Mappato su "messaggio" come richiesto da data.messaggio nel file profilo.js
-                        response.getWriter().write("{"
-                            + "\"success\": true, "
-                            + "\"messaggio\": \"" + descrizione + "\", " 
-                            + "\"stato\": \"" + stato + "\", "
-                            + "\"allegato\": \"" + allegato + "\""
-                            + "}");
-                    } else {
-                        sendJsonError(response, "Ticket non trovato o non autorizzato.");
-                    }
+                    String stato = ticket.getStato() != null ? ticket.getStato() : "";
+                    String allegato = ticket.getAllegato() != null ? ticket.getAllegato().replace("\"", "\\\"") : "";
                     
-                 // --- AZIONE: AGGIUNGI AI PREFERITI (AJAX) ---
-                    if ("aggiungiPreferito".equals(action)) {
-                        int idProdotto = Integer.parseInt(request.getParameter("idProdotto"));
-
-                        try {
-                            // CONTROLLO SMART: Verifica se è già nei preferiti per evitare duplicati nel DB
-                            if (preferitiDAO.isPreferito(utente.getIdUtente(), idProdotto)) {
-                                sendJsonError(response, "Questo strumento è già nei tuoi preferiti!");
-                                return;
-                            }
-
-                            // Se non c'è, lo aggiunge
-                            model.bean.PreferitiBean nuovoPreferito = new model.bean.PreferitiBean();
-                            nuovoPreferito.setIdUtente(utente.getIdUtente());
-                            nuovoPreferito.setIdProdotto(idProdotto);
-                            
-                            preferitiDAO.doSave(nuovoPreferito);
-                            response.getWriter().write("{\"success\": true, \"message\": \"Aggiunto ai preferiti con successo!\"}");
-                            
-                        } catch (SQLException e) {
-                            e.printStackTrace();
-                            sendJsonError(response, "Errore interno durante il salvataggio.");
-                        }
-                        return;
-                    }
-                    
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    sendJsonError(response, "Errore interno del database durante il recupero del ticket.");
+                    response.getWriter().write("{"
+                        + "\"success\": true, "
+                        + "\"messaggio\": \"" + descrizione + "\", " 
+                        + "\"stato\": \"" + stato + "\", "
+                        + "\"allegato\": \"" + allegato + "\""
+                        + "}");
+                } else {
+                    sendJsonError(response, "Ticket non trovato o non autorizzato.");
                 }
                 return;
             }
             
+            // --- AGGIUNGI AI PREFERITI (AJAX) ---
+            if ("aggiungiPreferito".equals(action)) {
+                int idProdotto = Integer.parseInt(request.getParameter("idProdotto"));
+                
+                // Usiamo l'istanza globale preferitiDAO già presente e inizializzata nell'init()
+                if (preferitiDAO.isPreferito(utente.getIdUtente(), idProdotto)) {
+                    sendJsonError(response, "Questo strumento è già nei tuoi preferiti!");
+                    return;
+                }
+
+                model.bean.PreferitiBean nuovoPreferito = new model.bean.PreferitiBean();
+                nuovoPreferito.setIdUtente(utente.getIdUtente());
+                nuovoPreferito.setIdProdotto(idProdotto);
+                
+                preferitiDAO.doSave(nuovoPreferito);
+                response.getWriter().write("{\"success\": true, \"message\": \"Aggiunto ai preferiti con successo!\"}");
+                return;
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
-            sendJsonError(response, "Errore interno del server durante il salvataggio.");
+            sendJsonError(response, "Errore interno del server durante l'elaborazione.");
         }
     }
-    
 
     private void sendJsonError(HttpServletResponse response, String message) throws IOException {
         response.getWriter().write("{\"success\": false, \"message\": \"" + message + "\"}");
