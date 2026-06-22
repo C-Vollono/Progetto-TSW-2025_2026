@@ -204,8 +204,8 @@
                     <div class="preferiti-grid" id="preferitiContainer">
                         <c:forEach var="prodotto" items="${preferiti}">
                             <div class="preferiti-card" data-card-id="${prodotto.idProdotto}">
-                                <img src="${pageContext.request.contextPath}/images/${prodotto.immagine}" alt="Immagine Prodotto" class="preferiti-img">
-                                <div class="preferiti-nome">${prodotto.nome}</div>
+                                <img src="${pageContext.request.contextPath}/images/${prodotto.urlImmagine}" alt="Immagine Prodotto" class="preferiti-img">
+								<div class="preferiti-nome">${prodotto.marca} ${prodotto.modello}</div>
                                 <div class="preferiti-prezzo">&euro; ${prodotto.prezzo}</div>
                                 
                                 <div class="preferiti-actions">
