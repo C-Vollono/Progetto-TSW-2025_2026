@@ -64,7 +64,7 @@
 					</button>
 				</form>
 
-				<form action="${pageContext.request.contextPath}/Preferiti" method="POST" class="action-form">
+				<form action="${pageContext.request.contextPath}/Profilo" method="POST" class="action-form">
 					<input type="hidden" name="idProdotto" value="${prodottoDettaglio.idProdotto}">
 					<button type="submit" class="btn-wishlist">
 						&#10084; Aggiungi ai Preferiti

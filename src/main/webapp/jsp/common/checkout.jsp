@@ -139,7 +139,7 @@
                     <c:forEach var="item" items="${sessionScope.carrello.elementi}">
                         <div class="summary-item">
                             <div class="summary-item-info">
-                                <span class="summary-item-name">${item.key.nome}</span>
+                                <span class="summary-item-name">${item.key.marca} ${item.key.modello}</span>
                                 <span class="summary-item-qty">Qtà: ${item.value}</span>
                             </div>
                             <span class="summary-item-price">&euro; <fmt:formatNumber value="${item.key.prezzo * item.value}" type="number" minFractionDigits="2" maxFractionDigits="2"/></span>
