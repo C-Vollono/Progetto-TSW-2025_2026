@@ -245,6 +245,22 @@ public class ProdottoDAO {
         }
         return lista;
     }
+    
+    // 11. RECUPERA TUTTE LE MARCHE (Senza doppioni per il filtro dinamico)
+    public List<String> doRetrieveAllMarche() throws SQLException {
+        List<String> marche = new ArrayList<>();
+        String sql = "SELECT DISTINCT Marca FROM Prodotto ORDER BY Marca ASC";
+        
+        try (Connection con = util.ConPool.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+             
+            while (rs.next()) {
+                marche.add(rs.getString("Marca"));
+            }
+        }
+        return marche;
+    }
 
     // Metodo interno di utility per il mapping ResultSet -> Bean
     private ProdottoBean mapResultSetToBean(ResultSet rs) throws SQLException {

@@ -47,11 +47,11 @@ public class CatalogoServlet extends HttpServlet {
                 ProdottoBean prodotto = prodottoDAO.doRetrieveByKey(id);
                 
                 if (prodotto != null) {
-                	
-                	List<RecensioneBean> recensioni = recensioneDAO.doRetrieveByProdotto(id);
+                    
+                    List<RecensioneBean> recensioni = recensioneDAO.doRetrieveByProdotto(id);
                     request.setAttribute("recensioniProdotto", recensioni);
-                	
-                	request.setAttribute("prodottoDettaglio", prodotto);
+                    
+                    request.setAttribute("prodottoDettaglio", prodotto);
                     request.getRequestDispatcher("/jsp/prodotto.jsp").forward(request, response);
                 } else {
                     HttpSession session = request.getSession();
@@ -81,6 +81,14 @@ public class CatalogoServlet extends HttpServlet {
                 List<MacrocategoriaBean> tutteLeMacro = macrocategoriaDAO.doRetrieveAll();
                 request.setAttribute("tutteLeMacro", tutteLeMacro);
 
+                // =========================================================================
+                // CORREZIONE / NUOVO INSERIMENTO: 
+                // Carichiamo dinamicamente tutte le marche dal DB per popolare il select/sidebar
+                // =========================================================================
+                List<String> tutteLeMarche = prodottoDAO.doRetrieveAllMarche();
+                request.setAttribute("tutteLeMarche", tutteLeMarche);
+                // =========================================================================
+
                 //Se una macro è selezionata, pre-carichiamo le sue micro per mantenere lo stato dei select
                 if (!categoria.equalsIgnoreCase("All") && !categoria.trim().isEmpty()) {
                     int idMacro = Integer.parseInt(categoria);
@@ -105,7 +113,7 @@ public class CatalogoServlet extends HttpServlet {
             session.setAttribute("messaggioErrore", "Parametri identificativi non validi.");
             response.sendRedirect(request.getContextPath() + "/Catalogo");
             
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             HttpSession session = request.getSession();
             session.setAttribute("messaggioErrore", "Errore di sistema nel recupero dei prodotti del catalogo.");

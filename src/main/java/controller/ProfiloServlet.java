@@ -348,6 +348,33 @@ public class ProfiloServlet extends HttpServlet {
                     } else {
                         sendJsonError(response, "Ticket non trovato o non autorizzato.");
                     }
+                    
+                 // --- AZIONE: AGGIUNGI AI PREFERITI (AJAX) ---
+                    if ("aggiungiPreferito".equals(action)) {
+                        int idProdotto = Integer.parseInt(request.getParameter("idProdotto"));
+
+                        try {
+                            // CONTROLLO SMART: Verifica se è già nei preferiti per evitare duplicati nel DB
+                            if (preferitiDAO.isPreferito(utente.getIdUtente(), idProdotto)) {
+                                sendJsonError(response, "Questo strumento è già nei tuoi preferiti!");
+                                return;
+                            }
+
+                            // Se non c'è, lo aggiunge
+                            model.bean.PreferitiBean nuovoPreferito = new model.bean.PreferitiBean();
+                            nuovoPreferito.setIdUtente(utente.getIdUtente());
+                            nuovoPreferito.setIdProdotto(idProdotto);
+                            
+                            preferitiDAO.doSave(nuovoPreferito);
+                            response.getWriter().write("{\"success\": true, \"message\": \"Aggiunto ai preferiti con successo!\"}");
+                            
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                            sendJsonError(response, "Errore interno durante il salvataggio.");
+                        }
+                        return;
+                    }
+                    
                 } catch (SQLException e) {
                     e.printStackTrace();
                     sendJsonError(response, "Errore interno del database durante il recupero del ticket.");
