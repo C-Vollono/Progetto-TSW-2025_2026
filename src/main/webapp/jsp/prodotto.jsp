@@ -64,12 +64,12 @@
 					</button>
 				</form>
 
-				<form action="${pageContext.request.contextPath}/Profilo" method="POST" class="action-form">
-					<input type="hidden" name="idProdotto" value="${prodottoDettaglio.idProdotto}">
-					<button type="submit" class="btn-wishlist">
+				<div class="wishlist-container">
+					<button type="button" class="btn-wishlist" id="btnAggiungiPreferito" data-id="${prodottoDettaglio.idProdotto}">
 						&#10084; Aggiungi ai Preferiti
 					</button>
-				</form>
+					<div id="msgPreferitoProdotto" class="msg-preferito"></div>
+				</div>
 				
 			</div>
 		</div>

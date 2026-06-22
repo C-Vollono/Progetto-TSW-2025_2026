@@ -598,6 +598,50 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
+/*STILI CONFERMA ELIMINAZIONE RECENSIONE*/
+.modal-conferma {
+    max-width: 400px;
+    text-align: center;
+}
+
+.modal-header-conferma {
+    justify-content: center;
+    border-bottom: none;
+}
+
+.modal-conferma-testo {
+    margin-bottom: 25px;
+    color: #555;
+}
+
+.modal-conferma-azioni {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.btn-annulla {
+    background-color: #f8f9fa;
+    color: #444;
+    border: 1px solid #ddd;
+    padding: 12px 25px;
+    font-size: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.btn-annulla:hover {
+    background-color: #ebebeb;
+}
+
+.btn-conferma-azione {
+    padding: 12px 25px;
+    font-size: 1rem;
+    border-radius: 4px;
+}
+
 /*RESPONSIVE*/
 @media screen and (max-width: 900px) {
     .dashboard-container { 
