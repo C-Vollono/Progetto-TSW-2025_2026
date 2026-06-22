@@ -269,6 +269,21 @@
             </c:choose>
         </div>
         
+        <div id="modalConfermaRecensione" class="modal-overlay">
+            <div class="modal-content modal-conferma">
+                <div class="modal-header modal-header-conferma">
+                    <h3>Conferma Eliminazione</h3>
+                </div>
+                <div class="modal-body">
+                    <p class="modal-conferma-testo">Sei sicuro di voler eliminare definitivamente questa recensione? L'operazione è irreversibile.</p>
+                    <div class="modal-conferma-azioni">
+                        <button id="btnAnnullaRecensione" class="btn-annulla">Annulla</button>
+                        <button id="btnConfermaRecensione" class="btn-danger-small btn-conferma-azione">Sì, Elimina</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <div id="assistenza" class="dashboard-section">
             <h2>Assistenza Clienti</h2>
             <p class="section-subtitle">Hai un problema con un ordine o uno strumento? Apri un ticket e ti aiuteremo al più presto.</p>
@@ -312,7 +327,7 @@
                                 <c:forEach var="ticket" items="${tuttiTicket}">
                                     <li class="ticket-item">
                                         <div class="ticket-info">
-                                            <span class="ticket-id">Ticket #${ticket.idTicket} - ${ticket.oggetto}</span>
+                                            <span class="ticket-id">Ticket #${ticket.idTicket} - ${ticket.descrizione}</span>
                                             <span class="ticket-date"><fmt:formatDate value="${ticket.dataApertura}" pattern="dd MMM yyyy" /></span>
                                         </div>
                                         

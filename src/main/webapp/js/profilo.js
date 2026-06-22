@@ -271,57 +271,83 @@ document.addEventListener("DOMContentLoaded", function() {
 		});
 	});
 					
-	//GESTIONE RIMOZIONE RECENSIONI
-	const msgRecensioni = document.getElementById("msgRecensioni");
-	const recensioniContainer = document.getElementById("recensioniContainer");
+    //GESTIONE RIMOZIONE RECENSIONE
+	const btnEliminaRecensioni = document.querySelectorAll('.btn-elimina-recensione');
+	const msgRecensioni = document.getElementById('msgRecensioni');
+	
+	const modalConfermaRec = document.getElementById('modalConfermaRecensione');
+	const btnAnnullaRec = document.getElementById('btnAnnullaRecensione');
+	const btnConfermaRec = document.getElementById('btnConfermaRecensione');
 
-    document.querySelectorAll(".btn-elimina-recensione").forEach(btn => {
-		btn.addEventListener("click", function() {
-			if (!confirm("Sei sicuro di voler eliminare questa recensione?")) {
-				return;
+	let idDaEliminare = null;
+	let cardDaEliminare = null;
+
+	btnEliminaRecensioni.forEach(btn => {
+		btn.addEventListener('click', function(e) {
+			e.preventDefault();
+			idDaEliminare = this.getAttribute('data-id');
+			cardDaEliminare = this.closest('.recensione-card');
+			
+			modalConfermaRec.classList.add('active');
+		});
+	});
+	if (btnAnnullaRec) {
+		btnAnnullaRec.addEventListener('click', function() {
+			modalConfermaRec.classList.remove('active');
+			idDaEliminare = null;
+			cardDaEliminare = null;
+		});
+	}
+	if (btnConfermaRec) {
+		btnConfermaRec.addEventListener('click', function() {
+			modalConfermaRec.classList.remove('active');
+
+			if (!idDaEliminare || !cardDaEliminare) return;
+
+			if(msgRecensioni) {
+				msgRecensioni.textContent = "Eliminazione in corso...";
+				msgRecensioni.className = "form-message-margin";
 			}
-
-			const idRecensione = this.getAttribute("data-id");
-			const cardDaRimuovere = document.querySelector(`.recensione-card[data-card-id="${idRecensione}"]`);
-					            
-			msgRecensioni.textContent = "Eliminazione in corso...";
-			msgRecensioni.className = "form-message-margin";
 
 			const params = new URLSearchParams();
 			params.append('action', 'eliminaRecensione');
-			params.append('idRecensione', idRecensione);
+			params.append('idRecensione', idDaEliminare);
 
 			fetch("Profilo", { method: 'POST', body: params })
 			.then(response => response.json())
 			.then(data => {
 				if (data.success) {
-					msgRecensioni.textContent = ""; 
-					msgRecensioni.className = "";
-					                    
-					if (cardDaRimuovere) {
-						recensioniContainer.removeChild(cardDaRimuovere);
+					if(msgRecensioni) {
+						msgRecensioni.textContent = data.message;
+						msgRecensioni.className = "success-msg-js form-message-margin";
 					}
-
-					if (recensioniContainer.children.length === 0) {
-						recensioniContainer.remove(); 
-					    
-						const emptyP = document.createElement("p");
-					    emptyP.className = "text-empty";
-					    emptyP.id = "emptyRecensioniText";
-					    emptyP.textContent = "Non hai più scritto nessuna recensione.";
-					                        
-					    msgRecensioni.parentNode.insertBefore(emptyP, msgRecensioni.nextSibling);
-					}
+					
+					cardDaEliminare.style.transition = "opacity 0.3s ease";
+					cardDaEliminare.style.opacity = "0";
+					setTimeout(() => cardDaEliminare.remove(), 300);
+					
 				} else {
-					msgRecensioni.textContent = data.message || "Impossibile eliminare la recensione.";
-					msgRecensioni.className = "error-msg-js form-message-margin";
+					if(msgRecensioni) {
+						msgRecensioni.textContent = data.message || "Errore durante l'eliminazione.";
+						msgRecensioni.className = "error-msg-js form-message-margin";
+					}
 				}
 			})
 			.catch(() => {
-				msgRecensioni.textContent = "Errore di connessione al server.";
-				msgRecensioni.className = "error-msg-js form-message-margin";
+				if(msgRecensioni) {
+					msgRecensioni.textContent = "Errore di connessione al server.";
+					msgRecensioni.className = "error-msg-js form-message-margin";
+				}
 			});
 		});
+	}
+
+	window.addEventListener("click", function(e) {
+		if (e.target === modalConfermaRec) {
+			modalConfermaRec.classList.remove("active");
+			idDaEliminare = null;
+			cardDaEliminare = null;
+		}
 	});
 							
 	//GESTIONE APERTURA TICKET
