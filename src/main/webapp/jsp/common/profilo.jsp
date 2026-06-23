@@ -169,6 +169,7 @@
                                           (ordine.statoOrdine == 'Annullato' ? 'status-danger' : 'status-warning')}">
                                         ${ordine.statoOrdine}
                                     </span>
+                                    <button class="btn-details btn-dettagli-ordine btn-ricevuta" data-id="${ordine.idOrdine}">Vedi Ricevuta</button>
                                 </div>
                             </div>
                         </c:forEach>
@@ -186,6 +187,48 @@
                 <div class="modal-body">
                     <ul id="listaDettagliProdotti" class="dettagli-list">
                         </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div id="modalRicevutaOrdine" class="modal-overlay">
+            <div class="modal-content modal-ricevuta">
+                <div class="modal-header">
+                    <h3 id="ricevutaTitle">Dettagli Ordine</h3>
+                    <span class="close-modal" id="closeModalRicevuta">&times;</span>
+                </div>
+                <div class="modal-body modal-body-ricevuta">
+                    
+                    <div id="ricevutaMessaggio"></div>
+
+                    <div id="ricevutaContenuto" class="nascosto">
+                        <div class="receipt-info-modal">
+                            <p><strong>Data Registrazione:</strong> <span id="ricevutaData"></span></p>
+                            <p><strong>Stato Spedizione:</strong> <span id="ricevutaStato"></span></p>
+                        </div>
+                        <table class="receipt-table-modal">
+                            <thead>
+                                <tr>
+                                    <th>Prodotto</th>
+                                    <th class="text-center">Qtà</th>
+                                    <th class="text-right">Prezzo</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ricevutaTbody">
+                                </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="2" class="text-right total-label-modal">Totale Pagato:</td>
+                                    <td class="text-right total-amount-modal">&euro; <span id="ricevutaTotale"></span></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <div class="modal-footer-actions no-print">
+                            <button id="btnPrintRicevutaModal" class="btn-annulla">
+                                🖨️ Stampa Ricevuta
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

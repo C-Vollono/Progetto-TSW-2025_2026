@@ -19,6 +19,20 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 	
+	//GESTIONE APERTURA DIRETTA CONFERMAORDINE
+    const hashUrl = window.location.hash.substring(1); 
+    
+    if (hashUrl) {
+        const tabDaAprire = document.querySelector(`.menu-link[data-target="${hashUrl}"]`);
+        
+        if (tabDaAprire) {
+            tabDaAprire.click();
+            setTimeout(() => {
+                window.scrollTo({ top: 100, behavior: 'smooth' });
+            }, 100);
+        }
+    }
+	
 	//GESTIONE FORM IMPOSTAZIONI AJAX    
 	const formAggiornaDati = document.getElementById("formAggiornaDati");
 		    if (formAggiornaDati) {
@@ -176,8 +190,8 @@ document.addEventListener("DOMContentLoaded", function() {
 				.then(response => response.json())
 			    .then(data => {
 			    	svuotaLista();
-		                if (data.success && data.dettagli.length > 0) {
-		                    data.dettagli.forEach(item => {			                        
+					if (data.success && data.prodotti.length > 0) {
+							    data.prodotti.forEach(item => {			                        
 		                        const li = document.createElement("li");
 		                        li.className = "dettaglio-item";
 			                        
@@ -539,4 +553,72 @@ document.addEventListener("DOMContentLoaded", function() {
             modalTicket.classList.remove("active");
         }
     });
+	
+	//GESTIONE RICEVUTA ORDINE
+    const btnDettagliOrdine = document.querySelectorAll('.btn-dettagli-ordine');
+    const modalRicevuta = document.getElementById('modalRicevutaOrdine');
+    const closeModalRicevuta = document.getElementById('closeModalRicevuta');
+    
+    const msgBox = document.getElementById('ricevutaMessaggio');
+    const contenutoBox = document.getElementById('ricevutaContenuto');
+    const tbody = document.getElementById('ricevutaTbody');
+
+    btnDettagliOrdine.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const idOrdine = this.getAttribute('data-id');
+            
+            contenutoBox.classList.add('nascosto');
+            msgBox.innerHTML = '<p class="text-empty-modal">Caricamento ricevuta in corso...</p>';
+            document.getElementById('ricevutaTitle').textContent = `Ricevuta Ordine #${idOrdine}`;
+            modalRicevuta.classList.add('active');
+
+            const params = new URLSearchParams();
+            params.append('action', 'dettagliOrdine');
+            params.append('idOrdine', idOrdine);
+
+            fetch("Profilo", { method: 'POST', body: params })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    msgBox.innerHTML = '';
+                    contenutoBox.classList.remove('nascosto');
+
+                    document.getElementById('ricevutaData').textContent = data.dataOrdine;
+                    document.getElementById('ricevutaStato').textContent = data.stato;
+                    document.getElementById('ricevutaTotale').textContent = parseFloat(data.totale).toFixed(2).replace('.', ',');
+
+                    tbody.innerHTML = data.prodotti.map(p => `
+                        <tr>
+                            <td>${p.nome}</td>
+                            <td class="text-center">${p.quantita}</td>
+                            <td class="text-right">&euro; ${(parseFloat(p.prezzo) * p.quantita).toFixed(2).replace('.', ',')}</td>
+                        </tr>
+                    `).join('');
+
+                } else {
+                    msgBox.innerHTML = `<p class="error-msg-js text-center">${data.message}</p>`;
+                }
+            })
+            .catch(() => {
+                msgBox.innerHTML = '<p class="error-msg-js text-center">Errore di connessione al server.</p>';
+            });
+        });
+    });
+
+    if (closeModalRicevuta) {
+        closeModalRicevuta.addEventListener("click", () => modalRicevuta.classList.remove("active"));
+    }
+    window.addEventListener("click", function(e) {
+        if (e.target === modalRicevuta) modalRicevuta.classList.remove("active");
+    });
+	
+	//GESTIONE STAMPA RICEVUTA
+	    const btnPrintRicevuta = document.getElementById('btnPrintRicevutaModal');
+	    if (btnPrintRicevuta) {
+	        btnPrintRicevuta.addEventListener('click', function(e) {
+	            e.preventDefault();
+	            window.print();
+	        });
+	    }
 });
