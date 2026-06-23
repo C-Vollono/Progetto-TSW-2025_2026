@@ -111,7 +111,7 @@ public class ProfiloServlet extends HttpServlet {
         String action = request.getParameter("action");
 
         try {
-            // AGGIORNAMENTO DATI PERSONALI
+            //AGGIORNAMENTO DATI PERSONALI
             if ("aggiornaDati".equals(action)) {
                 String nome = request.getParameter("nome");
                 String cognome = request.getParameter("cognome");
@@ -130,7 +130,7 @@ public class ProfiloServlet extends HttpServlet {
                 return;
             }
 
-            // CAMBIO PASSWORD
+            //CAMBIO PASSWORD
             if ("cambiaPassword".equals(action)) {
                 String oldPassword = request.getParameter("oldPassword");
                 String newPassword = request.getParameter("newPassword");
@@ -180,7 +180,7 @@ public class ProfiloServlet extends HttpServlet {
                 return;
             }
             
-            // --- CARTA DI PAGAMENTO ---
+            //CARTA DI PAGAMENTO
             if ("aggiungiPagamento".equals(action)) {
                 String numeroCarta = request.getParameter("numeroCarta").replaceAll("\\s+", "");
                 String oscurato = "****" + numeroCarta.substring(numeroCarta.length() - 4);
@@ -209,7 +209,7 @@ public class ProfiloServlet extends HttpServlet {
                 return;
             }
 
-            // --- RIMUOVI DAI PREFERITI (AJAX) ---
+            //RIMUOVI DAI PREFERITI
             if ("rimuoviPreferito".equals(action)) {
                 int idProdotto = Integer.parseInt(request.getParameter("idProdotto"));
                 preferitiDAO.doDelete(utente.getIdUtente(), idProdotto);
@@ -217,7 +217,7 @@ public class ProfiloServlet extends HttpServlet {
                 return;
             }
             
-            // --- ELIMINA RECENSIONE (AJAX) ---
+            //ELIMINA RECENSIONE
             if ("eliminaRecensione".equals(action)) {
                 int idRecensione = Integer.parseInt(request.getParameter("idRecensione"));
                 RecensioneBean r = recensioneDAO.doRetrieveByKey(idRecensione);
@@ -230,7 +230,7 @@ public class ProfiloServlet extends HttpServlet {
                 return;
             }
             
-            // --- APRI NUOVO TICKET (AJAX) --
+            //NUOVO TICKET
             if ("apriTicket".equals(action)) {
                 String oggetto = request.getParameter("oggetto");
                 String messaggio = request.getParameter("messaggio");
@@ -269,7 +269,7 @@ public class ProfiloServlet extends HttpServlet {
                 return;
             }
             
-            // --- DETTAGLI TICKET (AJAX) ---
+            //DETTAGLI TICKET
             if ("dettagliTicket".equals(action)) {
                 int idTicket = Integer.parseInt(request.getParameter("idTicket"));
                 TicketBean ticket = ticketDAO.doRetrieveByKey(idTicket);
@@ -293,11 +293,10 @@ public class ProfiloServlet extends HttpServlet {
                 return;
             }
             
-            // --- AGGIUNGI AI PREFERITI (AJAX) ---
+            //AGGIUNGI AI PREFERITI
             if ("aggiungiPreferito".equals(action)) {
                 int idProdotto = Integer.parseInt(request.getParameter("idProdotto"));
                 
-                // Usiamo l'istanza globale preferitiDAO già presente e inizializzata nell'init()
                 if (preferitiDAO.isPreferito(utente.getIdUtente(), idProdotto)) {
                     sendJsonError(response, "Questo strumento è già nei tuoi preferiti!");
                     return;
@@ -312,7 +311,7 @@ public class ProfiloServlet extends HttpServlet {
                 return;
             }
             
-         // --- AZIONE: DETTAGLI ORDINE (AJAX) ---
+         //AZIONE: DETTAGLI ORDINE
             if ("dettagliOrdine".equals(action)) {
                 response.setContentType("application/json");
                 response.setCharacterEncoding("UTF-8");
@@ -336,12 +335,10 @@ public class ProfiloServlet extends HttpServlet {
                     json.append("{");
                     json.append("\"success\": true, ");
                     
-                    // ECCO I DATI CHE MANCAVANO!
                     json.append("\"dataOrdine\": \"").append(ordine.getDataOrdine().toString()).append("\", ");
                     json.append("\"totale\": ").append(ordine.getTotaleOrdine()).append(", ");
                     json.append("\"stato\": \"").append(ordine.getStatoOrdine()).append("\", ");
                     
-                    // CHIAMIAMO L'ARRAY "prodotti" COME SI ASPETTA IL JAVASCRIPT
                     json.append("\"prodotti\": [");
                     
                     for (int i = 0; i < dettagli.size(); i++) {
