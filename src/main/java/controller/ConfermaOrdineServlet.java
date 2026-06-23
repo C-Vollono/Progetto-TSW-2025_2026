@@ -199,6 +199,13 @@ public class ConfermaOrdineServlet extends HttpServlet {
             }
 
             con.commit(); // Se tutto è andato bene, consolida i dati nel DB!
+            
+            session.setAttribute("ricevuta_idOrdine", idOrdineGenerato);
+            session.setAttribute("ricevuta_totale", carrello.getPrezzoTotale());
+            session.setAttribute("ricevuta_nome", nomeCognome);
+            session.setAttribute("ricevuta_indirizzo", via + ", " + civico + " - " + cap + " " + citta + " (" + provincia + ")");
+            session.setAttribute("ricevuta_metodo", circuito + " " + cartaOscurata);
+            session.setAttribute("ricevuta_elementi", new java.util.HashMap<>(carrello.getElementi())); // Copia gli elementi
 
             // 5. SVUOTAMENTO CARRELLO E REDIRECT (Pattern PRG)
             session.removeAttribute("carrello");

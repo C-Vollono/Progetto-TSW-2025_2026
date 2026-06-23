@@ -345,8 +345,16 @@
 .order-body {
     padding: 20px;
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
+}
+
+button.btn-details.btn-ricevuta {
+    flex: none; 
+    width: auto;
+    height: auto;
+    padding: 8px 15px;
+    font-size: 0.85rem;
 }
 
 /*SEZIONE MODAL*/
@@ -642,6 +650,63 @@
     border-radius: 4px;
 }
 
+/*STILI MODALE RICEVUTA*/
+.modal-ricevuta {
+    max-width: 600px;
+}
+.modal-body-ricevuta {
+    padding-bottom: 20px;
+}
+.nascosto {
+    display: none;
+}
+.text-empty-modal {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    font-style: italic;
+}
+
+/*STILI RICEVUTA*/
+.receipt-info-modal { 
+	margin-bottom: 20px;
+}
+
+.receipt-table-modal {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+.receipt-table-modal th {
+    padding: 10px 5px;
+    border-bottom: 2px solid #ddd;
+    color: #333;
+}
+.receipt-table-modal td {
+    padding: 10px 5px;
+    border-bottom: 1px solid #eee;
+    color: #555;
+}
+.total-amount-modal {
+    padding-top: 15px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #166534;
+}
+.total-label-modal {
+    padding-top: 15px;
+    font-weight: bold;
+    color: #333;
+}
+
+/*BOTTONE STAMPA*/
+.modal-footer-actions {
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+    text-align: center;
+}
+
 /*RESPONSIVE*/
 @media screen and (max-width: 900px) {
     .dashboard-container { 
@@ -675,5 +740,34 @@
     .indirizzo-actions { 
     	width: 100%; 
     	justify-content: flex-end; 
+    }
+}
+
+@media print {
+    body * {
+        visibility: hidden; 
+    }
+    
+    #modalRicevutaOrdine, #modalRicevutaOrdine * {
+        visibility: visible; 
+    }
+    
+    #modalRicevutaOrdine {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        background-color: white;
+    }
+
+    .modal-content {
+        box-shadow: none;
+        border: none;
+        width: 100%;
+        padding: 0;
+    }
+
+    .close-modal, .no-print {
+        display: none !important;
     }
 }

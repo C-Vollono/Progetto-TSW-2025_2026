@@ -25,7 +25,6 @@ import model.dao.DatiSpedizioneDAO;
 import model.bean.DatiPagamentoBean;
 import model.dao.DatiPagamentoDAO;
 import model.dao.DettagliOrdineDAO;
-import model.bean.DettaglioOrdineBean;
 import model.dao.ProdottoDAO;
 import model.bean.ProdottoBean;
 import model.dao.PreferitiDAO;
@@ -112,7 +111,7 @@ public class ProfiloServlet extends HttpServlet {
         String action = request.getParameter("action");
 
         try {
-            // AGGIORNAMENTO DATI PERSONALI
+            //AGGIORNAMENTO DATI PERSONALI
             if ("aggiornaDati".equals(action)) {
                 String nome = request.getParameter("nome");
                 String cognome = request.getParameter("cognome");
@@ -131,7 +130,7 @@ public class ProfiloServlet extends HttpServlet {
                 return;
             }
 
-            // CAMBIO PASSWORD
+            //CAMBIO PASSWORD
             if ("cambiaPassword".equals(action)) {
                 String oldPassword = request.getParameter("oldPassword");
                 String newPassword = request.getParameter("newPassword");
@@ -181,7 +180,7 @@ public class ProfiloServlet extends HttpServlet {
                 return;
             }
             
-            // --- CARTA DI PAGAMENTO ---
+            //CARTA DI PAGAMENTO
             if ("aggiungiPagamento".equals(action)) {
                 String numeroCarta = request.getParameter("numeroCarta").replaceAll("\\s+", "");
                 String oscurato = "****" + numeroCarta.substring(numeroCarta.length() - 4);
@@ -209,40 +208,8 @@ public class ProfiloServlet extends HttpServlet {
                 }
                 return;
             }
-            
-            // --- DETTAGLI ORDINE (AJAX) ---
-            if ("dettagliOrdine".equals(action)) {
-                int idOrdine = Integer.parseInt(request.getParameter("idOrdine"));
-                
-                DettagliOrdineDAO dettDao = new DettagliOrdineDAO();
-                ProdottoDAO prodDao = new ProdottoDAO();
-                List<DettaglioOrdineBean> dettagli = dettDao.doRetrieveByOrdine(idOrdine);
 
-                StringBuilder json = new StringBuilder("[");
-                for(int i=0; i<dettagli.size(); i++) {
-                    DettaglioOrdineBean d = dettagli.get(i);
-                    ProdottoBean p = prodDao.doRetrieveByKey(d.getIdProdotto());
-                    String nomeProd = "Prodotto rimosso dal catalogo";
-                    
-                    if (p != null) {
-                        String completo = p.getMarca() + " " + p.getModello();
-                        nomeProd = completo.replace("\"", "\\\"");
-                    }
-                    
-                    json.append("{")
-                        .append("\"nome\": \"").append(nomeProd).append("\",")
-                        .append("\"quantita\": ").append(d.getQuantita()).append(",")
-                        .append("\"prezzo\": ").append(d.getPrezzoUnitarioStorico())
-                        .append("}");
-                    if(i < dettagli.size() - 1) json.append(",");
-                }
-                json.append("]");
-
-                response.getWriter().write("{\"success\": true, \"dettagli\": " + json.toString() + "}");
-                return;
-            }
-
-            // --- RIMUOVI DAI PREFERITI (AJAX) ---
+            //RIMUOVI DAI PREFERITI
             if ("rimuoviPreferito".equals(action)) {
                 int idProdotto = Integer.parseInt(request.getParameter("idProdotto"));
                 preferitiDAO.doDelete(utente.getIdUtente(), idProdotto);
@@ -250,7 +217,7 @@ public class ProfiloServlet extends HttpServlet {
                 return;
             }
             
-            // --- ELIMINA RECENSIONE (AJAX) ---
+            //ELIMINA RECENSIONE
             if ("eliminaRecensione".equals(action)) {
                 int idRecensione = Integer.parseInt(request.getParameter("idRecensione"));
                 RecensioneBean r = recensioneDAO.doRetrieveByKey(idRecensione);
@@ -263,7 +230,7 @@ public class ProfiloServlet extends HttpServlet {
                 return;
             }
             
-            // --- APRI NUOVO TICKET (AJAX) --
+            //NUOVO TICKET
             if ("apriTicket".equals(action)) {
                 String oggetto = request.getParameter("oggetto");
                 String messaggio = request.getParameter("messaggio");
@@ -302,7 +269,7 @@ public class ProfiloServlet extends HttpServlet {
                 return;
             }
             
-            // --- DETTAGLI TICKET (AJAX) ---
+            //DETTAGLI TICKET
             if ("dettagliTicket".equals(action)) {
                 int idTicket = Integer.parseInt(request.getParameter("idTicket"));
                 TicketBean ticket = ticketDAO.doRetrieveByKey(idTicket);
@@ -326,11 +293,10 @@ public class ProfiloServlet extends HttpServlet {
                 return;
             }
             
-            // --- AGGIUNGI AI PREFERITI (AJAX) ---
+            //AGGIUNGI AI PREFERITI
             if ("aggiungiPreferito".equals(action)) {
                 int idProdotto = Integer.parseInt(request.getParameter("idProdotto"));
                 
-                // Usiamo l'istanza globale preferitiDAO già presente e inizializzata nell'init()
                 if (preferitiDAO.isPreferito(utente.getIdUtente(), idProdotto)) {
                     sendJsonError(response, "Questo strumento è già nei tuoi preferiti!");
                     return;
@@ -344,7 +310,64 @@ public class ProfiloServlet extends HttpServlet {
                 response.getWriter().write("{\"success\": true, \"message\": \"Aggiunto ai preferiti con successo!\"}");
                 return;
             }
-
+            
+         //AZIONE: DETTAGLI ORDINE
+            if ("dettagliOrdine".equals(action)) {
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+            
+                try {
+                    int idOrdine = Integer.parseInt(request.getParameter("idOrdine"));
+                    
+                    OrdineDAO ordineDAO = new OrdineDAO();
+                    model.bean.OrdineBean ordine = ordineDAO.doRetrieveByKey(idOrdine);
+                    
+                    if (ordine == null || ordine.getIdUtente() != utente.getIdUtente()) {
+                        sendJsonError(response, "Ordine non trovato o non autorizzato.");
+                        return;
+                    }
+                    
+                    DettagliOrdineDAO dettDAO = new DettagliOrdineDAO();
+                    List<model.bean.DettaglioOrdineBean> dettagli = dettDAO.doRetrieveByOrdine(idOrdine);
+                    ProdottoDAO prodDAO = new ProdottoDAO();
+                    
+                    StringBuilder json = new StringBuilder();
+                    json.append("{");
+                    json.append("\"success\": true, ");
+                    
+                    json.append("\"dataOrdine\": \"").append(ordine.getDataOrdine().toString()).append("\", ");
+                    json.append("\"totale\": ").append(ordine.getTotaleOrdine()).append(", ");
+                    json.append("\"stato\": \"").append(ordine.getStatoOrdine()).append("\", ");
+                    
+                    json.append("\"prodotti\": [");
+                    
+                    for (int i = 0; i < dettagli.size(); i++) {
+                        model.bean.DettaglioOrdineBean dett = dettagli.get(i);
+                        ProdottoBean prod = prodDAO.doRetrieveByKey(dett.getIdProdotto());
+                        
+                        String nomeProdotto = (prod != null) ? (prod.getMarca() + " " + prod.getModello()).replace("\"", "\\\"") : "Prodotto Rimosso";
+                        double prezzo = dett.getPrezzoUnitarioStorico(); 
+                        
+                        json.append("{")
+                            .append("\"nome\": \"").append(nomeProdotto).append("\", ")
+                            .append("\"quantita\": ").append(dett.getQuantita()).append(", ")
+                            .append("\"prezzo\": ").append(prezzo)
+                            .append("}");
+                        
+                        if (i < dettagli.size() - 1) {
+                            json.append(", ");
+                        }
+                    }
+                    
+                    json.append("]}");
+                    response.getWriter().write(json.toString());
+                    
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    sendJsonError(response, "Errore durante il recupero della ricevuta.");
+                }
+                return;
+            }
         } catch (Exception e) {
             e.printStackTrace();
             sendJsonError(response, "Errore interno del server durante l'elaborazione.");
