@@ -38,13 +38,44 @@
                     <h3>Classificazione</h3>
                     <div class="form-grid-2col">
                         <div class="form-group">
-                            <label for="tipo">Categoria (Tipo)</label>
-                            <input type="text" id="tipo" name="tipo" value="${prodotto.tipo}" required>
+                            <label for="macroSelect">Categoria Principale</label>
+                            <div class="select-btn-group" style="display: flex; gap: 8px;">
+                                <select id="macroSelect" name="tipo" required style="flex-grow: 1;">
+                                    <option value="">-- Seleziona Categoria --</option>
+                                    <c:if test="${not empty tutteLeMacro}">
+                                        <c:forEach var="macro" items="${tutteLeMacro}">
+                                            <option value="${macro.nomeMacro}" data-id="${macro.idMacro}">${macro.nomeMacro}</option>
+                                        </c:forEach>
+                                    </c:if>
+                                </select>
+                                <button type="button" id="btn-add-macro" class="btn-inline-add" title="Nuova Categoria">+</button>
+                            </div>
                         </div>
                         
                         <div class="form-group">
-                            <label for="idMicro">ID Sotto-Categoria</label>
-                            <input type="number" id="idMicro" name="idMicro" value="${prodotto.idMicro}" required>
+                            <label for="idMicro">Sotto-Categoria</label>
+                            <div class="select-btn-group" style="display: flex; gap: 8px;">
+                                <select id="idMicro" name="idMicro" required style="flex-grow: 1;">
+                                    <option value="">-- Seleziona Sotto-Categoria --</option>
+                                </select>
+                                <button type="button" id="btn-add-micro" class="btn-inline-add" title="Nuova Sotto-Categoria">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="box-nuova-macro" style="display:none; margin-top:12px; padding:10px; background:#f4f6f9; border-radius:6px;">
+                        <label style="font-size:12px; font-weight:6px;">Nuova Categoria Principale:</label>
+                        <div style="display:flex; gap:6px; margin-top:4px;">
+                            <input type="text" id="input-nuova-macro" placeholder="Es. Amplificatori">
+                            <button type="button" id="submit-macro" style="background:#28a745; color:white; border:none; padding:4px 10px; border-radius:4px; cursor:pointer;">Salva</button>
+                        </div>
+                    </div>
+
+                    <div id="box-nuova-micro" style="display:none; margin-top:12px; padding:10px; background:#f4f6f9; border-radius:6px;">
+                        <label style="font-size:12px; font-weight:6px;">Nuova Sotto-Categoria:</label>
+                        <div style="display:flex; gap:6px; margin-top:4px;">
+                            <input type="text" id="input-nuova-micro" placeholder="Es. Valvolari">
+                            <button type="button" id="submit-micro" style="background:#28a745; color:white; border:none; padding:4px 10px; border-radius:4px; cursor:pointer;">Salva</button>
                         </div>
                     </div>
                 </div>
@@ -68,7 +99,7 @@
                     <h3>Media e Contenuti</h3>
                     <div class="form-group mb-15">
                         <label for="urlImmagine">Nome File Immagine / URL</label>
-                        <input type="text" id="urlImmagine" name="urlImmagine" value="${prodotto.urlImmagine}" oninput="updatePreview(this.value)" required>
+                        <input type="text" id="urlImmagine" name="urlImmagine" value="${prodotto.urlImmagine}" required>
                     </div>
 
                     <div class="form-group">
@@ -83,7 +114,7 @@
                 <div class="sticky-preview-card">
                     <h3>Anteprima Immagine</h3>
                     <div class="image-preview-box">
-                        <img id="product-img-preview" src="${pageContext.request.contextPath}/images/${prodotto.urlImmagine.replace('images/', '')}" alt="Anteprima">
+                        <img id="product-img-preview" src="${pageContext.request.contextPath}/images/${prodotto.urlImmagine != null ? prodotto.urlImmagine.replace('images/', '') : ''}" alt="Anteprima">
                     </div>
                     <p class="image-path-indicator">File caricato: <span>${prodotto.urlImmagine}</span></p>
                 </div>
@@ -98,12 +129,25 @@
     </form>
 </main>
 
-<script>
-function updatePreview(val) {
-    const img = document.getElementById('product-img-preview');
-    const cleanVal = val.replace('images/', '');
-    img.src = "${pageContext.request.contextPath}/images/" + cleanVal;
-}
-</script>
+<div id="js-data-bridge" 
+     data-context-path="${pageContext.request.contextPath}"
+     data-id-micro-iniziale="${prodotto.idMicro != null ? prodotto.idMicro : 0}"
+     data-tipo-iniziale="${prodotto.tipo}"
+     style="display:none;">
+    <script id="micro-data-json" type="application/json">
+        [
+            <c:if test="${not empty tutteLeMicro}">
+                <c:forEach var="micro" items="${tutteLeMicro}" varStatus="loop">
+                    { 
+                      "idMicro": ${micro.idMicro}, 
+                      "nome": "${micro.nomeMicro.replace('"', '\\"')}", 
+                      "idMacro": ${micro.idMacro} 
+                    }${!loop.last ? ',' : ''}
+                </c:forEach>
+            </c:if>
+        ]
+    </script>
+</div>
 
+<script src="${pageContext.request.contextPath}/js/funzioniAdmin.js"></script>
 <jsp:include page="/jsp/footer.jsp" />

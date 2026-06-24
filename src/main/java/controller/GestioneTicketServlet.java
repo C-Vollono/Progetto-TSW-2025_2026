@@ -13,20 +13,17 @@ import javax.servlet.http.HttpSession;
 import model.bean.TicketBean;
 import model.bean.UtenteBean;
 import model.dao.TicketDAO;
-import model.bean.PraticaBean;
-import model.dao.PraticaDAO;
+
 
 @WebServlet("/Admin/GestioneTicket")
 public class GestioneTicketServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private TicketDAO ticketDAO;
-    private PraticaDAO praticaDAO;
 
     @Override
     public void init() throws ServletException {
         // Inizializzazione dei DAO all'avvio della servlet
         ticketDAO = new TicketDAO();
-        praticaDAO = new PraticaDAO();
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
@@ -61,9 +58,6 @@ public class GestioneTicketServlet extends HttpServlet {
                     break;
                 case "updateStatus":
                     updateTicketStatus(request, response);
-                    break;
-                case "updatePratica": // <-- NUOVA AZIONE AGGIUNTA
-                    updatePraticaDetails(request, response);
                     break;
                 default:
                     listTickets(request, response);
@@ -100,10 +94,9 @@ public class GestioneTicketServlet extends HttpServlet {
         if (ticket != null) {
             request.setAttribute("ticket", ticket);
          
-            // Recupera gli attributi della Pratica dal database tramite l'id ticket
-            PraticaBean pratica = praticaDAO.doRetrieveByTicket(idTicket);
+           
             
-            request.setAttribute("pratica", pratica);
+           
             request.getRequestDispatcher("/jsp/admin/dettagliTicket.jsp").forward(request, response);
         } else {
             response.sendRedirect(request.getContextPath() + "/Admin/GestioneTicket?action=list");
@@ -127,39 +120,5 @@ public class GestioneTicketServlet extends HttpServlet {
         response.sendRedirect(request.getContextPath() + "/Admin/GestioneTicket?action=view&idTicket=" + idTicket);
     }
 
-    // AZIONE: Modifica gli attributi storici della pratica legata al ticket
-    private void updatePraticaDetails(HttpServletRequest request, HttpServletResponse response) 
-            throws SQLException, IOException {
-        
-        int idTicket = Integer.parseInt(request.getParameter("idTicket"));
-        int idPratica = Integer.parseInt(request.getParameter("idPratica"));
-        String interventiPrevisti = request.getParameter("interventiPrevisti");
-        double costoRiparazione = Double.parseDouble(request.getParameter("costoRiparazione"));
-        String impostaCompletata = request.getParameter("impostaCompletata");
-
-        // Recuperiamo la pratica esistente per aggiornarla senza perdere i vecchi riferimenti (come l'ID_ticket)
-        PraticaBean pratica = praticaDAO.doRetrieveByKey(idPratica);
-        
-        if (pratica != null) {
-            pratica.setInterventiPrevisti(interventiPrevisti);
-            pratica.setCostoRiparazione(costoRiparazione);
-            
-            // Gestione dinamica del Timestamp di completamento lavoro
-            if ("true".equals(impostaCompletata)) {
-                // Imposta la data corrente solo se non era già presente una data passata
-                if (pratica.getDataCompletamento() == null) {
-                    pratica.setDataCompletamento(new java.sql.Timestamp(System.currentTimeMillis()));
-                }
-            } else {
-                // Se la checkbox viene deselezionata, il lavoro torna "in corso" (null nel database)
-                pratica.setDataCompletamento(null);
-            }
-            
-            // Esegue l'UPDATE nel database tramite il DAO dedicato
-            praticaDAO.doUpdate(pratica);
-        }
-        
-        // Redirezione di sicurezza per evitare il doppio invio dei dati al refresh della pagina
-        response.sendRedirect(request.getContextPath() + "/Admin/GestioneTicket?action=view&idTicket=" + idTicket);
-    }
+   
 }

@@ -21,7 +21,7 @@ import model.dao.MicrocategoriaDAO;
 public class GestioneProdottiServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     
-    private ProdottoDAO prodottoDAO = new ProdottoDAO();
+    private ProdottoDAO productoDAO = new ProdottoDAO();
     private MacrocategoriaDAO macrocategoriaDAO = new MacrocategoriaDAO();
     private MicrocategoriaDAO microcategoriaDAO = new MicrocategoriaDAO();
 
@@ -29,17 +29,55 @@ public class GestioneProdottiServlet extends HttpServlet {
         String action = request.getParameter("action");
         
         try {
+            // --- AGGIUNTO: GESTIONE APERTURA FORM INSERIMENTO ---
+            if (action != null && action.equalsIgnoreCase("insertForm")) {
+                try {
+                    List<MacrocategoriaBean> tutteLeMacro = macrocategoriaDAO.doRetrieveAll();
+                    List<MicrocategoriaBean> tutteLeMicro = microcategoriaDAO.doRetrieveAll();
+                    request.setAttribute("tutteLeMacro", tutteLeMacro);
+                    request.setAttribute("tutteLeMicro", tutteLeMicro);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                // Invia alla tua JSP di inserimento (assicurati che il percorso e il nome del file siano corretti)
+                request.getRequestDispatcher("/jsp/admin/InserimentoProdottoForm.jsp").forward(request, response);
+                return;
+            }
+
+            // --- GESTIONE APERTURA FORM MODIFICA (GIA' PRESENTE) ---
             if (action != null && action.equalsIgnoreCase("editForm")) {
+                try {
+                    List<MacrocategoriaBean> tutteLeMacro = macrocategoriaDAO.doRetrieveAll();
+                    List<MicrocategoriaBean> tutteLeMicro = microcategoriaDAO.doRetrieveAll();
+                    request.setAttribute("tutteLeMacro", tutteLeMacro);
+                    request.setAttribute("tutteLeMicro", tutteLeMicro);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+
                 String idParam = request.getParameter("idProdotto");
                 if (idParam != null && !idParam.trim().isEmpty()) {
-                    int idProdotto = Integer.parseInt(idParam);
-                    ProdottoBean prodotto = prodottoDAO.doRetrieveByKey(idProdotto); 
-                    request.setAttribute("prodotto", prodotto);
+                    try {
+                        int idProdotto = Integer.parseInt(idParam);
+                        ProdottoBean prodotto = productoDAO.doRetrieveByKey(idProdotto); 
+                        request.setAttribute("prodotto", prodotto);
+                    } catch (NumberFormatException | SQLException e) {
+                        e.printStackTrace();
+                        request.getSession().setAttribute("messaggioErrore", "ID Prodotto non valido o non trovato.");
+                        response.sendRedirect(request.getContextPath() + "/Admin/GestioneProdotti");
+                        return;
+                    }
+                } else {
+                    request.getSession().setAttribute("messaggioErrore", "Impossibile modificare: ID Prodotto mancante.");
+                    response.sendRedirect(request.getContextPath() + "/Admin/GestioneProdotti");
+                    return;
                 }
+
                 request.getRequestDispatcher("/jsp/admin/modificaProdottoForm.jsp").forward(request, response);
                 return;
             }
 
+            // --- GESTIONE VISUALIZZAZIONE CATALOGO STANDARD (GIA' PRESENTE) ---
             String searchQuery = request.getParameter("searchQuery");
             String categoria = request.getParameter("categoria");
             String microcategoria = request.getParameter("microcategoria");
@@ -63,7 +101,8 @@ public class GestioneProdottiServlet extends HttpServlet {
                 request.setAttribute("microDiQuestaMacro", microDiQuestaMacro);
             }
 
-            List<ProdottoBean> listaProdottiFiltrati = prodottoDAO.doRetrieveByFilters(categoria, microcategoria, marca, prezzoRange, searchQuery, ordina);
+         // Il parametro 'true' dice al DAO di prelevare sia i prodotti disponibili che quelli esauriti (quantita = 0)
+            List<ProdottoBean> listaProdottiFiltrati = productoDAO.doRetrieveByFilters(categoria, microcategoria, marca, prezzoRange, searchQuery, ordina, true);
             request.setAttribute("prodottiCatalogo", listaProdottiFiltrati); 
 
             request.setAttribute("searchQuery", searchQuery);
@@ -92,16 +131,20 @@ public class GestioneProdottiServlet extends HttpServlet {
                 // INSERIMENTO NUOVO PRODOTTO
                 if (action.equalsIgnoreCase("insert")) {
                     ProdottoBean p = new ProdottoBean();
-                    p.setModello(request.getParameter("nome"));
+                    
+                    // MODIFICATO: Parametri allineati alla nuova struttura del form JSP di inserimento
                     p.setMarca(request.getParameter("marca"));
-                    p.setTipo(request.getParameter("categoria")); // Corrisponde alla select del form
+                    p.setModello(request.getParameter("modello"));
+                    p.setTipo(request.getParameter("tipo")); // Riceve il nome della Macrocategoria selezionata
                     p.setPrezzo(Double.parseDouble(request.getParameter("prezzo")));
                     p.setQuantita(Integer.parseInt(request.getParameter("quantita")));
                     p.setDescrizione(request.getParameter("descrizione"));
                     p.setUrlImmagine(request.getParameter("urlImmagine"));
-                    p.setIdMicro(1); // Default o logica da implementare per categoria dinamica
                     
-                    prodottoDAO.doSave(p);
+                    // MODIFICATO: Lettura dinamica dell'ID Sotto-Categoria dal form invece del valore fisso 1
+                    p.setIdMicro(Integer.parseInt(request.getParameter("idMicro")));
+                    
+                    productoDAO.doSave(p);
                     session.setAttribute("messaggioSuccesso", "Prodotto inserito con successo!");
                     
                 } else if (action.equalsIgnoreCase("update")) {
@@ -116,12 +159,12 @@ public class GestioneProdottiServlet extends HttpServlet {
                     p.setUrlImmagine(request.getParameter("urlImmagine"));
                     p.setIdMicro(Integer.parseInt(request.getParameter("idMicro")));
                     
-                    prodottoDAO.doUpdate(p);
+                    productoDAO.doUpdate(p);
                     session.setAttribute("messaggioSuccesso", "Prodotto aggiornato con successo!");
                     
                 } else if (action.equalsIgnoreCase("delete")) {
                     int idProdotto = Integer.parseInt(request.getParameter("idProdotto"));
-                    prodottoDAO.doDelete(idProdotto);
+                    productoDAO.doDelete(idProdotto);
                     session.setAttribute("messaggioSuccesso", "Prodotto eliminato correttamente!");
                 }
             }
