@@ -4,16 +4,15 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 
 public class TicketBean implements Serializable {
-    // Numero di versione per la serializzazione, serve per non far crashare Tomcat in 
-	// caso finisca la RAM, per ricordare la classe anche se si eseguono modifiche 
+ 
 	private static final long serialVersionUID = 1L;
 
-    private int idTicket;            // ID_ticket INT AUTO_INCREMENT PRIMARY KEY
-    private int idUtente;            // ID_Utente INT NOT NULL
-    private Timestamp dataApertura;  // Data_apertura DATETIME NOT NULL
-    private String descrizione;      // Descrizione TEXT NOT NULL
-    private String allegato;         // Allegato VARCHAR(255)
-    private String stato;            // Stato VARCHAR(30) NOT NULL
+    private int idTicket;           
+    private int idUtente;         
+    private Timestamp dataApertura; 
+    private String descrizione;    
+    private String allegato;    
+    private String stato;        
 
     public TicketBean() {}
 

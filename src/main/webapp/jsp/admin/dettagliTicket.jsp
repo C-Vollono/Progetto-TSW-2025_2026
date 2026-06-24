@@ -24,7 +24,7 @@
 
                 <div class="wireframe-field">
                     <span class="wireframe-label">Descrizione Problema:</span>
-                    <span class="wireframe-value" style="white-space: pre-wrap;">${ticket.descrizione}</span>
+                    <span class="wireframe-value value-pre-wrap">${ticket.descrizione}</span>
                 </div>
 
                 <div class="wireframe-field">
@@ -52,6 +52,32 @@
                     
                     <button type="submit" class="btn-wireframe-submit">Aggiorna Stato</button>
                 </form>
+
+                <c:if test="${ticket.stato == 'COMPLETATO' and not empty pratica}">
+                    <div class="pratica-section">
+                        <h3>Dati Pratica Associata</h3>
+                        
+                        <div class="wireframe-field pratica-field">
+                            <span class="wireframe-label">ID Pratica:</span>
+                            <span class="wireframe-value">${pratica.idPratica}</span>
+                        </div>
+                        
+                        <div class="wireframe-field pratica-field">
+                            <span class="wireframe-label">Interventi Effettuati/Previsti:</span>
+                            <span class="wireframe-value value-pre-wrap">${pratica.interventiPrevisti}</span>
+                        </div>
+                        
+                        <div class="wireframe-field pratica-field">
+                            <span class="wireframe-label">Costo Totale Riparazione:</span>
+                            <span class="wireframe-value">€ ${pratica.costoRiparazione}</span>
+                        </div>
+                        
+                        <div class="wireframe-field pratica-field">
+                            <span class="wireframe-label">Data e Ora di Completamento:</span>
+                            <span class="wireframe-value">${pratica.dataCompletamento}</span>
+                        </div>
+                    </div>
+                </c:if>
 
             </div>
         </div>

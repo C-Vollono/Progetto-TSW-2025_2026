@@ -1,4 +1,4 @@
-package model; // Lascialo nel package model subito sopra bean per pulizia MVC
+package model; 
 
 import java.io.Serializable;
 import java.util.LinkedHashMap;
@@ -24,7 +24,7 @@ public class Carrello implements Serializable {
         
         if (esistente != null) {
             int nuovaQuantita = elementi.get(esistente) + quantitaRichiesta;
-            // CONTROLLO DI SICUREZZA: Usiamo getQuantita() che è il tuo stock nel DB
+
             if (nuovaQuantita <= prodotto.getQuantita()) {
                 elementi.put(esistente, nuovaQuantita);
             } else {
@@ -38,7 +38,7 @@ public class Carrello implements Serializable {
     public void modificaQuantita(int idProdotto, int nuovaQuantita) {
         ProdottoBean esistente = trovaInCarrello(idProdotto);
         if (esistente != null && nuovaQuantita > 0) {
-            // CONTROLLO DI SICUREZZA: Usiamo getQuantita() del tuo fagiolino
+           
             if (nuovaQuantita <= esistente.getQuantita()) {
                 elementi.put(esistente, nuovaQuantita);
             } else {

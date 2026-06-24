@@ -4,27 +4,25 @@ import java.io.Serializable;
 import java.sql.Timestamp; // Usiamo Timestamp visto che sul DB è DATETIME
 
 public class OrdineBean implements Serializable {
-    // Numero di versione per la serializzazione, serve per non far crashare Tomcat in 
-	// caso finisca la RAM, per ricordare la classe anche se si eseguono modifiche 
+
 	private static final long serialVersionUID = 1L;
 
-    private int idOrdine; // ID_ordine INT AUTO_INCREMENT PRIMARY KEY
-    private int idUtente; // ID_Utente INT NOT NULL
-    private Timestamp dataOrdine; // Data_ordine DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-    private double totaleOrdine; // Totale_ordine DECIMAL(10, 2) NOT NULL
-    private String statoOrdine; // Stato_ordine VARCHAR(30) NOT NULL DEFAULT 'IN_ATTESA'
-    // Dati Spedizione congelati
-    private String spedizioneNomeCognome; // Spedizione_Nome_Cognome VARCHAR(100) NOT NULL
-    private String spedizioneVia; // Spedizione_Via VARCHAR(100) NOT NULL
-    private String spedizioneNumeroCivico; // Spedizione_Numero_civico VARCHAR(10) NOT NULL
-    private String spedizioneCap; // Spedizione_Cap VARCHAR(10) NOT NULL
-    private String spedizioneCitta; // Spedizione_Citta VARCHAR(50) NOT NULL
-    private String spedizioneProvincia; // Spedizione_Provincia CHAR(2) NOT NULL
-    private String spedizioneTelefono; // Spedizione_Telefono VARCHAR(20) NOT NULL
+    private int idOrdine; 
+    private int idUtente;
+    private Timestamp dataOrdine; 
+    private double totaleOrdine; 
+    private String statoOrdine; 
     
-    // Dati Pagamento congelati
-    private String pagamentoCircuito; // Pagamento_Circuito VARCHAR(50) NOT NULL
-    private String pagamentoNumeroCartaOscurato; // Pagamento_Numero_Carta_Oscurato VARCHAR(20) NOT NULL
+    private String spedizioneNomeCognome; 
+    private String spedizioneVia; 
+    private String spedizioneNumeroCivico; 
+    private String spedizioneCap; 
+    private String spedizioneCitta; 
+    private String spedizioneProvincia; 
+    private String spedizioneTelefono; 
+    
+    private String pagamentoCircuito; 
+    private String pagamentoNumeroCartaOscurato; 
 
     public OrdineBean() {}
 

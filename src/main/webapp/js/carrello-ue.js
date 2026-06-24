@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
-    //Intercettazione dei form del carrello
+
     const formsCarrello = document.querySelectorAll('form[action*="/Carrello"]');
 
     formsCarrello.forEach(form => {
@@ -8,15 +8,15 @@ document.addEventListener("DOMContentLoaded", function() {
             
             // Controlla se il form è di "aggiunta"
             if (azioneInput && azioneInput.value === 'aggiungi') {
-                e.preventDefault(); // Blocca il ricaricamento
+                e.preventDefault(); 
 
                 const formData = new FormData(this);
                 const params = new URLSearchParams(formData);
-                params.append('isAjax', 'true'); // Aggiungiamo il nostro segnale
+                params.append('isAjax', 'true'); 
 
                 fetch(this.action, {
                     method: 'POST',
-                    body: params // Usiamo params formattato per Java
+                    body: params 
                 })
                 .then(response => {
                     if (!response.ok) throw new Error("Errore dal server");
@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         const badge = document.getElementById('cart-badge-count');
                         if (badge) {
                             badge.textContent = data.totaleElementi;
-                            badge.style.display = 'flex'; // Lo mostra se era nascosto
+                            badge.style.display = 'flex'; 
                         }
                         
                         showToast("Prodotto aggiunto al carrello \u2714");

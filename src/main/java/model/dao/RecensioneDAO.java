@@ -13,7 +13,7 @@ public class RecensioneDAO {
 
     // 1. INSERISCI UNA RECENSIONE (doSave)
     public void doSave(RecensioneBean recensione) throws SQLException {
-        // Lasciamo che Data_recensione prenda il DEFAULT CURRENT_TIMESTAMP del DB
+    
         String sql = "INSERT INTO Recensione (ID_Utente, ID_prodotto, Valutazione, Titolo, Corpo) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection con = ConPool.getConnection();

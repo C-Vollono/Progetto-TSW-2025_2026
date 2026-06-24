@@ -8,12 +8,12 @@ public class DatiPagamentoBean implements Serializable {
 	// caso finisca la RAM, per ricordare la classe anche se si eseguono modifiche 
 	private static final long serialVersionUID = 1L;
 
-    private int idPagamento;             // ID_pagamento INT AUTO_INCREMENT PRIMARY KEY
-    private int idUtente;                // ID_Utente INT NOT NULL (Foreign Key)
-    private String circuitoCarta;         // Circuito_carta VARCHAR(50) -> Es. Visa, Mastercard
-    private String numeroCartaOscurato;  // Numero_carta_oscurato VARCHAR(20) -> Es. ************1234
-    private Date scadenzaCarta;          // Scadenza_carta DATE
-    private String intestatario;         // Intestatario VARCHAR(100)
+    private int idPagamento;
+    private int idUtente;             
+    private String circuitoCarta;        
+    private String numeroCartaOscurato;  
+    private Date scadenzaCarta;         
+    private String intestatario;     
 
     public DatiPagamentoBean() {}
 

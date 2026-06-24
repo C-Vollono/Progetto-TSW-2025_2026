@@ -316,7 +316,6 @@ public class ProfiloServlet extends HttpServlet {
                 return;
             }
             
-         //AZIONE: DETTAGLI ORDINE
             if ("dettagliOrdine".equals(action)) {
                 response.setContentType("application/json");
                 response.setCharacterEncoding("UTF-8");

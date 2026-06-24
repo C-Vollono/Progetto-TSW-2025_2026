@@ -164,12 +164,6 @@
 					</c:otherwise>
 				</c:choose>
 			</div>
-
-			<!--<c:if test="${not empty prodottiCatalogo}">
-				<div class="load-more-container">
-					<button class="btn-details load-more-btn">Vedi altro</button>
-				</div>
-			</c:if>-->
 		</div>
 	</div>
 	

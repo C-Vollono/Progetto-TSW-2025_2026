@@ -13,7 +13,7 @@ public class TicketDAO {
 
     // 1. INSERISCI UN NUOVO TICKET (doSave)
     public void doSave(TicketBean ticket) throws SQLException {
-        // Lasciamo che Data_apertura e Stato prendano automaticamente i DEFAULT definiti sul database
+       
         String sql = "INSERT INTO Ticket (ID_Utente, Descrizione, Allegato) VALUES (?, ?, ?)";
 
         try (Connection con = ConPool.getConnection();

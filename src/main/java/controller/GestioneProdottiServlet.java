@@ -29,7 +29,7 @@ public class GestioneProdottiServlet extends HttpServlet {
         String action = request.getParameter("action");
         
         try {
-            // --- AGGIUNTO: GESTIONE APERTURA FORM INSERIMENTO ---
+            // --- GESTIONE APERTURA FORM INSERIMENTO ---
             if (action != null && action.equalsIgnoreCase("insertForm")) {
                 try {
                     List<MacrocategoriaBean> tutteLeMacro = macrocategoriaDAO.doRetrieveAll();
@@ -44,7 +44,7 @@ public class GestioneProdottiServlet extends HttpServlet {
                 return;
             }
 
-            // --- GESTIONE APERTURA FORM MODIFICA (GIA' PRESENTE) ---
+            // --- GESTIONE APERTURA FORM MODIFICA ---
             if (action != null && action.equalsIgnoreCase("editForm")) {
                 try {
                     List<MacrocategoriaBean> tutteLeMacro = macrocategoriaDAO.doRetrieveAll();
@@ -77,7 +77,7 @@ public class GestioneProdottiServlet extends HttpServlet {
                 return;
             }
 
-            // --- GESTIONE VISUALIZZAZIONE CATALOGO STANDARD (GIA' PRESENTE) ---
+            // --- GESTIONE VISUALIZZAZIONE CATALOGO STANDARD ---
             String searchQuery = request.getParameter("searchQuery");
             String categoria = request.getParameter("categoria");
             String microcategoria = request.getParameter("microcategoria");
@@ -92,6 +92,7 @@ public class GestioneProdottiServlet extends HttpServlet {
             if (ordina == null) ordina = "rilevanza";
             if (searchQuery == null) searchQuery = "";
 
+            // Recupero Categorie
             List<MacrocategoriaBean> tutteLeMacro = macrocategoriaDAO.doRetrieveAll(); 
             request.setAttribute("tutteLeMacro", tutteLeMacro);
 
@@ -101,7 +102,12 @@ public class GestioneProdottiServlet extends HttpServlet {
                 request.setAttribute("microDiQuestaMacro", microDiQuestaMacro);
             }
 
-         // Il parametro 'true' dice al DAO di prelevare sia i prodotti disponibili che quelli esauriti (quantita = 0)
+            // --- AGGIUNTO: RECUPERO LISTA DELLE MARCHE ---
+            // Sostituisci doRetrieveAllBrands() con il nome esatto del metodo che usi nella tua CatalogoServlet se è diverso.
+            List<String> tutteLeMarche = productoDAO.doRetrieveAllMarche(); 
+            request.setAttribute("tutteLeMarche", tutteLeMarche);
+
+            // Il parametro 'true' dice al DAO di prelevare sia i prodotti disponibili che quelli esauriti (quantita = 0)
             List<ProdottoBean> listaProdottiFiltrati = productoDAO.doRetrieveByFilters(categoria, microcategoria, marca, prezzoRange, searchQuery, ordina, true);
             request.setAttribute("prodottiCatalogo", listaProdottiFiltrati); 
 
@@ -132,7 +138,7 @@ public class GestioneProdottiServlet extends HttpServlet {
                 if (action.equalsIgnoreCase("insert")) {
                     ProdottoBean p = new ProdottoBean();
                     
-                    // MODIFICATO: Parametri allineati alla nuova struttura del form JSP di inserimento
+                    // Parametri allineati alla nuova struttura del form JSP di inserimento
                     p.setMarca(request.getParameter("marca"));
                     p.setModello(request.getParameter("modello"));
                     p.setTipo(request.getParameter("tipo")); // Riceve il nome della Macrocategoria selezionata
@@ -141,7 +147,7 @@ public class GestioneProdottiServlet extends HttpServlet {
                     p.setDescrizione(request.getParameter("descrizione"));
                     p.setUrlImmagine(request.getParameter("urlImmagine"));
                     
-                    // MODIFICATO: Lettura dinamica dell'ID Sotto-Categoria dal form invece del valore fisso 1
+                    // Lettura dinamica dell'ID Sotto-Categoria dal form
                     p.setIdMicro(Integer.parseInt(request.getParameter("idMicro")));
                     
                     productoDAO.doSave(p);

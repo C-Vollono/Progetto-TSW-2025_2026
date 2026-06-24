@@ -3,22 +3,21 @@ package model.bean;
 import java.io.Serializable;
 
 public class ProdottoBean implements Serializable {
-    // Numero di versione per la serializzazione, serve per non far crashare Tomcat in 
-    // caso finisca la RAM, per ricordare la classe anche se si eseguono modifiche 
+ 
     private static final long serialVersionUID = 1L;
 
-    private int idProdotto; // ID_prodotto INT AUTO_INCREMENT PRIMARY KEY
-    private String marca; //  Marca VARCHAR(50) NOT NULL 
-    private String modello; // Modello VARCHAR(100) NOT NULL
-    private String tipo; // Tipo VARCHAR(50)
-    private int quantita; // Quantita INT NOT NULL DEFAULT 0
-    private String descrizione; // Descrizione TEXT
-    private double prezzo; // Prezzo DECIMAL(10, 2) NOT NULL  
-    private int idMicro; // ID_micro INT NOT NULL
-    private String urlImmagine; // Url_Immagine VARCHAR(255) NOT NULL
-    private int iva; // <--- Aliquota fissa 22% default MySql
+    private int idProdotto; 
+    private String marca;  
+    private String modello;
+    private String tipo; 
+    private int quantita; 
+    private String descrizione; 
+    private double prezzo;  
+    private int idMicro; 
+    private String urlImmagine; 
+    private int iva; 
     
-    private int valutazione; // Attributo per calcolare la media del prodotto 
+    private int valutazione;
 
     public ProdottoBean() {
     }

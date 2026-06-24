@@ -58,12 +58,10 @@ public class ConfermaOrdineServlet extends HttpServlet {
         String circuito = "", cartaOscurata = "";
 
         try {
-            // --- GESTIONE SPEDIZIONE ---
             String idSpedizione = request.getParameter("idSpedizione");
             DatiSpedizioneDAO spedizioneDAO = new DatiSpedizioneDAO();
             
             if ("nuovo".equals(idSpedizione)) {
-                // Prende i dati dal form a comparsa
                 via = request.getParameter("nuovaVia").trim();
                 civico = request.getParameter("nuovoCivico").trim();
                 citta = request.getParameter("nuovaCitta").trim();
@@ -71,7 +69,6 @@ public class ConfermaOrdineServlet extends HttpServlet {
                 cap = request.getParameter("nuovoCap").trim();
                 telefono = request.getParameter("nuovoTelefono") != null ? request.getParameter("nuovoTelefono").trim() : "";
                 
-                // SALVATAGGIO BONUS: Memorizza il nuovo indirizzo nel DB per i prossimi acquisti!
                 DatiSpedizioneBean nuovoInd = new DatiSpedizioneBean();
                 nuovoInd.setIdUtente(utente.getIdUtente());
                 nuovoInd.setVia(via);
@@ -92,17 +89,14 @@ public class ConfermaOrdineServlet extends HttpServlet {
                 telefono = indEsistente.getTelefono() != null ? indEsistente.getTelefono() : "";
             }
 
-            // --- GESTIONE PAGAMENTO ---
             String idPagamento = request.getParameter("idPagamento");
             DatiPagamentoDAO pagamentoDAO = new DatiPagamentoDAO();
 
             if ("nuovo".equals(idPagamento)) {
-                // Prende i dati dal form a comparsa
                 circuito = request.getParameter("nuovoCircuito");
                 String numeroCarta = request.getParameter("nuovoNumeroCarta").replaceAll("\\s+", "");
                 cartaOscurata = "**" + numeroCarta.substring(numeroCarta.length() - 4);
                 
-                // SALVATAGGIO BONUS: Memorizza la nuova carta nel DB
                 DatiPagamentoBean nuovaCarta = new DatiPagamentoBean();
                 nuovaCarta.setIdUtente(utente.getIdUtente());
                 nuovaCarta.setCircuitoCarta(circuito);
@@ -110,8 +104,9 @@ public class ConfermaOrdineServlet extends HttpServlet {
                 nuovaCarta.setIntestatario(request.getParameter("nuovoIntestatario").trim());
                 nuovaCarta.setScadenzaCarta(java.sql.Date.valueOf(request.getParameter("nuovaScadenza") + "-01"));
                 pagamentoDAO.doSave(nuovaCarta);
+                
             } else {
-                // Recupera la carta selezionata dal DB
+            	
                 DatiPagamentoBean cartaEsistente = pagamentoDAO.doRetrieveByKey(Integer.parseInt(idPagamento));
                 circuito = cartaEsistente.getCircuitoCarta();
                 cartaOscurata = cartaEsistente.getNumeroCartaOscurato();
@@ -124,13 +119,11 @@ public class ConfermaOrdineServlet extends HttpServlet {
             return;
         }
 
-        // 4. TRANSAZIONE ATOMICA (ACID): Ordine + Dettagli + Magazzino
         Connection con = null;
         try {
             con = ConPool.getConnection();
             con.setAutoCommit(false); 
 
-            // A) Creazione Ordine
             String sqlOrdine = "INSERT INTO Ordine (ID_Utente, Totale_ordine, Stato_ordine, Spedizione_Nome_Cognome, "
                            + "Spedizione_Via, Spedizione_Numero_civico, Spedizione_Cap, Spedizione_Citta, "
                            + "Spedizione_Provincia, Spedizione_Telefono, Pagamento_Circuito, Pagamento_Numero_Carta_Oscurato) "
@@ -163,7 +156,6 @@ public class ConfermaOrdineServlet extends HttpServlet {
                 throw new SQLException("Errore critico: Impossibile generare la chiave primaria per l'Ordine.");
             }
 
-            // B) Creazione Dettagli e Aggiornamento Magazzino (Aggiunta IVA per l'integrità storica)
             String sqlDettaglio = "INSERT INTO Dettaglio_Ordine (ID_ordine, ID_prodotto, Quantita, Prezzo_unitario_storico, Iva_storicizzata) VALUES (?, ?, ?, ?, ?)";
             String sqlUpdateStock = "UPDATE Prodotto SET Quantita = Quantita - ? WHERE ID_prodotto = ? AND Quantita >= ?";
 
@@ -174,7 +166,6 @@ public class ConfermaOrdineServlet extends HttpServlet {
                     ProdottoBean prodotto = entry.getKey();
                     int qtaRichiesta = entry.getValue();
 
-                    // Salvataggio Dettaglio con IVA (fissata al 22% come da standard italiano)
                     psD.setInt(1, idOrdineGenerato);
                     psD.setInt(2, prodotto.getIdProdotto());
                     psD.setInt(3, qtaRichiesta);
@@ -182,14 +173,13 @@ public class ConfermaOrdineServlet extends HttpServlet {
                     psD.setInt(5, 22); 
                     psD.executeUpdate();
 
-                    // Controllo e aggiornamento Magazzino
                     psU.setInt(1, qtaRichiesta);
                     psU.setInt(2, prodotto.getIdProdotto());
                     psU.setInt(3, qtaRichiesta); 
                     
                     int rowsAffected = psU.executeUpdate();
                     if (rowsAffected == 0) {
-                        con.rollback(); // Annulla tutto se un prodotto è andato esaurito nel frattempo!
+                        con.rollback();
                         
                         session.setAttribute("messaggioErrore", "Siamo spiacenti, lo strumento '" + prodotto.getMarca() + " " + prodotto.getModello() + "' è appena andato esaurito. Aggiorna il carrello.");
                         response.sendRedirect(request.getContextPath() + "/Carrello");
@@ -198,7 +188,7 @@ public class ConfermaOrdineServlet extends HttpServlet {
                 }
             }
 
-            con.commit(); // Se tutto è andato bene, consolida i dati nel DB!
+            con.commit();
             
             session.setAttribute("ricevuta_idOrdine", idOrdineGenerato);
             session.setAttribute("ricevuta_totale", carrello.getPrezzoTotale());
@@ -211,7 +201,6 @@ public class ConfermaOrdineServlet extends HttpServlet {
             session.removeAttribute("carrello");
             session.setAttribute("messaggioSuccesso", "Complimenti! Il tuo ordine è stato registrato con successo. ID Ordine: #" + idOrdineGenerato);
             
-            // Qui momentaneamente rimandiamo alla home, ma potresti creare una pagina "conferma.jsp" dedicata!
             response.sendRedirect(request.getContextPath() + "/jsp/common/confermaOrdine.jsp");
 
         } catch (SQLException e) {

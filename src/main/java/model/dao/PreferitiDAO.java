@@ -14,7 +14,7 @@ public class PreferitiDAO {
 
     // 1. AGGIUNGI AI PREFERITI (doSave)
     public void doSave(PreferitiBean preferito) throws SQLException {
-        // Lasciamo che la data prenda il DEFAULT CURRENT_TIMESTAMP del DB
+
         String sql = "INSERT INTO Preferiti (ID_Utente, ID_prodotto) VALUES (?, ?)";
 
         try (Connection con = ConPool.getConnection();
@@ -42,11 +42,9 @@ public class PreferitiDAO {
     }
 
     // 3. RECUPERA TUTTI I PRODOTTI PREFERITI DI UN UTENTE
-    // Molto utile per mostrare direttamente gli oggetti (Chitarre, Flauti, ecc.) nella pagina "I miei preferiti"
     public List<ProdottoBean> doRetrieveProdottiByUtente(int idUtente) throws SQLException {
         List<ProdottoBean> lista = new ArrayList<>();
         
-        // Una comodissima JOIN che estrae i dettagli del prodotto direttamente partendo dall'ID Utente
         String sql = "SELECT p.* FROM Prodotto p " +
                      "JOIN Preferiti f ON p.ID_prodotto = f.ID_prodotto " +
                      "WHERE f.ID_Utente = ? ORDER BY f.Data_aggiunta DESC";
@@ -77,7 +75,6 @@ public class PreferitiDAO {
     }
 
     // 4. VERIFICA SE UN PRODOTTO È GIÀ NEI PREFERITI DI UN UTENTE
-    // Fondamentale nel frontend (JSP) per capire se disegnare il cuore "pieno" o il cuore "vuoto"
     public boolean isPreferito(int idUtente, int idProdotto) throws SQLException {
         String sql = "SELECT 1 FROM Preferiti WHERE ID_Utente = ? AND ID_prodotto = ?";
         
@@ -88,7 +85,7 @@ public class PreferitiDAO {
             ps.setInt(2, idProdotto);
 
             try (ResultSet rs = ps.executeQuery()) {
-                return rs.next(); // Ritorna true se trova un record, false altrimenti
+                return rs.next();
             }
         }
     }

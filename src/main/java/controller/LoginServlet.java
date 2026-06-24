@@ -16,7 +16,6 @@ import util.PasswordHashing;
 public class LoginServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     
-    //Dichiarazione del Dao utente per l'utilizzo
     private UtenteDAO utenteDao;
        
     public LoginServlet() {
@@ -38,12 +37,12 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
-        //Recupero dei parametri
+
         String email = request.getParameter("email");
         String passwordInChiaro = request.getParameter("password");
         String isAjax = request.getParameter("isAjax");
 
-        //Validazione con chiave standard 'messaggioErrore'
+
         if (email == null || email.trim().isEmpty() || passwordInChiaro == null || passwordInChiaro.isEmpty()) {
         	if ("true".equals(isAjax)) {
                 response.setContentType("application/json");
@@ -61,28 +60,25 @@ public class LoginServlet extends HttpServlet {
         String passwordCifrata = PasswordHashing.toHash(passwordInChiaro);
 
         try {
-            //Interrogazione del Database
             UtenteBean utente = utenteDao.doRetrieveByLogin(email.trim(), passwordCifrata);
 
             if (utente != null) {
-                //Login andato a buon fine
+
                 HttpSession session = request.getSession(true);
                 
-                //Salviamo l'intero Bean dell'utente in sessione
                 session.setAttribute("utenteLoggato", utente);
                 session.setAttribute("ruolo", utente.isIsAdmin() ? "admin" : "customer");
                 
-                // --- INIZIO REDIRECT INTELLIGENTE ---
                 String url;
                 String redirectDopoLogin = (String) session.getAttribute("redirectDopoLogin");
                 
                 if (redirectDopoLogin != null) {
                     url = request.getContextPath() + redirectDopoLogin;
-                    session.removeAttribute("redirectDopoLogin"); // Puliamo per non falsare futuri login
+                    session.removeAttribute("redirectDopoLogin");
                 } else {
                     url = request.getContextPath() + (utente.isIsAdmin() ? "/jsp/admin/admin.jsp" : "/Home");
                 }
-                // --- FINE REDIRECT INTELLIGENTE ---
+ 
 
                 //Risposta AJAX
                 if ("true".equals(isAjax)) {

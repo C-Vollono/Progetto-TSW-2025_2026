@@ -11,13 +11,12 @@ import util.ConPool;
 
 public class ProdottoDAO {
 
-    // Costante applicativa per l'aliquota IVA standard del negozio (22%)
     private static final int IVA_DEFAULT = 22;
 
     // 1. RECUPERA TUTTI I PRODOTTI (Escludendo quelli con Quantità = 0 per il catalogo principale)
     public List<ProdottoBean> doRetrieveAll() throws SQLException {
         List<ProdottoBean> lista = new ArrayList<>();
-        // MODIFICATO: Aggiunto filtro Quantita > 0 per escluderli dal catalogo generale
+
         String sql = "SELECT * FROM Prodotto WHERE Quantita > 0";
 
         try (Connection con = ConPool.getConnection();
@@ -32,7 +31,6 @@ public class ProdottoDAO {
     }
 
     // 2. RECUPERA UN PRODOTTO DALLA CHIAVE PRIMARIA 
-    // (Qui non mettiamo Quantita > 0 perché serve poter recuperare lo storico o i dettagli anche se oscurato)
     public ProdottoBean doRetrieveByKey(int idProdotto) throws SQLException {
         String sql = "SELECT * FROM Prodotto WHERE ID_prodotto = ?";
 
@@ -117,7 +115,7 @@ public class ProdottoDAO {
         Connection con = null;
         try {
             con = ConPool.getConnection();
-            con.setAutoCommit(false); // Inizio Transazione
+            con.setAutoCommit(false); 
 
             int totaleLegami = 0;
             try (PreparedStatement psCheck = con.prepareStatement(sqlCheckLegami)) {
@@ -191,7 +189,7 @@ public class ProdottoDAO {
                 }
             }
 
-            con.commit(); // Fine transazione con successo
+            con.commit(); 
         } catch (SQLException e) {
             if (con != null) con.rollback();
             throw e;
@@ -217,7 +215,6 @@ public class ProdottoDAO {
     // 7. RECUPERA PRODOTTI DI UNA SPECIFICA MICROCATEGORIA (Filtrando quelli attivi)
     public List<ProdottoBean> doRetrieveByMicrocategoria(int idMicro) throws SQLException {
         List<ProdottoBean> lista = new ArrayList<>();
-        // MODIFICATO: Aggiunto AND Quantita > 0
         String sql = "SELECT * FROM Prodotto WHERE ID_micro = ? AND Quantita > 0";
 
         try (Connection con = ConPool.getConnection();
@@ -237,7 +234,6 @@ public class ProdottoDAO {
     // 8. RECUPERA 3 PRODOTTI CASUALI PER L'HERO DELLA HOMEPAGE
     public List<ProdottoBean> doRetrieveInEvidenza() throws SQLException {
         List<ProdottoBean> lista = new ArrayList<>();
-        // MODIFICATO: Aggiunto WHERE Quantita > 0
         String sql = "SELECT * FROM Prodotto WHERE Quantita > 0 ORDER BY RAND() LIMIT 3";
 
         try (Connection con = ConPool.getConnection();
@@ -254,7 +250,6 @@ public class ProdottoDAO {
     // 9. RECUPERA I PRODOTTI PER I SUGGERIMENTI DI RICERCA (LIVE SEARCH AJAX)
     public List<ProdottoBean> doRetrieveBySearch(String query) throws SQLException {
         List<ProdottoBean> lista = new ArrayList<>();
-        // MODIFICATO: Aggiunto AND Quantita > 0 alla fine della condizione
         String sql = "SELECT * FROM Prodotto WHERE (CONCAT(Marca, ' ', Modello) LIKE ? OR CONCAT(Modello, ' ', Marca) LIKE ?) AND Quantita > 0 LIMIT 5";
 
         try (Connection con = ConPool.getConnection();
@@ -276,8 +271,7 @@ public class ProdottoDAO {
  // 10. RECUPERA I PRODOTTI FILTRATI (Accetta ora includeEsauriti per differenziare l'uso lato Client o Admin)
     public List<ProdottoBean> doRetrieveByFilters(String macroIdParam, String microIdParam, String marca, String prezzoRange, String searchQuery, String ordina, boolean includeEsauriti) throws SQLException {
         List<ProdottoBean> lista = new ArrayList<>();
-        
-        // Se includeEsauriti è true (caso Admin), prende tutto (WHERE 1=1). Se è false (caso Client), mostra solo quantità > 0.
+     
         String baseQuery = "SELECT p.* FROM Prodotto p JOIN Microcategoria mi ON p.ID_micro = mi.ID_micro WHERE " 
                          + (includeEsauriti ? "1=1" : "p.Quantita > 0");
         
@@ -350,7 +344,6 @@ public class ProdottoDAO {
     // 11. RECUPERA TUTTE LE MARCHE (Solo dei prodotti visibili nel catalogo)
     public List<String> doRetrieveAllMarche() throws SQLException {
         List<String> marche = new ArrayList<>();
-        // MODIFICATO: Aggiunto WHERE Quantita > 0 per evitare che compaiano marche solo di prodotti cancellati/oscurati
         String sql = "SELECT DISTINCT Marca FROM Prodotto WHERE Quantita > 0 ORDER BY Marca ASC";
         
         try (Connection con = util.ConPool.getConnection();

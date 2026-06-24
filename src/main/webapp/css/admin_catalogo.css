@@ -124,3 +124,14 @@
 @media (max-width: 600px) {
     .catalog-grid { grid-template-columns: 1fr; }
 }
+
+header, .admin-header, .navbar {
+    position: sticky;
+    top: 0;
+    z-index: 9999 !important; 
+    background-color: #ffffff;
+}
+
+.catalog-sidebar {
+    z-index: 10 !important; 
+}

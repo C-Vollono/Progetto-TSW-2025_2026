@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-  //LOGICA SUGGERIMENTI RICERCA TESTUALE (AUTOCOMPLETE AJAX)
+  //logica suggerimenti autocomplete
   const input = document.getElementById('catalog-search');
   const box   = document.getElementById('search-suggestions');
 
@@ -64,25 +64,24 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-//FUNZIONE PER AGGIORNAMENTO DELLE MICROCATEGORIE
+//funzione aggiornamento microcategorie
 
 const macroSelect = document.getElementById('categoria'); 
   
   if (macroSelect) {
     macroSelect.addEventListener('change', (event) => {
-      // Prende l'ID della categoria selezionata
+     
       const idSelezionato = event.target.value; 
-      // Richiama la funzione AJAX che popola le sotto-categorie
+
       window.caricaMicrocategorie(idSelezionato); 
     });
   }
 
-//FUNZIONE GLOBALE: CARICAMENTO ASINCRONO DELLE MICROCATEGORIE (ID MACRO)
+//Caricamento asincrono delle microcategorie
 window.caricaMicrocategorie = function(macroId) {
   const microSelect = document.getElementById('microcategoria');
   const microGroup = document.getElementById('filter-group-micro');
 
-  // Se l'utente seleziona "Tutte" (All), svuota e nascondi il filtro micro
   if (!macroId || macroId === 'All') {
     if (microSelect) microSelect.innerHTML = '<option value="All">Tutte le sotto-categorie</option>';
     if (microGroup) microGroup.style.display = 'none';
@@ -104,7 +103,7 @@ window.caricaMicrocategorie = function(macroId) {
       microSelect.innerHTML = '<option value="All">Tutte le sotto-categorie</option>';
 
       if (data && data.length > 0) {
-        // Popola la select ciclando l'array JSON ricevuto
+
         data.forEach(micro => {
           const option = document.createElement('option');
           option.value = micro.id;

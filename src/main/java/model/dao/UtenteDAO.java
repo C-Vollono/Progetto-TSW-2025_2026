@@ -15,7 +15,6 @@ public class UtenteDAO {
     // 1. INSERIMENTO / REGISTRAZIONE (Modificato: restituisce boolean e controlla i duplicati)
     public boolean doSave(UtenteBean utente) throws SQLException {
         
-        // Controllo preventivo per evitare eccezioni di vincolo UNIQUE nel Database
         if (checkEmailExists(utente.getEmail())) {
             System.out.println("[UtenteDAO] Tentativo di registrazione fallito: Email già esistente -> " + utente.getEmail());
             return false;
@@ -28,7 +27,6 @@ public class UtenteDAO {
 
         String sql = "INSERT INTO Utente (Email, Password, Username, Nome, Cognome, Is_Admin, Data_di_nascita) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-        // Passiamo Statement.RETURN_GENERATED_KEYS come secondo parametro per recuperare l'ID generato
         try (Connection con = ConPool.getConnection();
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -42,22 +40,22 @@ public class UtenteDAO {
 
             int rowsAffected = ps.executeUpdate();
 
-            // Se nessuna riga è stata inserita nel DB, restituiamo subito false
+        
             if (rowsAffected == 0) {
                 return false;
             }
 
-            // Recuperiamo l'ID appena assegnato in automatico dal DBMS
+       
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    // Iniettiamo l'ID generato direttamente nel Bean corrente
+       
                     utente.setIdUtente(generatedKeys.getInt(1));
                 } else {
                     throw new SQLException("Errore nella registrazione: nessun ID utente generato restituito.");
                 }
             }
             
-            return true; // Registrazione completata con successo al 100%
+            return true;
         }
     }
 
@@ -108,7 +106,7 @@ public class UtenteDAO {
             ps.setString(1, email);
 
             try (ResultSet rs = ps.executeQuery()) {
-                return rs.next(); // Ritorna true se trova già un record con questa mail
+                return rs.next(); 
             }
         }
     }
@@ -123,7 +121,7 @@ public class UtenteDAO {
             ps.setString(1, username);
 
             try (ResultSet rs = ps.executeQuery()) {
-                return rs.next(); // Ritorna true se trova già un record con questo username
+                return rs.next(); 
             }
         }
     }
@@ -158,7 +156,7 @@ public class UtenteDAO {
             ps.setString(5, utente.getCognome());
             ps.setBoolean(6, utente.isIsAdmin());
             ps.setDate(7, utente.getDataDiNascita());
-            ps.setInt(8, utente.getIdUtente()); // Condizione WHERE
+            ps.setInt(8, utente.getIdUtente());
 
             ps.executeUpdate();
         }

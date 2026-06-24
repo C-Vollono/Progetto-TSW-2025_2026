@@ -25,9 +25,9 @@ public class GestioneOrdiniServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
         this.ordineDAO = new OrdineDAO();
-        this.dettagliOrdineDAO = new DettagliOrdineDAO(); // <-- AGGIUNTO
+        this.dettagliOrdineDAO = new DettagliOrdineDAO();
     }
-    // IL METODO GET SI OCCUPA SOLO DI LETTURA E FILTRAGGIO (IDEMPOTENTE)
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
@@ -42,27 +42,23 @@ public class GestioneOrdiniServlet extends HttpServlet {
 
         String action = request.getParameter("action");
 
-        // ==========================================
-        // NUOVO SCENARIO: VISUALIZZAZIONE DETTAGLI
-        // ==========================================
+
         if ("dettagli".equals(action)) {
             try {
                 int idOrdine = Integer.parseInt(request.getParameter("idOrdine"));
                 
-                // 1. Recuperiamo i dati generali dell'ordine (Spedizione, Totale, Stato, ecc...)
                 OrdineBean ordine = ordineDAO.doRetrieveByKey(idOrdine);
                 
                 if (ordine != null) {
-                    // 2. Recuperiamo la lista degli articoli associati a quell'ordine dal DettagliOrdineDAO
+                    
                     List<DettaglioOrdineBean> articoliOrdine = dettagliOrdineDAO.doRetrieveByOrdine(idOrdine);
                     
-                    // 3. Passiamo tutto alla JSP tramite la request
+
                     request.setAttribute("ordine", ordine);
                     request.setAttribute("articoliOrdine", articoliOrdine);
                     
-                    // 4. Inoltriamo alla pagina dei dettagli dell'ordine per l'admin
                     request.getRequestDispatcher("/jsp/admin/dettagliOrdine.jsp").forward(request, response);
-                    return; // Interrompiamo il metodo qui
+                    return; 
                 } else {
                     request.setAttribute("messaggioErrore", "Ordine non trovato nel sistema.");
                 }
@@ -75,9 +71,6 @@ public class GestioneOrdiniServlet extends HttpServlet {
             }
         }
 
-        // =========================================================================
-        // IL TUO CODICE PREESISTENTE PER IL FILTRAGGIO GLOBALE (Resta invariato)
-        // =========================================================================
         String dataInizio = request.getParameter("dataInizio");
         String dataFine = request.getParameter("dataFine");
         String filtroCliente = request.getParameter("filtroCliente");
@@ -134,12 +127,11 @@ public class GestioneOrdiniServlet extends HttpServlet {
         request.getRequestDispatcher("/jsp/admin/ordiniAdmin.jsp").forward(request, response);
     }
     
-    // IL METODO POST GESTISCE LE MODIFICHE AL DATABASE (CAMBIO STATO ORDINE)
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
-        // Verifica Sicurezza Admin anche sul POST
         HttpSession session = request.getSession(false);
         UtenteBean utente = (session != null) ? (UtenteBean) session.getAttribute("utenteLoggato") : null;
         if (utente == null || !utente.isIsAdmin()) {
@@ -156,7 +148,6 @@ public class GestioneOrdiniServlet extends HttpServlet {
                 
                 ordineDAO.doUpdateStato(idOrdine, nuovoStato);
                 
-                // Salviamo il feedback in sessione perché stiamo per fare un redirect (PRG)
                 session.setAttribute("messaggioSuccesso", "Stato dell'ordine #" + idOrdine + " modificato in " + nuovoStato + "!");
                 
             } catch (NumberFormatException e) {
@@ -168,7 +159,6 @@ public class GestioneOrdiniServlet extends HttpServlet {
             }
         }
 
-        // REDIRECT (PRG) alla GET della stessa servlet per rinfrescare la lista in totale sicurezza
         response.sendRedirect(request.getContextPath() + "/Admin/GestioneOrdini");
     }
 }

@@ -4,13 +4,12 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 
 public class PreferitiBean implements Serializable {
-    // Numero di versione per la serializzazione, serve per non far crashare Tomcat in 
-	// caso finisca la RAM, per ricordare la classe anche se si eseguono modifiche 
+
 	private static final long serialVersionUID = 1L;
 
-    private int idUtente;       // ID_Utente INT NOT NULL
-    private int idProdotto;     // ID_prodotto INT NOT NULL
-    private Timestamp dataAggiunta; // Data_aggiunta DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    private int idUtente;       
+    private int idProdotto;     
+    private Timestamp dataAggiunta; 
 
     public PreferitiBean() {}
 

@@ -4,18 +4,17 @@ import java.io.Serializable;
 import java.sql.Date;
 
 public class UtenteBean implements Serializable {
-    // Numero di versione per la serializzazione, serve per non far crashare Tomcat in 
-	// caso finisca la RAM, per ricordare la classe anche se si eseguono modifiche 
+
 	private static final long serialVersionUID = 1L;
 
-    private int idUtente; // ID_Utente INT AUTO_INCREMENT PRIMARY KEY
-    private String email; // Email VARCHAR(100) NOT NULL UNIQUE
-    private String password; // Password VARCHAR(255) NOT NULL
-    private String username; //Username VARCHAR(50) NOT NULL UNIQUE
-    private String nome; // Nome VARCHAR(50) NOT NULL
-    private String cognome; // Cognome VARCHAR(50) NOT NULL
-    private boolean isAdmin; // Is_Admin BOOL DEFAULT false
-    private Date dataDiNascita; // Data_di_nascita DATE
+    private int idUtente; 
+    private String email; 
+    private String password; 
+    private String username; 
+    private String nome; 
+    private String cognome; 
+    private boolean isAdmin;
+    private Date dataDiNascita; 
 
     public UtenteBean() {}
 
