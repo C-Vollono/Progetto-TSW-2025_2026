@@ -12,7 +12,7 @@
         <div class="catalog-header-title">
             <h2>Gestione Catalogo <span class="premium-text">Premium</span></h2>
         </div>
-        <a href="${pageContext.request.contextPath}/jsp/admin/InserimentoProdottoForm.jsp" class="btn-add-product">
+        <a href="${pageContext.request.contextPath}/Admin/GestioneProdotti?action=insertForm" class="btn-add-product">
             + Inserisci Nuovo Prodotto
         </a>
     </div>
@@ -130,7 +130,20 @@
                                 <div class="product-info">
                                     <h3>${prodotto.marca} ${prodotto.modello}</h3>
                                     <p class="product-brand">Categoria: ${prodotto.tipo}</p>
-                                    <p class="product-brand">Disponibili: <strong>${prodotto.quantita} pz</strong></p>
+                                    
+                                    <p class="product-brand">Stato Magazzino: 
+                                        <c:choose>
+                                            <c:when test="${prodotto.quantita == 0}">
+                                                <span style="color: #dc3545; font-weight: bold; background: #f8d7da; padding: 2px 6px; border-radius: 4px; font-size: 13px;">
+                                                    Non in commercio (Esaurito)
+                                                </span>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <strong style="color: #28a745;">${prodotto.quantita} pz</strong>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </p>
+                                    
                                     <p class="product-price">€ ${prodotto.prezzo}</p>
                                     
                                     <div class="product-actions">

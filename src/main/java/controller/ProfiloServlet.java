@@ -74,6 +74,11 @@ public class ProfiloServlet extends HttpServlet {
             List<DatiPagamentoBean> datiPagamento = pagamentoDAO.doRetrieveByUtente(utente.getIdUtente());
             List<ProdottoBean> preferiti = preferitiDAO.doRetrieveProdottiByUtente(utente.getIdUtente());
             List<RecensioneBean> mieRecensioni = recensioneDAO.doRetrieveByUtente(utente.getIdUtente());
+            
+            if (preferiti != null) {
+                preferiti.removeIf(prodotto -> prodotto.getQuantita() == 0);
+            }
+            
             int maxTicket = Math.min(tuttiTicket.size(), 3);
             int maxOrdini = Math.min(tuttiOrdini.size(), 3);
             

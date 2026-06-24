@@ -75,7 +75,7 @@ public class CatalogoServlet extends HttpServlet {
                 if (ordina == null) ordina = "rilevanza";
 
                 //Chiamata al DAO con i filtri per ID
-                List<ProdottoBean> listaProdotti = prodottoDAO.doRetrieveByFilters(categoria, microcategoria, marca, prezzoRange, searchQuery, ordina);
+                List<ProdottoBean> listaProdotti = prodottoDAO.doRetrieveByFilters(categoria, microcategoria, marca, prezzoRange, searchQuery, ordina, false);
                 
                 //Carichiamo dinamicamente tutte le Macrocategorie dal DB per la sidebar
                 List<MacrocategoriaBean> tutteLeMacro = macrocategoriaDAO.doRetrieveAll();
