@@ -68,7 +68,6 @@ public class CarrelloServlet extends HttpServlet {
             }
         } catch (NumberFormatException e) {
             e.printStackTrace();
-            // Se scatta l'eccezione qui dentro, l'azione era necessariamente non null, quindi salviamo sempre in sessione per il redirect
             session.setAttribute("messaggioErrore", "Formato dei parametri non valido.");
         } catch (SQLException e) {
             e.printStackTrace();
@@ -78,11 +77,9 @@ public class CarrelloServlet extends HttpServlet {
      //CHIAMATA AJAX
         String isAjax = request.getParameter("isAjax");
         if ("true".equals(isAjax)) {
-            // Dichiara che la risposta sarà un pacchetto JSON
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             
-            // Conta quanti elementi ci sono nel carrello aggiornato
             int totaleElementi = 0;
             if (carrello != null) {
                 totaleElementi = carrello.getTotalePezzi(); 
@@ -90,17 +87,14 @@ public class CarrelloServlet extends HttpServlet {
             
             // Costruisci il JSON
             String json = "{\"success\": true, \"totaleElementi\": " + totaleElementi + "}";
-            
-            // Invia la risposta e ferma l'esecuzione con un return
+
             response.getWriter().write(json);
             return; 
         }
         
         if (azione != null) {
-            // C'è stata un'azion: facciamo redirect per pulire l'URL
             response.sendRedirect(request.getContextPath() + "/Carrello");
         } else {
-            // Nessuna azione: inoltro diretto alla pagina JSP per la visualizzazione pura
             request.getRequestDispatcher("/jsp/carrello.jsp").forward(request, response);
         }
     }

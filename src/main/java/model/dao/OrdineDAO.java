@@ -19,7 +19,7 @@ public class OrdineDAO {
                    + "Spedizione_Provincia, Spedizione_Telefono, Pagamento_Circuito, Pagamento_Numero_Carta_Oscurato) "
                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        // Passiamo Statement.RETURN_GENERATED_KEYS come secondo parametro per salvare la key
+        
         try (Connection con = ConPool.getConnection();
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -41,7 +41,7 @@ public class OrdineDAO {
             // Recuperiamo l'ID generato automaticamente dal database
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    // Iniettiamo l'ID appena generato direttamente all'interno del Bean
+     
                     ordine.setIdOrdine(generatedKeys.getInt(1));
                 } else {
                     throw new SQLException("Errore nel salvataggio dell'ordine: nessun ID generato restituito.");
@@ -88,7 +88,6 @@ public class OrdineDAO {
     }
 
     // 4. MODIFICA STATO DELL'ORDINE (doUpdate)
-    // Utile per l'Admin che deve contrassegnare l'ordine come "SPEDITO" o "CONSEGNATO"
     public void doUpdateStato(int idOrdine, String nuovoStato) throws SQLException {
         String sql = "UPDATE Ordine SET Stato_ordine = ? WHERE ID_ordine = ?";
 
@@ -134,14 +133,11 @@ public class OrdineDAO {
     public List<OrdineBean> doRetrieveByDates(String dataInizio, String dataFine) throws SQLException {
         List<OrdineBean> lista = new ArrayList<>();
         
-        // Aggiungiamo i timestamp di inizio e fine giornata per coprire l'intera giornata selezionata
         String sql = "SELECT * FROM Ordine WHERE Data_ordine BETWEEN ? AND ? ORDER BY Data_ordine DESC";
 
         try (Connection con = ConPool.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
-            // Trasformiamo le stringhe provenienti dal form HTML (formato yyyy-MM-dd) in Timestamp
-            // Aggiungiamo l'orario per prendere tutto il giorno di inizio (00:00:00) e tutto il giorno di fine (23:59:59)
             ps.setString(1, dataInizio + " 00:00:00");
             ps.setString(2, dataFine + " 23:59:59");
 

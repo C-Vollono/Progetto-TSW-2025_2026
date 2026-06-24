@@ -557,16 +557,6 @@ main{
 	color: var(--bg-card); 
 }
 
-/*.load-more-container { 
-	text-align: center; 
-	margin-top: 20px; 
-}
-
-.load-more-btn { 
-	padding: 12px 40px; 
-	font-size: 1.1rem; 
-} */
-
 /*FOOTER*/
 footer {
 	background-color: var(--bg-secondary);

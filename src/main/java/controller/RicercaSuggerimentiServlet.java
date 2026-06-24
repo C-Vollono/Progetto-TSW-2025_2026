@@ -25,13 +25,11 @@ public class RicercaSuggerimentiServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
-        // 1. Configurazione nativa della risposta JSON
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
         String testoDigitato = request.getParameter("q");
 
-        // Se l'utente non ha digitato nulla o solo spazi, restituiamo un array JSON vuoto immediatamente
         if (testoDigitato == null || testoDigitato.trim().isEmpty()) {
             response.getWriter().write("[]");
             return;
@@ -40,14 +38,12 @@ public class RicercaSuggerimentiServlet extends HttpServlet {
         try {
             List<ProdottoBean> suggerimenti = prodottoDAO.doRetrieveBySearch(testoDigitato.trim());
             
-            // 2. COSTRUZIONE MANUALE DEL JSON CON CONTROLLO ANTI-NULL
             StringBuilder json = new StringBuilder();
             json.append("["); 
             
             for (int i = 0; i < suggerimenti.size(); i++) {
                 ProdottoBean p = suggerimenti.get(i);
                 
-                // Fallback di sicurezza se i testi nel DB sono nulli
                 String marcaSanitizzata = (p.getMarca() != null) ? p.getMarca().replace("\"", "\\\"") : "";
                 String modelloSanitizzato = (p.getModello() != null) ? p.getModello().replace("\"", "\\\"") : "";
                 
@@ -65,14 +61,13 @@ public class RicercaSuggerimentiServlet extends HttpServlet {
             
             json.append("]"); 
             
-            // 3. Spediamo la stringa al JavaScript della pagina
             response.getWriter().write(json.toString());
 
         } catch (SQLException e) {
             e.printStackTrace();
             // Impostiamo lo status HTTP 500 (Internal Server Error)
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            // IMPORTANTE: Manteniamo la coerenza semantica della chiave usando 'messaggioErrore' anche nel JSON
+  
             response.getWriter().write("{\"messaggioErrore\": \"Errore di comunicazione con il database durante la ricerca.\"}");
         }
     }

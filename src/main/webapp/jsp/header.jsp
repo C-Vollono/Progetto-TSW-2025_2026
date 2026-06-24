@@ -9,7 +9,6 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	
 	<title>ToneMarket - Il miglior negozio di strumenti musicali sul mercato</title>
-	<!--<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/style.css">-->
 	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/global.css">
 	<link rel="icon" type="image/png" href="${pageContext.request.contextPath}/images/chiaveViolinotrans.png" sizes="96x96">
 </head>

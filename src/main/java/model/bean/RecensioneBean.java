@@ -4,18 +4,16 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 
 public class RecensioneBean implements Serializable {
-    // Numero di versione per la serializzazione, serve per non far crashare Tomcat in 
-	// caso finisca la RAM, per ricordare la classe anche se si eseguono modifiche 
+ 
 	private static final long serialVersionUID = 1L;
 
-    private int idRecensione;          // ID_recensione INT AUTO_INCREMENT PRIMARY KEY
-    private int idUtente;              // ID_Utente INT NOT NULL
-    private int idProdotto;            // ID_prodotto INT NOT NULL
-    private int valutazione;           // Valutazione INT NOT NULL (CHECK BETWEEN 1 AND 5)
-    private String titolo;             // Titolo VARCHAR(100)
-    private String corpo;              // Corpo TEXT NOT NULL
-    private Timestamp dataRecensione;  // Data_recensione DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-
+    private int idRecensione;       
+    private int idUtente;        
+    private int idProdotto;          
+    private int valutazione;    
+    private String titolo;           
+    private String corpo;             
+    private Timestamp dataRecensione;  
     public RecensioneBean() {}
 
     // Getter e Setter

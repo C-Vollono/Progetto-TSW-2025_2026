@@ -33,7 +33,6 @@ public class CheckoutServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        // Rimanda la GET alla POST (utile per quando il Login ci reindirizza qui)
         doPost(request, response);
     }
 
@@ -51,12 +50,12 @@ public class CheckoutServlet extends HttpServlet {
                 session = request.getSession(true);
             }
             session.setAttribute("messaggioErrore", "Devi effettuare il login per procedere al checkout.");
-            session.setAttribute("redirectDopoLogin", "/Checkout"); // Salva la destinazione
+            session.setAttribute("redirectDopoLogin", "/Checkout");
             response.sendRedirect(request.getContextPath() + "/Login");
             return;
         }
 
-        // 2. CONTROLLO CARRELLO (Dev'esserci e non deve essere vuoto)
+        // 2. CONTROLLO CARRELLO
         model.Carrello carrello = (session != null) ? (model.Carrello) session.getAttribute("carrello") : null;
         if (carrello == null || carrello.getElementi().isEmpty()) {
             response.sendRedirect(request.getContextPath() + "/Carrello");

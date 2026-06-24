@@ -47,10 +47,7 @@ public class AccessControlFilter extends HttpFilter implements Filter {
         
         System.out.println("[AccessControl-DEBUG] Richiesta intercettata verso l'URI: " + path);
         
-        // --- 4. BLOCCO DELLE ECCEZIONI (FONDAMENTALE) ---
-        // Se la richiesta riguarda asset statici, login, registrazione o logout,
-        // lasciamo passare la richiesta senza alcun controllo di sicurezza.
-        // NOTA: Avendo usato .toLowerCase(), i controlli vengono fatti tutti in minuscolo.
+        // 4. BLOCCO DELLE ECCEZIONI
         if (path.contains("/css/") || 
             path.contains("/images/") || 
             path.contains("/js/") || 
@@ -63,8 +60,6 @@ public class AccessControlFilter extends HttpFilter implements Filter {
             chain.doFilter(request, response);
             return;
         }
-
-        // --- APPLICAZIONE LOGICA DEL PROFESSORE ---
         
         // Caso A: L'utente prova ad andare in un'area comune ma non è loggato
         if (path.contains("/jsp/common/") && utente == null) {
@@ -78,14 +73,13 @@ public class AccessControlFilter extends HttpFilter implements Filter {
             if (utente == null || isAdmin == null || !isAdmin) {
                 System.out.println("[AccessControl] ACCESSO NEGATO su area admin per la risorsa: " + path);
                 
-                // Impostiamo l'errore da mostrare nel form
+      
                 httpRequest.setAttribute("erroreLogin", "Accesso negato! Area riservata agli amministratori.");
                 httpResponse.sendRedirect(httpRequest.getContextPath() + "/jsp/login.jsp");
                 return;
             }
         }
 
-        // Se supera le restrizioni, la risorsa è accessibile (es: index.jsp generale)
         chain.doFilter(request, response);
     }
 

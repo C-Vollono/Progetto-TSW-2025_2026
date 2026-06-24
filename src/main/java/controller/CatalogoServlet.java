@@ -60,8 +60,8 @@ public class CatalogoServlet extends HttpServlet {
                 }
             } else {
                 //CATALOGO GENERALE CON DOPPIO FILTRO ID
-                String categoria = request.getParameter("categoria"); // ID Macrocategoria
-                String microcategoria = request.getParameter("microcategoria"); // ID Microcategoria
+                String categoria = request.getParameter("categoria");
+                String microcategoria = request.getParameter("microcategoria");
                 String marca = request.getParameter("marca");
                 String prezzoRange = request.getParameter("prezzo");
                 String searchQuery = request.getParameter("searchQuery");
@@ -81,22 +81,15 @@ public class CatalogoServlet extends HttpServlet {
                 List<MacrocategoriaBean> tutteLeMacro = macrocategoriaDAO.doRetrieveAll();
                 request.setAttribute("tutteLeMacro", tutteLeMacro);
 
-                // =========================================================================
-                // CORREZIONE / NUOVO INSERIMENTO: 
-                // Carichiamo dinamicamente tutte le marche dal DB per popolare il select/sidebar
-                // =========================================================================
                 List<String> tutteLeMarche = prodottoDAO.doRetrieveAllMarche();
                 request.setAttribute("tutteLeMarche", tutteLeMarche);
-                // =========================================================================
 
-                //Se una macro è selezionata, pre-carichiamo le sue micro per mantenere lo stato dei select
                 if (!categoria.equalsIgnoreCase("All") && !categoria.trim().isEmpty()) {
                     int idMacro = Integer.parseInt(categoria);
                     List<MicrocategoriaBean> microDiQuestaMacro = microcategoriaDAO.doRetrieveByMacro(idMacro);
                     request.setAttribute("microDiQuestaMacro", microDiQuestaMacro);
                 }
                 
-                //Ripassiamo i parametri per il "selected" in JSTL
                 request.setAttribute("selCategoria", categoria);
                 request.setAttribute("selMicrocategoria", microcategoria);
                 request.setAttribute("selMarca", marca);

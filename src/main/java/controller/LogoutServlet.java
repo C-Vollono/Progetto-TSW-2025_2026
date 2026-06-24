@@ -28,14 +28,11 @@ public class LogoutServlet extends HttpServlet {
         processRequest(request, response);
     }
 
-    //Metodo per mantenere il codice pulito 
     private void processRequest(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
-        // Recuperiamo la sessione corrente senza crearne una nuova
         HttpSession session = request.getSession(false);
         
-        // Controlliamo se abbiamo recuperato la sessione
         if (session != null) {
         	
         	// Debug da terminale per verificare la verifica della condizione tramite messaggio di errore e recupero del ID utente 
@@ -45,7 +42,6 @@ public class LogoutServlet extends HttpServlet {
             session.invalidate();
         }
         
-        // Redirect all'index che pulisce sce la cronologia delle richieste
         response.sendRedirect(request.getContextPath() + "/Home");
     }
 }

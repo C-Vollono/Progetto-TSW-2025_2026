@@ -1,9 +1,5 @@
 @charset "UTF-8";
 
-/* ==========================================================================
-   1. STILI CONDIVISI E LISTA ORDINI (TABELLA PRINCIPALE)
-   ========================================================================== */
-
 .admin-orders-container {
     max-width: 1400px;
     margin: 40px auto;
@@ -211,11 +207,6 @@
     background-color: #b5832e;
     color: #fff;
 }
-
-
-/* ==========================================================================
-   2. STILE DETTAGLIO ORDINE (LAYOUT WIREFRAME)
-   ========================================================================== */
 
 .wireframe-box {
     border: 1px solid #000;

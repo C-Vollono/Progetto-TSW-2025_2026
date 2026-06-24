@@ -31,10 +31,8 @@ public class GetMicrocategorieServlet extends HttpServlet {
             try {
                 int idMacro = Integer.parseInt(macroIdParam);
                 
-                // CHIAMATA AL TUO METODO DO_RETRIEVE_BY_MACRO
                 List<MicrocategoriaBean> lista = microcategoriaDAO.doRetrieveByMacro(idMacro);
                 
-                // Creazione manuale della stringa JSON standard compatibile
                 StringBuilder json = new StringBuilder("[");
                 for (int i = 0; i < lista.size(); i++) {
                     MicrocategoriaBean m = lista.get(i);

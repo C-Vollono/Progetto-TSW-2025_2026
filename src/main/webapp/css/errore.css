@@ -30,7 +30,7 @@ body {
 }
 
 .brand-error span {
-    color: #b5832e; /* Colore Oro di ToneMarket */
+    color: #b5832e; 
 }
 
 .error-icon {
@@ -52,7 +52,7 @@ p {
 
 #countdown {
     font-weight: bold;
-    color: #d9534f; /* Rosso per l'avviso del timer */
+    color: #d9534f; 
 }
 
 .actions-bar {

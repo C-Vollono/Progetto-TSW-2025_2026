@@ -22,14 +22,13 @@ public class GestioneTicketServlet extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        // Inizializzazione dei DAO all'avvio della servlet
+
         ticketDAO = new TicketDAO();
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
-        // 1. CONTROLLO DI SICUREZZA (RBAC)
         HttpSession session = request.getSession(false);
         
         if (session == null || session.getAttribute("utenteLoggato") == null) {
@@ -42,7 +41,6 @@ public class GestioneTicketServlet extends HttpServlet {
             return;
         }
 
-        // 2. GESTIONE DELLE AZIONI
         String action = request.getParameter("action");
         if (action == null) {
             action = "list"; 
@@ -70,11 +68,10 @@ public class GestioneTicketServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        // Redirige tutte le richieste POST al doGet per centralizzare la logica
+
         doGet(request, response);
     }
 
-    // AZIONE: Mostra tutti i ticket presenti nel database
     private void listTickets(HttpServletRequest request, HttpServletResponse response) 
             throws SQLException, ServletException, IOException {
         
@@ -84,7 +81,6 @@ public class GestioneTicketServlet extends HttpServlet {
         request.getRequestDispatcher("/jsp/admin/ticket_admin.jsp").forward(request, response);
     }
 
-    // AZIONE: Mostra i dettagli di un singolo ticket selezionato e la relativa Pratica
     private void viewTicket(HttpServletRequest request, HttpServletResponse response) 
             throws SQLException, ServletException, IOException {
         
@@ -103,7 +99,7 @@ public class GestioneTicketServlet extends HttpServlet {
         }
     }
 
-    // AZIONE: Modifica lo stato del ticket (es. da IN_ATTESA a ACCETTATO)
+
     private void updateTicketStatus(HttpServletRequest request, HttpServletResponse response) 
             throws SQLException, IOException {
         

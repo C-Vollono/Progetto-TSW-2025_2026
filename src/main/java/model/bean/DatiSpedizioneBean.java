@@ -3,18 +3,17 @@ package model.bean;
 import java.io.Serializable;
 
 public class DatiSpedizioneBean implements Serializable {
-    // Numero di versione per la serializzazione, serve per non far crashare Tomcat in 
-	// caso finisca la RAM, per ricordare la classe anche se si eseguono modifiche 
+
 	private static final long serialVersionUID = 1L;
 
-    private int idSpedizione;    // ID_spedizione INT AUTO_INCREMENT PRIMARY KEY
-    private int idUtente;         // ID_Utente INT NOT NULL (Foreign Key)
-    private String telefono;      // Telefono VARCHAR(20)
-    private String numeroCivico;  // Numero_civico VARCHAR(10)
-    private String via;           // Via VARCHAR(100)
-    private String cap;           // Cap VARCHAR(10)
-    private String citta;         // Citta VARCHAR(50)
-    private String provincia;     // Provincia CHAR(2)
+    private int idSpedizione;   
+    private int idUtente;      
+    private String telefono;  
+    private String numeroCivico;  
+    private String via;         
+    private String cap;         
+    private String citta;       
+    private String provincia;    
 
 
     public DatiSpedizioneBean() {}
