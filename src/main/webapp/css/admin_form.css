@@ -263,6 +263,56 @@
     background-color: #cccccc;
 }
 
+/* Gruppo select + bottone "+" */
+.select-btn-group {
+    display: flex;
+    gap: 8px;
+}
+
+/* I select dentro al gruppo occupano tutto lo spazio */
+.select-btn-group select {
+    flex-grow: 1;
+}
+
+/* Box per nuova macro/micro */
+#box-nuova-macro,
+#box-nuova-micro {
+    display: none;
+    margin-top: 12px;
+    padding: 10px;
+    background: #f4f6f9;
+    border-radius: 6px;
+}
+
+/* Label interna del box inline */
+.inline-box-label {
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Riga con input + bottone "Salva" */
+.box-inline-row {
+    display: flex;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+/* Bottone verde "Salva" inline */
+.btn-save-inline {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+/* Nascondi il bridge JS */
+#js-data-bridge {
+    display: none;
+}
+
 /* ==========================================================================
    RESPONSIVITÀ FORM V2 (Tablet & Smartphone)
    ========================================================================== */

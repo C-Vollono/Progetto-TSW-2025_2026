@@ -17,6 +17,16 @@ import model.dao.ProdottoDAO;
 import model.dao.MacrocategoriaDAO;
 import model.dao.MicrocategoriaDAO;
 
+// import per gestione download immagini
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.UUID;
+
 @WebServlet("/Admin/GestioneProdotti")
 public class GestioneProdottiServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -39,7 +49,6 @@ public class GestioneProdottiServlet extends HttpServlet {
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
-                // Invia alla tua JSP di inserimento (assicurati che il percorso e il nome del file siano corretti)
                 request.getRequestDispatcher("/jsp/admin/InserimentoProdottoForm.jsp").forward(request, response);
                 return;
             }
@@ -102,13 +111,13 @@ public class GestioneProdottiServlet extends HttpServlet {
                 request.setAttribute("microDiQuestaMacro", microDiQuestaMacro);
             }
 
-            // --- AGGIUNTO: RECUPERO LISTA DELLE MARCHE ---
-            // Sostituisci doRetrieveAllBrands() con il nome esatto del metodo che usi nella tua CatalogoServlet se è diverso.
+            // Recupero lista marche
             List<String> tutteLeMarche = productoDAO.doRetrieveAllMarche(); 
             request.setAttribute("tutteLeMarche", tutteLeMarche);
 
-            // Il parametro 'true' dice al DAO di prelevare sia i prodotti disponibili che quelli esauriti (quantita = 0)
-            List<ProdottoBean> listaProdottiFiltrati = productoDAO.doRetrieveByFilters(categoria, microcategoria, marca, prezzoRange, searchQuery, ordina, true);
+            // true = include anche prodotti con quantita = 0
+            List<ProdottoBean> listaProdottiFiltrati = productoDAO.doRetrieveByFilters(
+                    categoria, microcategoria, marca, prezzoRange, searchQuery, ordina, true);
             request.setAttribute("prodottiCatalogo", listaProdottiFiltrati); 
 
             request.setAttribute("searchQuery", searchQuery);
@@ -138,16 +147,17 @@ public class GestioneProdottiServlet extends HttpServlet {
                 if (action.equalsIgnoreCase("insert")) {
                     ProdottoBean p = new ProdottoBean();
                     
-                    // Parametri allineati alla nuova struttura del form JSP di inserimento
                     p.setMarca(request.getParameter("marca"));
                     p.setModello(request.getParameter("modello"));
-                    p.setTipo(request.getParameter("tipo")); // Riceve il nome della Macrocategoria selezionata
+                    p.setTipo(request.getParameter("tipo")); 
                     p.setPrezzo(Double.parseDouble(request.getParameter("prezzo")));
                     p.setQuantita(Integer.parseInt(request.getParameter("quantita")));
                     p.setDescrizione(request.getParameter("descrizione"));
-                    p.setUrlImmagine(request.getParameter("urlImmagine"));
+
+                    String rawUrlImg = request.getParameter("urlImmagine");
+                    String imagePathToSave = processImageUrl(rawUrlImg, request);
+                    p.setUrlImmagine(imagePathToSave);
                     
-                    // Lettura dinamica dell'ID Sotto-Categoria dal form
                     p.setIdMicro(Integer.parseInt(request.getParameter("idMicro")));
                     
                     productoDAO.doSave(p);
@@ -162,7 +172,11 @@ public class GestioneProdottiServlet extends HttpServlet {
                     p.setPrezzo(Double.parseDouble(request.getParameter("prezzo")));
                     p.setQuantita(Integer.parseInt(request.getParameter("quantita")));
                     p.setDescrizione(request.getParameter("descrizione"));
-                    p.setUrlImmagine(request.getParameter("urlImmagine"));
+
+                    String rawUrlImg = request.getParameter("urlImmagine");
+                    String imagePathToSave = processImageUrl(rawUrlImg, request);
+                    p.setUrlImmagine(imagePathToSave);
+
                     p.setIdMicro(Integer.parseInt(request.getParameter("idMicro")));
                     
                     productoDAO.doUpdate(p);
@@ -180,5 +194,55 @@ public class GestioneProdottiServlet extends HttpServlet {
         }
         
         response.sendRedirect(request.getContextPath() + "/Admin/GestioneProdotti");
+    }
+
+    // Gestisce urlImmagine: path interno oppure URL remoto da scaricare in /images/prodotti
+    private String processImageUrl(String rawUrl, HttpServletRequest request) throws IOException {
+        if (rawUrl == null) return null;
+        String trimmed = rawUrl.trim();
+        if (trimmed.isEmpty()) return null;
+
+        // Caso 1: path interno (non http/https)
+        if (!(trimmed.startsWith("http://") || trimmed.startsWith("https://"))) {
+            if (trimmed.startsWith("images/")) {
+                trimmed = trimmed.substring("images/".length());
+            } else if (trimmed.startsWith("/images/")) {
+                trimmed = trimmed.substring("/images/".length());
+            }
+            return trimmed; // es. "prodotti/chitarre/lespaul.png"
+        }
+
+        // Caso 2: URL remoto -> scarico in /images/prodotti
+        URL url = new URL(trimmed);
+        URLConnection conn = url.openConnection();
+        conn.setConnectTimeout(5000);
+        conn.setReadTimeout(5000);
+
+        String contentType = conn.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            // non è un'immagine: salvo comunque l'URL così com'è
+            return trimmed;
+        }
+
+        String extension = ".jpg";
+        String path = url.getPath();
+        int dotIndex = path.lastIndexOf('.');
+        if (dotIndex > 0 && dotIndex < path.length() - 1) {
+            extension = path.substring(dotIndex);
+        }
+
+        String fileName = UUID.randomUUID().toString() + extension;
+        String relativePath = "prodotti/" + fileName; // ciò che va nel DB
+
+        String imagesRoot = request.getServletContext().getRealPath("/images");
+        Path targetDir = Paths.get(imagesRoot, "prodotti");
+        Files.createDirectories(targetDir);
+
+        Path targetFile = targetDir.resolve(fileName);
+        try (InputStream in = conn.getInputStream()) {
+            Files.copy(in, targetFile, StandardCopyOption.REPLACE_EXISTING);
+        }
+
+        return relativePath;
     }
 }

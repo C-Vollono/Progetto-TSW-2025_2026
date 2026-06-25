@@ -31,62 +31,62 @@
     </c:if>
     
     <div class="catalog-layout">
-		
-	<aside class="catalog-sidebar">
-			<h3>Filtri</h3>
+        
+        <aside class="catalog-sidebar">
+            <h3>Filtri</h3>
             <form action="${pageContext.request.contextPath}/Admin/GestioneProdotti" method="GET">
-				<input type="hidden" name="searchQuery" value="${searchQuery}">
-				<input type="hidden" name="ordina" value="${empty selOrdina ? 'rilevanza' : selOrdina}">
-				
-				<div class="filter-group">
-					<label for="categoria">Categoria:</label>
-					<select name="categoria" id="categoria">
-						<option value="All" ${empty selCategoria || selCategoria == 'All' ? 'selected' : ''}>Tutte le categorie</option>
-						<c:forEach var="macro" items="${tutteLeMacro}">
-							<option value="${macro.idMacro}" ${selCategoria != 'All' && selCategoria == macro.idMacro ? 'selected' : ''}>
-								${macro.nomeMacro}
-							</option>
-						</c:forEach>
-					</select>
-				</div>
-				
-				<div class="filter-group" id="filter-group-micro" style="${selCategoria == 'All' || empty selCategoria ? 'display:none;' : ''}">
-					<label for="microcategoria">Sotto-categoria:</label>
-					<select name="microcategoria" id="microcategoria">
-						<option value="All" ${empty selMicrocategoria || selMicrocategoria == 'All' ? 'selected' : ''}>Tutte le sotto-categorie</option>
-						<c:if test="${not empty microDiQuestaMacro}">
-							<c:forEach var="micro" items="${microDiQuestaMacro}">
-								<option value="${micro.idMicro}" ${selMicrocategoria != 'All' && selMicrocategoria == micro.idMicro ? 'selected' : ''}>
-									${micro.nomeMicro}
-								</option>
-							</c:forEach>
-						</c:if>
-					</select>
-				</div>
-				
-				<div class="filter-group">
-					<label for="marca">Marca:</label>
-					<select name="marca" id="marca">
-						<option value="All" ${empty selMarca || selMarca == 'All' ? 'selected' : ''}>Tutte le marche</option>						
-						<c:forEach var="m" items="${tutteLeMarche}">
-							<option value="${m}" ${selMarca == m ? 'selected' : ''}>${m}</option>
-						</c:forEach>						
-					</select>
-				</div>
-				
-				<div class="filter-group">
-					<label for="prezzo">Range di prezzo:</label>
-					<select name="prezzo" id="prezzo">
-						<option value="All" ${empty selPrezzo || selPrezzo == 'All' ? 'selected' : ''}>Tutti i prezzi</option>
-						<option value="0-500" ${selPrezzo == '0-500' ? 'selected' : ''}>0€ - 500€</option>
-						<option value="500-2000" ${selPrezzo == '500-2000' ? 'selected' : ''}>500€ - 2.000€</option>
-						<option value="2000-10000" ${selPrezzo == '2000-10000' ? 'selected' : ''}>2.000€ - 10.000€</option>
-					</select>
-				</div>
-				
-				<button type="submit" class="btn-gold filter-btn">Applica filtri</button>
-			</form>
-		</aside>
+                <input type="hidden" name="searchQuery" value="${searchQuery}">
+                <input type="hidden" name="ordina" value="${empty selOrdina ? 'rilevanza' : selOrdina}">
+                
+                <div class="filter-group">
+                    <label for="categoria">Categoria:</label>
+                    <select name="categoria" id="categoria">
+                        <option value="All" ${empty selCategoria || selCategoria == 'All' ? 'selected' : ''}>Tutte le categorie</option>
+                        <c:forEach var="macro" items="${tutteLeMacro}">
+                            <option value="${macro.idMacro}" ${selCategoria != 'All' && selCategoria == macro.idMacro ? 'selected' : ''}>
+                                ${macro.nomeMacro}
+                            </option>
+                        </c:forEach>
+                    </select>
+                </div>
+                
+                <div class="filter-group" id="filter-group-micro" style="${selCategoria == 'All' || empty selCategoria ? 'display:none;' : ''}">
+                    <label for="microcategoria">Sotto-categoria:</label>
+                    <select name="microcategoria" id="microcategoria">
+                        <option value="All" ${empty selMicrocategoria || selMicrocategoria == 'All' ? 'selected' : ''}>Tutte le sotto-categorie</option>
+                        <c:if test="${not empty microDiQuestaMacro}">
+                            <c:forEach var="micro" items="${microDiQuestaMacro}">
+                                <option value="${micro.idMicro}" ${selMicrocategoria != 'All' && selMicrocategoria == micro.idMicro ? 'selected' : ''}>
+                                    ${micro.nomeMicro}
+                                </option>
+                            </c:forEach>
+                        </c:if>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="marca">Marca:</label>
+                    <select name="marca" id="marca">
+                        <option value="All" ${empty selMarca || selMarca == 'All' ? 'selected' : ''}>Tutte le marche</option>                        
+                        <c:forEach var="m" items="${tutteLeMarche}">
+                            <option value="${m}" ${selMarca == m ? 'selected' : ''}>${m}</option>
+                        </c:forEach>                        
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="prezzo">Range di prezzo:</label>
+                    <select name="prezzo" id="prezzo">
+                        <option value="All" ${empty selPrezzo || selPrezzo == 'All' ? 'selected' : ''}>Tutti i prezzi</option>
+                        <option value="0-500" ${selPrezzo == '0-500' ? 'selected' : ''}>0€ - 500€</option>
+                        <option value="500-2000" ${selPrezzo == '500-2000' ? 'selected' : ''}>500€ - 2.000€</option>
+                        <option value="2000-10000" ${selPrezzo == '2000-10000' ? 'selected' : ''}>2.000€ - 10.000€</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn-gold filter-btn">Applica filtri</button>
+            </form>
+        </aside>
 
         <div class="catalog-main">
             <form action="${pageContext.request.contextPath}/Admin/GestioneProdotti" method="GET" class="form-topbar-flex">
@@ -124,7 +124,7 @@
                         <c:forEach var="prodotto" items="${prodottiCatalogo}">
                             <div class="product-card">
                                 <div class="product-image">
-                                    <img src="${pageContext.request.contextPath}/images/${prodotto.urlImmagine.replace('images/', '')}" alt="${prodotto.modello}">
+                                    <img src="${pageContext.request.contextPath}/images/${prodotto.urlImmagine}" alt="${prodotto.modello}">
                                 </div>
                                 
                                 <div class="product-info">

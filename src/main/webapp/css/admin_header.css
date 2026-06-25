@@ -1,12 +1,17 @@
 @charset "UTF-8";
 
 .main-admin-header {
-    background-color: #111111;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    width: 100%;
+	background-color: var(--bg-secondary);
+	color: var(--text-light);
+	padding: 15px 40px;
+	height: 71px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+	position: sticky;
+	top: 0;
+	z-index: 9999;
 }
 
 .admin-nav-container {
@@ -22,15 +27,16 @@
 .admin-brand a {
     display: flex;
     align-items: center;
-    gap: 10px; 
+    gap: 12px; 
     font-weight: bold;
-    font-size: 1.6rem;
+    font-size: 1.8rem;
     text-decoration: none;
+    letter-spacing: 1px;
     font-family: Arial, sans-serif;
 }
 
 .admin-logo-img {
-    height: 40px; 
+    height: 35px; 
 }
 
 .brand-text {

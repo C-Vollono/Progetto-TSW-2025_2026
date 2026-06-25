@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputNuovaMicro = document.getElementById('input-nuova-micro');
     const submitMicro = document.getElementById('submit-micro');
 
-    // 1. Funzione di caricamento e filtraggio dinamico
+    // 1. Funzione di caricamento e filtraggio dinamico delle micro categorie
     function caricaSottoCategorie() {
         const selectedOption = macroSelect.options[macroSelect.selectedIndex];
         const idMacroSelezionata = selectedOption ? selectedOption.getAttribute('data-id') : null;
@@ -51,11 +51,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Toggle dei box input
+    // Toggle dei box input nuova macro
     btnAddMacro.addEventListener('click', () => {
         boxNuovaMacro.style.display = boxNuovaMacro.style.display === 'none' ? 'block' : 'none';
     });
 
+    // Toggle del box input nuova micro (solo se è selezionata una macro)
     btnAddMicro.addEventListener('click', () => {
         if (!macroSelect.value) {
             alert('Seleziona prima una Categoria Principale!');
@@ -125,14 +126,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     macroSelect.addEventListener('change', caricaSottoCategorie);
     
-    if (urlImmagineInput) {
+    // Anteprima immagine prodotto (updatePreview esterno alla JSP)
+    if (urlImmagineInput && imgPreview) {
         urlImmagineInput.addEventListener('input', (e) => {
-            if (!imgPreview) return;
-            imgPreview.src = contextPath + "/images/" + e.target.value.replace('images/', '');
+            const raw = e.target.value.trim();
+            if (raw === '') {
+                imgPreview.src = '';
+                return;
+            }
+            const normalized = raw.startsWith('/')
+                ? raw.substring(1)
+                : raw.replace('images/', '');
+            imgPreview.src = contextPath + "/images/" + normalized;
         });
     }
 
-    // Forza la selezione iniziale basandosi sul testo "tipoIniziale"
+    // Selezione iniziale basata su "tipoIniziale"
     if (tipoIniziale) {
         macroSelect.value = tipoIniziale;
         caricaSottoCategorie();
