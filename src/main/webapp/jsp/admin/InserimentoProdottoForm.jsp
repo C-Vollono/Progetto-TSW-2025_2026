@@ -12,7 +12,7 @@
     </div>
 
     <form action="${pageContext.request.contextPath}/Admin/GestioneProdotti" method="POST" class="main-form-layout">
-    <input type="hidden" name="action" value="insert">
+        <input type="hidden" name="action" value="insert">
 
         <div class="form-content-columns">
             
@@ -38,8 +38,8 @@
                     <div class="form-grid-2col">
                         <div class="form-group">
                             <label for="macroSelect">Categoria Principale</label>
-                            <div class="select-btn-group" style="display: flex; gap: 8px;">
-                                <select id="macroSelect" name="tipo" required style="flex-grow: 1;">
+                            <div class="select-btn-group">
+                                <select id="macroSelect" name="tipo" required>
                                     <option value="">-- Seleziona Categoria --</option>
                                     <c:if test="${not empty tutteLeMacro}">
                                         <c:forEach var="macro" items="${tutteLeMacro}">
@@ -53,8 +53,8 @@
                         
                         <div class="form-group">
                             <label for="idMicro">Sotto-Categoria</label>
-                            <div class="select-btn-group" style="display: flex; gap: 8px;">
-                                <select id="idMicro" name="idMicro" required style="flex-grow: 1;">
+                            <div class="select-btn-group">
+                                <select id="idMicro" name="idMicro" required>
                                     <option value="">-- Seleziona Sotto-Categoria --</option>
                                 </select>
                                 <button type="button" id="btn-add-micro" class="btn-inline-add" title="Nuova Sotto-Categoria">+</button>
@@ -62,19 +62,19 @@
                         </div>
                     </div>
 
-                    <div id="box-nuova-macro" style="display:none; margin-top:12px; padding:10px; background:#f4f6f9; border-radius:6px;">
-                        <label style="font-size:12px; font-weight:bold;">Nuova Categoria Principale:</label>
-                        <div style="display:flex; gap:6px; margin-top:4px;">
+                    <div id="box-nuova-macro">
+                        <label class="inline-box-label">Nuova Categoria Principale:</label>
+                        <div class="box-inline-row">
                             <input type="text" id="input-nuova-macro" placeholder="Es. Amplificatori">
-                            <button type="button" id="submit-macro" style="background:#28a745; color:white; border:none; padding:4px 10px; border-radius:4px; cursor:pointer;">Salva</button>
+                            <button type="button" id="submit-macro" class="btn-save-inline">Salva</button>
                         </div>
                     </div>
 
-                    <div id="box-nuova-micro" style="display:none; margin-top:12px; padding:10px; background:#f4f6f9; border-radius:6px;">
-                        <label style="font-size:12px; font-weight:bold;">Nuova Sotto-Categoria:</label>
-                        <div style="display:flex; gap:6px; margin-top:4px;">
+                    <div id="box-nuova-micro">
+                        <label class="inline-box-label">Nuova Sotto-Categoria:</label>
+                        <div class="box-inline-row">
                             <input type="text" id="input-nuova-micro" placeholder="Es. Valvolari">
-                            <button type="button" id="submit-micro" style="background:#28a745; color:white; border:none; padding:4px 10px; border-radius:4px; cursor:pointer;">Salva</button>
+                            <button type="button" id="submit-micro" class="btn-save-inline">Salva</button>
                         </div>
                     </div>
                 </div>
@@ -98,12 +98,16 @@
                     <h3>Media e Contenuti</h3>
                     <div class="form-group mb-15">
                         <label for="urlImmagine">Nome File Immagine / URL</label>
-                        <input type="text" id="urlImmagine" name="urlImmagine" placeholder="Es. chitarre/lespaul.png" required oninput="updatePreview(this.value)">
+                        <input type="text" id="urlImmagine" name="urlImmagine"
+                               placeholder="Es. prodotti/chitarre/lespaul.png oppure https://..."
+                               required>
                     </div>
 
                     <div class="form-group">
                         <label for="descrizione">Descrizione Tecnica Estesa</label>
-                        <textarea id="descrizione" name="descrizione" placeholder="Inserisci una descrizione accurata del prodotto..." required></textarea>
+                        <textarea id="descrizione" name="descrizione"
+                                  placeholder="Inserisci una descrizione accurata del prodotto..."
+                                  required></textarea>
                     </div>
                 </div>
                 
@@ -115,7 +119,7 @@
                     <div class="image-preview-box">
                         <img id="product-img-preview" src="" alt="Anteprima">
                     </div>
-                    <p class="image-path-indicator">L'immagine deve trovarsi in: <span>/images/</span></p>
+                    <p class="image-path-indicator">L'immagine sarà servita da: <span>/images/...</span></p>
                 </div>
             </div>
 
@@ -128,11 +132,10 @@
     </form>
 </main>
 
-<div id="js-data-bridge" 
+<div id="js-data-bridge"
      data-context-path="${pageContext.request.contextPath}"
      data-id-micro-iniziale="0"
-     data-tipo-iniziale=""
-     style="display:none;">
+     data-tipo-iniziale="">
     <script id="micro-data-json" type="application/json">
         [
             <c:if test="${not empty tutteLeMicro}">
@@ -149,19 +152,5 @@
 </div>
 
 <script src="${pageContext.request.contextPath}/js/funzioniAdmin.js"></script>
-<script>
-// Mantieni aggiornata l'anteprima anche col nuovo ID del tag img usato dal JS comune
-function updatePreview(path) {
-    const previewImg = document.getElementById('product-img-preview');
-    const contextPath = '${pageContext.request.contextPath}';
-    
-    if (path.trim() !== '') {
-        const cleanPath = path.startsWith('/') ? path.substring(1) : path;
-        previewImg.src = contextPath + '/images/' + cleanPath;
-    } else {
-        previewImg.src = '';
-    }
-}
-</script>
 
 <jsp:include page="/jsp/footer.jsp" />
